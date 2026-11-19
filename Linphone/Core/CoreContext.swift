@@ -176,7 +176,7 @@ class CoreContext: ObservableObject {
 		
 		coreQueue.async {
 			LoggingService.Instance.logLevel = LogLevel.Debug
-			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: UnsafeMutablePointer<Int8>(mutating: (SharedMainViewModel.appGroupName as NSString).utf8String))
+			Factory.Instance.logCollectionPath = Factory.Instance.getDataDir(context: FileUtil.sdkPathContext())
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 
 			MDMManager.shared.loadXMLConfigFromMdm(config: AppServices.config)
@@ -188,7 +188,13 @@ class CoreContext: ObservableObject {
 			}
 #endif
 
-			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
+			if FileUtil.appGroupAvailable {
+				self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
+			} else {
+				// LAN build sideloaded without app group (no extensions anyway): plain core
+				Log.warn("App group \(SharedMainViewModel.appGroupName) unavailable, creating a non-shared core")
+				self.mCore = try? Factory.Instance.createCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque())
+			}
 
 			MDMManager.shared.applyMdmConfigToCore(core: self.mCore)
 			self.startObservingMDMConfigurationUpdates()
@@ -739,11 +745,19 @@ enum AppServices {
 
 		setupConfigIfNeeded()
 
-		_config = Config.newForSharedCore(
-			appGroupId: FileUtil.appGroupName,
-			configFilename: "linphonerc",
-			factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
-		)
+		if FileUtil.appGroupAvailable {
+			_config = Config.newForSharedCore(
+				appGroupId: FileUtil.appGroupName,
+				configFilename: "linphonerc",
+				factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
+			)
+		} else if let rcDir = FileUtil.linphonercDirectory() {
+			// LAN build sideloaded without app group: config in the app's own directory
+			_config = try? Factory.Instance.createConfigWithFactory(
+				path: rcDir.appendingPathComponent("linphonerc").path,
+				factoryPath: FileUtil.bundleFilePath("linphonerc-factory") ?? ""
+			)
+		}
 
 		return _config
 	}
@@ -757,8 +771,7 @@ enum AppServices {
 	
 	static func setupConfigIfNeeded() {
 		Log.info("Checking if linphonerc file exists already. If not, creating one as a copy of linphonerc-default")
-		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
-			.appendingPathComponent("Library/Preferences/linphone") {
+		if let rcDir = FileUtil.linphonercDirectory() {
 			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
 			if !FileManager.default.fileExists(atPath: rcFileUrl.path) {
 				do {
@@ -777,8 +790,7 @@ enum AppServices {
 	}
 	
 	static func resetConfig() {
-		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
-			.appendingPathComponent("Library/Preferences/linphone") {
+		if let rcDir = FileUtil.linphonercDirectory() {
 			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
 			do {
 				try FileManager.default.createDirectory(at: rcDir, withIntermediateDirectories: true)

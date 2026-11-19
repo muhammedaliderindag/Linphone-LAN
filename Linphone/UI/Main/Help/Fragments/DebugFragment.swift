@@ -245,8 +245,7 @@ struct DebugFragment: View {
 	
 	func showConfigFile() {
 		Log.info("[DebugFragment][showConfigFile] Dumping & displaying Core's config")
-		if let rcDir = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SharedMainViewModel.appGroupName)?
-			.appendingPathComponent("Library/Preferences/linphone") {
+		if let rcDir = FileUtil.linphonercDirectory() {
 			let rcFileUrl = rcDir.appendingPathComponent("linphonerc")
 			if FileManager.default.fileExists(atPath: rcFileUrl.path) {
 				let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first

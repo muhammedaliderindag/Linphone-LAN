@@ -25,6 +25,28 @@ class FileUtil: NSObject {
 	
 	static let appGroupName: String = resolveAppGroupName()
 
+	/// True when the app group container is accessible. Always true for App Store builds;
+	/// false for a LAN build sideloaded with a free Apple ID (e.g. Sideloadly drops app groups).
+	static let appGroupAvailable: Bool =
+		FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupName) != nil
+
+	/// Context for the SDK's Factory.getDataDir/getConfigDir: the app group name, or nil
+	/// (= the app's own Library directories) when the group is not accessible.
+	/// Passing an inaccessible group crashes the SDK (strlen(NULL) in SysPaths::getDataPath).
+	static func sdkPathContext() -> UnsafeMutablePointer<Int8>? {
+		guard appGroupAvailable else { return nil }
+		return UnsafeMutablePointer<Int8>(mutating: (appGroupName as NSString).utf8String)
+	}
+
+	/// Directory containing linphonerc (group container, or the app's own config dir).
+	static func linphonercDirectory() -> URL? {
+		if appGroupAvailable {
+			return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupName)?
+				.appendingPathComponent("Library/Preferences/linphone")
+		}
+		return URL(fileURLWithPath: Factory.Instance.getConfigDir(context: nil), isDirectory: true)
+	}
+
 	/// APP_GROUP_NAME from Info.plist. In LAN builds (sideloaded, re-signed with a free
 	/// Apple ID), tools like AltStore/SideStore rename the app group (e.g. append the team id),
 	/// so if the declared group is not accessible, use the first accessible group listed in
