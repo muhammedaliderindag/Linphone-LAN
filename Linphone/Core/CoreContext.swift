@@ -25,6 +25,7 @@ import linphonesw
 import Combine
 import UniformTypeIdentifiers
 import Network
+import UserNotifications
 import SwiftUI
 
 #if USE_CRASHLYTICS
@@ -548,7 +549,15 @@ class CoreContext: ObservableObject {
 			})
 			
 			self.mCore.addDelegate(delegate: self.mCoreDelegate)
-			
+#if LAN_BUILD
+			// No push / notification service extension in the LAN build: the app itself
+			// posts a local notification for incoming chat messages (SMS from the bridge).
+			self.lanMessageNotifier = CoreDelegateStub(onMessagesReceived: { (_: Core, chatRoom: ChatRoom, messages: [ChatMessage]) in
+				self.postLanMessageNotification(chatRoom: chatRoom, messages: messages)
+			})
+			self.mCore.addDelegate(delegate: self.lanMessageNotifier!)
+#endif
+
 			self.mCore.autoIterateEnabled = true
 			
 			try? self.mCore.start()
@@ -561,6 +570,46 @@ class CoreContext: ObservableObject {
 		}
 	}
 	
+	/// LAN build: local notification for incoming chat messages (core queue).
+	private var lanMessageNotifier: CoreDelegateStub?
+
+	private func postLanMessageNotification(chatRoom: ChatRoom, messages: [ChatMessage]) {
+		if chatRoom.muted { return }
+		let incoming = messages.filter { !$0.isOutgoing }
+		guard let last = incoming.last else { return }
+
+		let texts = incoming.compactMap { $0.utf8Text }.filter { !$0.isEmpty }
+		var body = texts.joined(separator: "\n")
+		if body.isEmpty {
+			body = NSLocalizedString("notification_chat_message_received_title", comment: "")
+		}
+
+		let from = last.fromAddress
+		let friend = ContactsManager.shared.getFriendWithAddress(address: from)
+		let title = friend?.name ?? from?.displayName ?? from?.username ?? "SMS"
+
+		let content = UNMutableNotificationContent()
+		content.title = title
+		content.body = body
+		content.sound = .default
+		content.categoryIdentifier = "msg_cat"
+		let peerAddr = chatRoom.peerAddress?.asStringUriOnly() ?? ""
+		content.threadIdentifier = peerAddr
+		content.userInfo = [
+			"CallId": last.messageId,
+			"peer_addr": peerAddr,
+			"local_addr": chatRoom.localAddress?.asStringUriOnly() ?? "",
+			"from": from?.asStringUriOnly() ?? ""
+		]
+
+		let request = UNNotificationRequest(identifier: "lan_msg_\(last.messageId)", content: content, trigger: nil)
+		UNUserNotificationCenter.current().add(request) { error in
+			if let error = error {
+				Log.error("[LanKeepAlive] could not post message notification: \(error.localizedDescription)")
+			}
+		}
+	}
+
 	/// LAN build: force a REGISTER refresh every 60 s while in background (core queue).
 	private var lanRegisterRefreshTimer: DispatchSourceTimer?
 
