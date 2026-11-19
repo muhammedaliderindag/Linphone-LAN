@@ -561,13 +561,34 @@ class CoreContext: ObservableObject {
 		}
 	}
 	
+	/// LAN build: force a REGISTER refresh every 60 s while in background (core queue).
+	private var lanRegisterRefreshTimer: DispatchSourceTimer?
+
+	private func startLanRegisterRefresh() {
+		guard lanRegisterRefreshTimer == nil else { return }
+		let timer = DispatchSource.makeTimerSource(queue: coreQueue)
+		timer.schedule(deadline: .now() + 60, repeating: 60, leeway: .seconds(5))
+		timer.setEventHandler { [weak self] in
+			guard let self = self, self.mCore.globalState == .On, self.mCore.calls.isEmpty else { return }
+			Log.info("[LanKeepAlive] periodic REGISTER refresh in background")
+			self.mCore.refreshRegisters()
+		}
+		timer.resume()
+		lanRegisterRefreshTimer = timer
+	}
+
+	private func stopLanRegisterRefresh() {
+		lanRegisterRefreshTimer?.cancel()
+		lanRegisterRefreshTimer = nil
+	}
+
 	func onEnterForeground() {
 		coreQueue.async {
 			Log.info("[onEnterForegroundOrBackground] Entering foreground")
 
 			if LanKeepAlive.isEnabled {
 				LanKeepAlive.shared.stop(deactivateSession: self.mCore.calls.isEmpty)
-				self.mCore.enterForeground()
+				self.stopLanRegisterRefresh()
 			}
 			try? self.mCore.start()
 			AppServices.corePreferences.reloadFromConfig()
@@ -587,7 +608,11 @@ class CoreContext: ObservableObject {
 				if self.mCore.globalState == .Off {
 					try? self.mCore.start()
 				}
-				self.mCore.enterBackground()
+				// Do NOT call mCore.enterBackground(): measured 2026-11-19, after it the SDK
+				// kept sending UDP keep-alives but never refreshed the REGISTER (Expires 120,
+				// no refresh for 17 min) -> the bridge saw the registration expire.
+				// The core keeps behaving as in foreground, plus a periodic forced refresh.
+				self.startLanRegisterRefresh()
 				if self.mCore.calls.isEmpty {
 					Log.info("[onEnterForegroundOrBackground] LAN keep-alive: core stays running in background")
 					LanKeepAlive.shared.start()
