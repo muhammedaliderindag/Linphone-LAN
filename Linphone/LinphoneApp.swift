@@ -63,6 +63,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 		// Set up notifications
 		UNUserNotificationCenter.current().delegate = self
+#if LAN_BUILD
+		// The permission is normally only requested from the first-run welcome screen
+		// ("Grant all"); if that was skipped it is never asked again. The LAN build relies on
+		// local notifications (SMS, missed calls), so ask whenever it was never determined.
+		UNUserNotificationCenter.current().getNotificationSettings { settings in
+			if settings.authorizationStatus == .notDetermined {
+				UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+					Log.info("[LAN] notification permission requested at launch: granted=\(granted) error=\(String(describing: error))")
+				}
+			}
+		}
+#endif
 
 		return true
 	}
