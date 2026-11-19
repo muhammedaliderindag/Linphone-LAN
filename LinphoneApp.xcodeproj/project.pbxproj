@@ -86,6 +86,7 @@
 		D719ABBB2ABC67BF00B41C10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D719ABBA2ABC67BF00B41C10 /* Assets.xcassets */; };
 		D719ABBF2ABC67BF00B41C10 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D719ABBE2ABC67BF00B41C10 /* Preview Assets.xcassets */; };
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
+		4C414E4B41000000000000B1 /* LanKeepAlive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C414E4B41000000000000F1 /* LanKeepAlive.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
 		D719EF892EDF4AFA00509AAB /* GeneratedGit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719EF882EDF4AFA00509AAB /* GeneratedGit.swift */; };
@@ -372,6 +373,7 @@
 		D719ABBC2ABC67BF00B41C10 /* Linphone.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Linphone.entitlements; sourceTree = "<group>"; };
 		D719ABBE2ABC67BF00B41C10 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
+		4C414E4B41000000000000F1 /* LanKeepAlive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanKeepAlive.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
 		D719EF882EDF4AFA00509AAB /* GeneratedGit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedGit.swift; sourceTree = "<group>"; };
@@ -873,6 +875,7 @@
 			children = (
 				D756C8162D352C5600A58F2F /* CorePreferences.swift */,
 				D719ABC82ABC6FD700B41C10 /* CoreContext.swift */,
+				4C414E4B41000000000000F1 /* LanKeepAlive.swift */,
 				66C491FA2B24D32600CEA16D /* CoreExtension.swift */,
 			);
 			path = Core;
@@ -1601,7 +1604,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncase \"$OTHER_SWIFT_FLAGS $SWIFT_ACTIVE_COMPILATION_CONDITIONS\" in *LAN_BUILD*) echo \"LAN build: Crashlytics upload skipped\"; exit 0;; esac\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
 		};
 		D7D1F5432EDDB9C20034EEB0 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1682,6 +1685,7 @@
 				C65270F82F879D2700FF248C /* EarlyPushkitDelegate.swift in Sources */,
 				D7C2DA1D2CA44DE400A2441B /* EventModel.swift in Sources */,
 				D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */,
+				4C414E4B41000000000000B1 /* LanKeepAlive.swift in Sources */,
 				D70A26F22B7F5D95006CC8FC /* ConversationFragment.swift in Sources */,
 				D719EF892EDF4AFA00509AAB /* GeneratedGit.swift in Sources */,
 				D7D1F5282EDD939E0034EEB0 /* RecordingMediaPlayerViewModel.swift in Sources */,

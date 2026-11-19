@@ -180,6 +180,13 @@ class CoreContext: ObservableObject {
 			Factory.Instance.enableLogCollection(state: LogCollectionState.Enabled)
 
 			MDMManager.shared.loadXMLConfigFromMdm(config: AppServices.config)
+#if LAN_BUILD
+			// Two Linphone apps on the same iPhone (App Store + LAN): never bind a fixed
+			// SIP port (5060), use random local ports (-1 = LC_SIP_TRANSPORT_RANDOM).
+			for key in ["sip_port", "sip_tcp_port", "sip_tls_port"] {
+				AppServices.config.setInt(section: "sip", key: key, value: -1)
+			}
+#endif
 
 			self.mCore = try? Factory.Instance.createSharedCoreWithConfig(config: AppServices.config, systemContext: Unmanaged.passUnretained(coreQueue).toOpaque(), appGroupId: SharedMainViewModel.appGroupName, mainCore: true)
 
@@ -192,7 +199,13 @@ class CoreContext: ObservableObject {
 			
 			
 			self.mCore.callkitEnabled = true
+#if LAN_BUILD
+			// LAN build: sideloaded with a free Apple ID, no APNs/PushKit available.
+			// The app is kept alive in background by LanKeepAlive instead.
+			self.mCore.pushNotificationEnabled = false
+#else
 			self.mCore.pushNotificationEnabled = true
+#endif
 			
 			let appGitVersion = AppGitInfo.commit
 			let appGitBranch = AppGitInfo.branch
@@ -206,7 +219,12 @@ class CoreContext: ObservableObject {
 			
 			Log.info("Git Info — App: \(appGitTag + "-" + appGitVersion) [\(appGitBranch)] | SDK: \(sdkGitVersion) [\(sdkGitBranch)]")
 			
-			let userAgent = "LinphoneiOS/\(appGitTag) (\(UIDevice.current.localizedModel.replacingOccurrences(of: "'", with: ""))) LinphoneSDK"
+#if LAN_BUILD
+			let uaPrefix = "LinphoneLAN-iOS" // distinguishable from App Store Linphone in bridge logs
+#else
+			let uaPrefix = "LinphoneiOS"
+#endif
+			let userAgent = "\(uaPrefix)/\(appGitTag) (\(UIDevice.current.localizedModel.replacingOccurrences(of: "'", with: ""))) LinphoneSDK"
 			self.mCore.setUserAgent(name: userAgent, version: self.coreVersion)
 			
 			self.mCore.videoPreviewEnabled = false
@@ -296,7 +314,12 @@ class CoreContext: ObservableObject {
 						MagicSearchSingleton.shared.recreateMagicSearch(core: core)
 					}
 
-					for account in core.accountList {
+#if LAN_BUILD
+					let accountsNeedingApns: [Account] = []
+#else
+					let accountsNeedingApns = core.accountList
+#endif
+					for account in accountsNeedingApns {
 						if account.params?.pushNotificationConfig?.provider != ("apns" + pushEnvironment) {
 							let newParams = account.params?.clone()
 							
@@ -332,7 +355,12 @@ class CoreContext: ObservableObject {
 				
 			}, onCallStateChanged: { (core: Core, call: Call, cstate: Call.State, message: String) in
 				TelecomManager.shared.onCallStateChanged(core: core, call: call, state: cstate, message: message)
-				
+
+				if LanKeepAlive.isEnabled && (cstate == .Connected || cstate == .StreamsRunning) {
+					// The call (CallKit audio session) now keeps the app alive.
+					LanKeepAlive.shared.stop(deactivateSession: false)
+				}
+
 				if core.calls.isEmpty {
 					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 						if UIApplication.shared.applicationState == .background {
@@ -531,6 +559,10 @@ class CoreContext: ObservableObject {
 		coreQueue.async {
 			Log.info("[onEnterForegroundOrBackground] Entering foreground")
 
+			if LanKeepAlive.isEnabled {
+				LanKeepAlive.shared.stop(deactivateSession: self.mCore.calls.isEmpty)
+				self.mCore.enterForeground()
+			}
 			try? self.mCore.start()
 			AppServices.corePreferences.reloadFromConfig()
 		}
@@ -542,7 +574,23 @@ class CoreContext: ObservableObject {
 			
 			self.updatePresence(core: self.mCore, presence: .Offline)
 			self.mCore.iterate()
-			
+
+			if LanKeepAlive.isEnabled {
+				// LAN build: do NOT stop the core (that would send REGISTER Expires 0).
+				// Keep it registered on the local SIP server and keep the app alive.
+				if self.mCore.globalState == .Off {
+					try? self.mCore.start()
+				}
+				self.mCore.enterBackground()
+				if self.mCore.calls.isEmpty {
+					Log.info("[onEnterForegroundOrBackground] LAN keep-alive: core stays running in background")
+					LanKeepAlive.shared.start()
+				} else {
+					Log.info("[onEnterForegroundOrBackground] LAN keep-alive: call in progress, nothing to do")
+				}
+				return
+			}
+
 			if self.mCore.currentCall == nil && self.mCore.globalState == .On {
 				Log.info("[onEnterForegroundOrBackground] Stopping core because no active calls")
 				self.mCore.stop()
@@ -692,10 +740,7 @@ enum AppServices {
 		setupConfigIfNeeded()
 
 		_config = Config.newForSharedCore(
-			appGroupId: Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
-			?? {
-				fatalError("APP_GROUP_NAME not defined in Info.plist")
-			}(),
+			appGroupId: FileUtil.appGroupName,
 			configFilename: "linphonerc",
 			factoryConfigFilename: FileUtil.bundleFilePath("linphonerc-factory")
 		)

@@ -23,12 +23,49 @@ import UniformTypeIdentifiers
 
 class FileUtil: NSObject {
 	
-	static let appGroupName: String = {
-		Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
+	static let appGroupName: String = resolveAppGroupName()
+
+	/// APP_GROUP_NAME from Info.plist. In LAN builds (sideloaded, re-signed with a free
+	/// Apple ID), tools like AltStore/SideStore rename the app group (e.g. append the team id),
+	/// so if the declared group is not accessible, use the first accessible group listed in
+	/// the app's embedded.mobileprovision instead.
+	/// Uses NSLog on purpose: Log itself depends on this value.
+	private static func resolveAppGroupName() -> String {
+		let declared = Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
 		?? {
 			fatalError("APP_GROUP_NAME not defined in Info.plist")
 		}()
-	}()
+#if LAN_BUILD
+		let fm = FileManager.default
+		if fm.containerURL(forSecurityApplicationGroupIdentifier: declared) == nil {
+			let provisioned = provisionedAppGroups()
+			if let usable = provisioned.first(where: { fm.containerURL(forSecurityApplicationGroupIdentifier: $0) != nil }) {
+				NSLog("[LAN] app group %@ not accessible, using provisioned group %@", declared, usable)
+				return usable
+			}
+			NSLog("[LAN] app group %@ not accessible and no usable provisioned group (found: %@)", declared, provisioned.joined(separator: ","))
+		}
+#endif
+		return declared
+	}
+
+#if LAN_BUILD
+	private static func provisionedAppGroups() -> [String] {
+		guard let url = Bundle.main.url(forResource: "embedded", withExtension: "mobileprovision"),
+			  let data = try? Data(contentsOf: url),
+			  let start = data.range(of: Data("<?xml".utf8)),
+			  let end = data.range(of: Data("</plist>".utf8), in: start.lowerBound..<data.endIndex) else {
+			return []
+		}
+		let plistData = data.subdata(in: start.lowerBound..<end.upperBound)
+		guard let plist = try? PropertyListSerialization.propertyList(from: plistData, format: nil) as? [String: Any],
+			  let entitlements = plist["Entitlements"] as? [String: Any],
+			  let groups = entitlements["com.apple.security.application-groups"] as? [String] else {
+			return []
+		}
+		return groups
+	}
+#endif
 	
 	public enum MimeType {
 		case plainText
@@ -84,11 +121,13 @@ class FileUtil: NSObject {
 	}
 	
 	public class func sharedContainerUrl() -> URL {
-		let appGroupName = Bundle.main.object(forInfoDictionaryKey: "APP_GROUP_NAME") as? String
-		?? {
-			fatalError("APP_GROUP_NAME not defined in Info.plist")
-		}()
-		return FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupName)!
+		if let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupName) {
+			return url
+		}
+		// Sideloaded builds may be re-signed without the app group: fall back to the
+		// app's own Library directory instead of crashing.
+		Log.error("App group \(appGroupName) container unavailable, falling back to app Library directory")
+		return libraryDirectory()
 	}
 	
 	public class func ensureDirectoryExists(path: String) {

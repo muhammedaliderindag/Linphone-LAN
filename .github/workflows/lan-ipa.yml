@@ -1,0 +1,101 @@
+# Builds the "Linphone LAN" variant as an UNSIGNED .ipa for sideloading with a free Apple ID
+# (AltStore / SideStore / Sideloadly). LAN variant = Swift flag LAN_BUILD:
+#   - core keeps running in background (silent audio keep-alive) instead of stopping,
+#     so a UDP account on a local SIP server keeps receiving calls -> CallKit
+#   - no PushKit / APNs, no Crashlytics
+#   - app extensions removed (they need push and eat free-account App IDs)
+#   - bundle id org.linphone.phone.lan so it installs NEXT TO App Store Linphone
+name: Linphone LAN IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      xcode:
+        description: "Optional Xcode app path (e.g. /Applications/Xcode_26.1.app). Empty = runner default."
+        required: false
+        default: ""
+  push:
+    branches: [master, main]
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 120
+    env:
+      BUNDLE_ID: org.linphone.phone.lan
+      DISPLAY_NAME: Linphone LAN
+      APP_GROUP: group.org.linphone.phone.lan   # must match Linphone/LinphoneLAN.entitlements
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - name: Select Xcode
+        if: ${{ github.event.inputs.xcode != '' }}
+        run: sudo xcode-select -s "${{ github.event.inputs.xcode }}"
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          ls -d /Applications/Xcode*.app || true
+
+      - name: Enable LAN_BUILD (replaces -DUSE_CRASHLYTICS)
+        run: |
+          sed -i '' 's/-DUSE_CRASHLYTICS/-DLAN_BUILD/g' LinphoneApp.xcodeproj/project.pbxproj
+          grep -c -- '-DLAN_BUILD' LinphoneApp.xcodeproj/project.pbxproj
+
+      - name: Cache Swift packages
+        uses: actions/cache@v4
+        with:
+          path: build/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('LinphoneApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+
+      - name: Resolve packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project LinphoneApp.xcodeproj -scheme Linphone \
+            -derivedDataPath build -clonedSourcePackagesDirPath build/SourcePackages
+
+      - name: Build (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project LinphoneApp.xcodeproj -scheme Linphone \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build -clonedSourcePackagesDirPath build/SourcePackages \
+            -skipPackagePluginValidation -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            | tee build/xcodebuild.log | grep -E "error:|warning: .*LanKeepAlive|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build/xcodebuild.log
+
+      - name: Package IPA
+        run: |
+          brew install ldid
+          APP=$(find build/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" | head -1)
+          echo "App bundle: $APP"
+          test -n "$APP"
+          rm -rf "$APP/PlugIns" "$APP/Watch" "$APP/_CodeSignature"
+          PL="$APP/Info.plist"
+          plutil -replace CFBundleIdentifier -string "$BUNDLE_ID" "$PL"
+          plutil -replace CFBundleDisplayName -string "$DISPLAY_NAME" "$PL"
+          # Own app group (data/config/db) so nothing is shared with App Store Linphone
+          plutil -replace APP_GROUP_NAME -string "$APP_GROUP" "$PL"
+          EXE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$PL")
+          ldid -SLinphone/LinphoneLAN.entitlements "$APP/$EXE"
+          echo "Embedded entitlements:"; ldid -e "$APP/$EXE"
+          mkdir -p out/Payload
+          cp -R "$APP" out/Payload/
+          (cd out && zip -qry "../Linphone-LAN.ipa" Payload)
+          ls -lh Linphone-LAN.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Linphone-LAN-ipa
+          path: Linphone-LAN.ipa
+          retention-days: 30
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: xcodebuild-log
+          path: build/xcodebuild.log

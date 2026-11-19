@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+	Entitlements embedded (ldid) into the unsigned LAN build so that sideloading tools
+	(AltStore / SideStore / Sideloadly) request them with a free Apple ID.
+	No aps-environment: push is not available with a free Apple ID.
+	If the tool renames the app group, FileUtil.appGroupName picks it up from embedded.mobileprovision.
+-->
+<dict>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.org.linphone.phone.lan</string>
+	</array>
+</dict>
+</plist>

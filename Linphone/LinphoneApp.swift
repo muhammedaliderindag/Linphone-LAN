@@ -163,8 +163,11 @@ struct LinphoneApp: App {
 		LinphoneApp.applyUITestMDMConfigIfNeeded()
 #endif
 		if !configAvailable {
+#if !LAN_BUILD
+			// LAN build has no APNs entitlement (free Apple ID sideload): no PushKit.
 			voipRegistry.delegate = earlyPushDelegate
 			voipRegistry.desiredPushTypes = [.voIP]
+#endif
 			waitForConfig()
 		} else {
 			let _ = CoreContext.shared
