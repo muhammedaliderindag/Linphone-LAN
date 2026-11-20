@@ -43,7 +43,7 @@ struct SipAddressesPopup: View {
 					Image("x")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.grayMain2c600)
+						.foregroundStyle(Color.msgTextBody)
 						.frame(width: 25, height: 25)
 						.padding(.all, 10)
 				}
@@ -67,7 +67,7 @@ struct SipAddressesPopup: View {
 						.padding(.vertical, 15)
 						.padding(.horizontal, 10)
 					}
-					.background(.white)
+					.background(Color.msgFieldBackground)
 					.onTapGesture {
 						do {
 							let address = try Factory.Instance.createAddress(addr: contactAvatarModel.addresses[index])
@@ -108,7 +108,7 @@ struct SipAddressesPopup: View {
 						.padding(.vertical, 15)
 						.padding(.horizontal, 10)
 					}
-					.background(.white)
+					.background(Color.msgFieldBackground)
 					.onTapGesture {
 						CoreContext.shared.doOnCoreQueue { core in
 							if let address = core.interpretUrl(url: contactAvatarModel.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
@@ -136,10 +136,10 @@ struct SipAddressesPopup: View {
 			}
 			.padding(.horizontal, 20)
 			.padding(.vertical, 20)
-			.background(.white)
+			.background(Color.msgFieldBackground)
 			.cornerRadius(20)
 			.frame(maxHeight: .infinity)
-			.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
+			.shadow(color: Color.msgAccent, radius: 0, x: 0, y: 2)
 			.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 			.padding(.horizontal, 20)
 			.position(x: geometry.size.width / 2, y: geometry.size.height / 2)

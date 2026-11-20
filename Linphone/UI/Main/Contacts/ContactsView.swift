@@ -30,27 +30,11 @@ struct ContactsView: View {
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
+				// DerindSIP: "add contact" lives in the header (plus)
+				Color.msgBackground
+					.ignoresSafeArea()
+
 				ContactsFragment(isShowDeletePopup: $isShowDeletePopup, text: $text)
-				
-				if !AppServices.corePreferences.disableAddContact && !AppServices.corePreferences.hideContactEdition {
-					Button {
-						withAnimation {
-							contactsListViewModel.selectedEditFriend = nil
-							isShowEditContactFragment.toggle()
-						}
-					} label: {
-						Image("user-plus")
-							.renderingMode(.template)
-							.foregroundStyle(.white)
-							.padding()
-							.background(Color.orangeMain500)
-							.clipShape(Circle())
-							.shadow(color: .black.opacity(0.2), radius: 4)
-						
-					}
-					.padding()
-					.accessibilityIdentifier("contacts_add_contact_button")
-				}
 				
 				// For testing crashlytics
 				/*Button(action: CoreContext.shared.crashForCrashlytics, label: {

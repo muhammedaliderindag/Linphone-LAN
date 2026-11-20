@@ -35,7 +35,7 @@ struct EditContactFragment: View {
 	@Binding var isShowDismissPopup: Bool
 	let isShowEditContactFragmentAddress: String
 	
-	@State private var delayedColor = Color.white
+	@State private var delayedColor = Color.msgFieldBackground
 	
 	@FocusState var isFirstNameFocused: Bool
 	@FocusState var isLastNameFocused: Bool
@@ -76,23 +76,22 @@ struct EditContactFragment: View {
 				} else {
 					if #available(iOS 16.0, *) {
 						Rectangle()
-							.foregroundColor(Color.orangeMain500)
+							.foregroundColor(Color.msgFieldBackground)
 							.edgesIgnoringSafeArea(.top)
 							.frame(height: 0)
 					} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
 												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
 						Rectangle()
-							.foregroundColor(Color.orangeMain500)
+							.foregroundColor(Color.msgFieldBackground)
 							.edgesIgnoringSafeArea(.top)
 							.frame(height: 1)
 					}
 				}
 				
 				HStack {
-					Image("caret-left")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.orangeMain500)
+					Image(systemName: "chevron.left")
+						.font(.system(size: 22, weight: .semibold))
+						.foregroundStyle(Color.msgAccent)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 						.padding(.top, 2)
@@ -127,8 +126,8 @@ struct EditContactFragment: View {
 							editContactViewModel.firstName.isEmpty
 								&& editContactViewModel.lastName.isEmpty
 								&& editContactViewModel.company.isEmpty
-								? Color.orangeMain100
-								: Color.orangeMain500
+								? Color.msgElevated
+								: Color.msgAccent
 						)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
@@ -156,7 +155,7 @@ struct EditContactFragment: View {
 				.frame(height: 50)
 				.padding(.horizontal)
 				.padding(.bottom, 4)
-				.background(.white)
+				.background(Color.msgFieldBackground)
 				
 				ScrollView {
 					VStack(spacing: 0) {
@@ -194,7 +193,7 @@ struct EditContactFragment: View {
 													.frame(width: 20, height: 20)
 												
 												Text("manage_account_edit_picture")
-													.foregroundStyle(Color.grayMain2c700)
+													.foregroundStyle(Color.msgTextBody)
 													.multilineTextAlignment(.center)
 													.default_text_style(styleSize: 14)
 											}
@@ -229,7 +228,7 @@ struct EditContactFragment: View {
 													.frame(width: 20, height: 20)
 												
 												Text("manage_account_remove_picture")
-													.foregroundStyle(Color.grayMain2c700)
+													.foregroundStyle(Color.msgTextBody)
 													.multilineTextAlignment(.center)
 													.default_text_style(styleSize: 14)
 											}
@@ -248,7 +247,7 @@ struct EditContactFragment: View {
 												.frame(width: 20, height: 20)
 											
 											Text("manage_account_add_picture")
-												.foregroundStyle(Color.grayMain2c700)
+												.foregroundStyle(Color.msgTextBody)
 												.multilineTextAlignment(.center)
 												.default_text_style(styleSize: 14)
 										}
@@ -276,7 +275,7 @@ struct EditContactFragment: View {
 							.frame(minHeight: 150)
 							.frame(maxWidth: .infinity)
 							.padding(.top, 10)
-							.background(Color.gray100)
+							.background(Color.msgBackground)
 							
 							VStack(alignment: .leading) {
 								Text("contact_editor_first_name")
@@ -288,12 +287,12 @@ struct EditContactFragment: View {
 									.frame(height: 25)
 									.padding(.horizontal, 20)
 									.padding(.vertical, 15)
-									.background(.white)
+									.background(Color.msgFieldBackground)
 									.cornerRadius(60)
 									.overlay(
 										RoundedRectangle(cornerRadius: 60)
 											.inset(by: 0.5)
-											.stroke(isFirstNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+											.stroke(isFirstNameFocused ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 									)
 									.padding(.bottom)
 									.focused($isFirstNameFocused)
@@ -310,12 +309,12 @@ struct EditContactFragment: View {
 									.frame(height: 25)
 									.padding(.horizontal, 20)
 									.padding(.vertical, 15)
-									.background(.white)
+									.background(Color.msgFieldBackground)
 									.cornerRadius(60)
 									.overlay(
 										RoundedRectangle(cornerRadius: 60)
 											.inset(by: 0.5)
-											.stroke(isLastNameFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+											.stroke(isLastNameFocused ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 									)
 									.padding(.bottom)
 									.focused($isLastNameFocused)
@@ -337,12 +336,12 @@ struct EditContactFragment: View {
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)
-											.background(.white)
+											.background(Color.msgFieldBackground)
 											.cornerRadius(60)
 											.overlay(
 												RoundedRectangle(cornerRadius: 60)
 													.inset(by: 0.5)
-													.stroke(isSIPAddressFocused == index ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													.stroke(isSIPAddressFocused == index ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 											)
 											.focused($isSIPAddressFocused, equals: index)
 											.accessibilityIdentifier("contact_editor_sip_address_field_\(index)")
@@ -362,8 +361,8 @@ struct EditContactFragment: View {
 												.resizable()
 												.foregroundStyle(
 													editContactViewModel.sipAddresses[index].isEmpty && index == editContactViewModel.sipAddresses.count - 1
-													? Color.gray100
-													: Color.grayMain2c600
+													? Color.msgBackground
+													: Color.msgTextBody
 												)
 												.frame(width: 25, height: 25)
 												.padding(.all, 10)
@@ -389,12 +388,12 @@ struct EditContactFragment: View {
 											.frame(height: 25)
 											.padding(.horizontal, 20)
 											.padding(.vertical, 15)
-											.background(.white)
+											.background(Color.msgFieldBackground)
 											.cornerRadius(60)
 											.overlay(
 												RoundedRectangle(cornerRadius: 60)
 													.inset(by: 0.5)
-													.stroke(isPhoneNumberFocused == index ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+													.stroke(isPhoneNumberFocused == index ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 											)
 											.focused($isPhoneNumberFocused, equals: index)
 											.onChange(of: editContactViewModel.phoneNumbers[index]) { newValue in
@@ -414,8 +413,8 @@ struct EditContactFragment: View {
 												.resizable()
 												.foregroundStyle(
 													editContactViewModel.phoneNumbers[index].isEmpty && index == editContactViewModel.phoneNumbers.count - 1
-													? Color.gray100
-													: Color.grayMain2c600
+													? Color.msgBackground
+													: Color.msgTextBody
 												)
 												.frame(width: 25, height: 25)
 												.padding(.all, 10)
@@ -438,12 +437,12 @@ struct EditContactFragment: View {
 									.frame(height: 25)
 									.padding(.horizontal, 20)
 									.padding(.vertical, 15)
-									.background(.white)
+									.background(Color.msgFieldBackground)
 									.cornerRadius(60)
 									.overlay(
 										RoundedRectangle(cornerRadius: 60)
 											.inset(by: 0.5)
-											.stroke(isCompanyFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+											.stroke(isCompanyFocused ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 									)
 									.padding(.bottom)
 									.focused($isCompanyFocused)
@@ -460,12 +459,12 @@ struct EditContactFragment: View {
 									.frame(height: 25)
 									.padding(.horizontal, 20)
 									.padding(.vertical, 15)
-									.background(.white)
+									.background(Color.msgFieldBackground)
 									.cornerRadius(60)
 									.overlay(
 										RoundedRectangle(cornerRadius: 60)
 											.inset(by: 0.5)
-											.stroke(isJobTitleFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+											.stroke(isJobTitleFocused ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 									)
 									.padding(.bottom)
 									.focused($isJobTitleFocused)
@@ -476,9 +475,9 @@ struct EditContactFragment: View {
 					}
 					.frame(maxWidth: .infinity)
 				}
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 			}
-			.background(.white)
+			.background(Color.msgFieldBackground)
 			
 			if !isShowEditContactFragment {
 				ZStack {
@@ -503,14 +502,14 @@ struct EditContactFragment: View {
 	
 	@Sendable private func delayColor() async {
 		try? await Task.sleep(nanoseconds: 250_000_000)
-		delayedColor = Color.orangeMain500
+		delayedColor = Color.msgFieldBackground
 	}
 	
 	func delayColorDismiss() {
 		if editContactViewModel.selectedEditFriend == nil {
 			Task {
 				try? await Task.sleep(nanoseconds: 80_000_000)
-				delayedColor = .white
+				delayedColor = Color.msgFieldBackground
 			}
 		}
 	}

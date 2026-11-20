@@ -43,6 +43,7 @@ struct ContactFragment: View {
 			contactInnerContent(contactsListViewModel: contactsListViewModel)
 				.sheet(isPresented: $showingSheet) {
 					ContactListBottomSheet(contactsListViewModel: contactsListViewModel, showingSheet: $showingSheet)
+					.msgDarkPresentation()
 						.presentationDetents([.fraction(0.1)])
 				}
 				.sheet(isPresented: $showShareSheet) {
@@ -54,6 +55,7 @@ struct ContactFragment: View {
 			contactInnerContent(contactsListViewModel: contactsListViewModel)
 				.halfSheet(showSheet: $showingSheet) {
 					ContactListBottomSheet(contactsListViewModel: contactsListViewModel, showingSheet: $showingSheet)
+					.msgDarkPresentation()
 				} onDismiss: {}
 				.sheet(isPresented: $showShareSheet) {
 					ShareSheet(friendToShare: contactAvatarModel)

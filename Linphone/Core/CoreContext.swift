@@ -339,7 +339,28 @@ class CoreContext: ObservableObject {
 							account.params = newParams
 						}
 					}
-					
+
+#if LAN_BUILD
+					// DerindSIP: send every request through the bridge (outbound proxy =
+					// registrar). Chat rooms created by incoming SMS have a peer at the
+					// bridge's loopback host (sip:+90...@127.0.0.1); with this route their
+					// replies still reach 192.168.43.1 instead of the iPhone itself.
+					for account in core.accountList {
+						guard let params = account.params, params.routesAddresses.isEmpty,
+							  let server = params.serverAddress,
+							  let newParams = params.clone() else {
+							continue
+						}
+						do {
+							try newParams.setRoutesaddresses(newValue: [server])
+							account.params = newParams
+							Log.info("[LAN] Outbound route set to \(server.asStringUriOnly())")
+						} catch {
+							Log.warn("[LAN] Unable to set outbound route: \(error)")
+						}
+					}
+#endif
+
 					let pendingActions = self.actionsToPerformOnCoreQueueWhenCoreIsStarted
 					self.actionsToPerformOnCoreQueueWhenCoreIsStarted.removeAll()
 					pendingActions.forEach { $0(core) }

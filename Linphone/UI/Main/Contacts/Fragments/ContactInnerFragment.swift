@@ -53,17 +53,16 @@ struct ContactInnerFragment: View {
 				ZStack {
 					VStack(spacing: 1) {
 						Rectangle()
-							.foregroundColor(Color.orangeMain500)
+							.foregroundColor(Color.msgFieldBackground)
 							.edgesIgnoringSafeArea(.top)
 							.frame(height: 0)
 						
 						HStack {
 							if !(orientation == .landscapeLeft || orientation == .landscapeRight
 								 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-								Image("caret-left")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.orangeMain500)
+								Image(systemName: "chevron.left")
+									.font(.system(size: 22, weight: .semibold))
+									.foregroundStyle(Color.msgAccent)
 									.frame(width: 25, height: 25, alignment: .leading)
 									.padding(.all, 10)
 									.padding(.top, 2)
@@ -85,7 +84,7 @@ struct ContactInnerFragment: View {
 										Image("pencil-simple")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.orangeMain500)
+											.foregroundStyle(Color.msgAccent)
 											.frame(width: 25, height: 25, alignment: .leading)
 											.padding(.all, 10)
 											.padding(.top, 2)
@@ -98,7 +97,7 @@ struct ContactInnerFragment: View {
 											Image("pencil-simple")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.orangeMain500)
+												.foregroundStyle(Color.msgAccent)
 												.frame(width: 25, height: 25, alignment: .leading)
 												.padding(.all, 10)
 												.padding(.top, 2)
@@ -116,7 +115,7 @@ struct ContactInnerFragment: View {
 						.frame(height: 50)
 						.padding(.horizontal)
 						.padding(.bottom, 4)
-						.background(.white)
+						.background(Color.msgFieldBackground)
 						
 						ScrollView {
 							VStack(spacing: 0) {
@@ -126,9 +125,9 @@ struct ContactInnerFragment: View {
 											Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 100)
 											
 											Text(contactAvatarModel.name)
-												.foregroundStyle(Color.grayMain2c700)
+												.foregroundStyle(Color.msgTextPrimary)
 												.multilineTextAlignment(.center)
-												.default_text_style(styleSize: 14)
+												.font(.system(size: 26, weight: .semibold))
 												.frame(maxWidth: .infinity)
 												.padding(.top, 10)
 												.accessibilityIdentifier("contact_details_name")
@@ -145,7 +144,7 @@ struct ContactInnerFragment: View {
 									.frame(minHeight: 150)
 									.frame(maxWidth: .infinity)
 									.padding(.top, 10)
-									.background(Color.gray100)
+									.background(Color.msgBackground)
 									
 									HStack {
 										Spacer()
@@ -176,11 +175,11 @@ struct ContactInnerFragment: View {
 													Image("phone")
 														.renderingMode(.template)
 														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
+														.foregroundStyle(Color.msgTextBody)
 														.frame(width: 25, height: 25)
 												}
 												.padding(16)
-												.background(Color.grayMain2c200)
+												.background(Color.msgElevated)
 												.cornerRadius(40)
 												
 												Text("contact_call_action")
@@ -217,11 +216,11 @@ struct ContactInnerFragment: View {
 														Image("chat-teardrop-text")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25)
 													}
 													.padding(16)
-													.background(Color.grayMain2c200)
+													.background(Color.msgElevated)
 													.cornerRadius(40)
 													
 													Text("contact_message_action")
@@ -259,11 +258,11 @@ struct ContactInnerFragment: View {
 														Image("video-camera")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25)
 													}
 													.padding(16)
-													.background(Color.grayMain2c200)
+													.background(Color.msgElevated)
 													.cornerRadius(40)
 													
 													Text("contact_video_call_action")
@@ -276,7 +275,7 @@ struct ContactInnerFragment: View {
 									}
 									.padding(.top, 20)
 									.frame(maxWidth: .infinity)
-									.background(Color.gray100)
+									.background(Color.msgBackground)
 									
 									ContactInnerActionsFragment(
 										showingSheet: $showingSheet,
@@ -311,9 +310,9 @@ struct ContactInnerFragment: View {
 							}
 							.frame(maxWidth: .infinity)
 						}
-						.background(Color.gray100)
+						.background(Color.msgBackground)
 					}
-					.background(.white)
+					.background(Color.msgFieldBackground)
 					.navigationBarHidden(true)
 					.onRotate { newOrientation in
 						orientation = newOrientation

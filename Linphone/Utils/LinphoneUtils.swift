@@ -186,4 +186,36 @@ class LinphoneUtils: NSObject {
 	public class func isCallLogMissed(callLog: CallLog) -> Bool {
 		return callLog.dir == .Incoming && (callLog.status == .Missed || callLog.status == .Aborted || callLog.status == .EarlyAborted)
 	}
+
+	/// DerindSIP LAN build: the GSM bridge forwards incoming calls / SMS with the
+	/// GSM side's loopback host in From (`sip:+90...@127.0.0.1`). Calling or
+	/// replying to that address would target the iPhone itself, so map loopback
+	/// hosts to the default account's domain (the bridge, e.g. 192.168.43.1).
+	/// Returns the address unchanged in other builds or when nothing to fix.
+	public class func lanRoutableAddress(_ addr: Address, core: Core? = nil) -> Address {
+#if LAN_BUILD
+		let host = (addr.domain ?? "").lowercased()
+		let loopbackHosts = ["", "127.0.0.1", "localhost", "::1", "[::1]"]
+		guard loopbackHosts.contains(host) else { return addr }
+
+		let theCore = core ?? CoreContext.shared.mCore
+		guard let account = theCore?.defaultAccount ?? theCore?.accountList.first,
+			  let domain = account.params?.domain, !domain.isEmpty,
+			  let fixed = addr.clone() else {
+			return addr
+		}
+		do {
+			try fixed.setDomain(newValue: domain)
+			if fixed.port != 0 {
+				try fixed.setPort(newValue: 0)
+			}
+			return fixed
+		} catch {
+			Log.warn("[LinphoneUtils] lanRoutableAddress: unable to rewrite \(addr.asStringUriOnly()): \(error)")
+			return addr
+		}
+#else
+		return addr
+#endif
+	}
 }

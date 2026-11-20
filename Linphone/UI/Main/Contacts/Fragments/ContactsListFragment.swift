@@ -80,19 +80,30 @@ struct ContactRow: View {
 						.padding(.trailing, 10)
 				}
 				
-				Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 50)
-				
-				Text(contactAvatarModel.name)
-					.default_text_style(styleSize: 16)
-					.frame(maxWidth: .infinity, alignment: .leading)
-					.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
-			}
-		}
-		.frame(height: 50)
-		.buttonStyle(.borderless)
-		.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
-		.listRowSeparator(.hidden)
-		.msgAdaptiveBackground(Color.white, Color.msgBackground)
+						Avatar(contactAvatarModel: contactAvatarModel, avatarSize: 40)
+
+						// DerindSIP: iOS Contacts row — plain 17pt name, hairline separator
+						Text(contactAvatarModel.name)
+							.font(.system(size: 17))
+							.msgAdaptiveForeground(Color.grayMain2c700, Color.msgTextPrimary)
+							.lineLimit(1)
+							.frame(maxWidth: .infinity, alignment: .leading)
+					}
+				}
+				.frame(minHeight: 52)
+				.overlay(
+					Rectangle()
+						.fill(Color.msgSeparator)
+						.frame(height: 0.5)
+						.padding(.leading, 74),
+					alignment: .bottom
+				)
+				.contentShape(Rectangle())
+				.buttonStyle(.borderless)
+				.listRowInsets(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 16))
+				.listRowSeparator(.hidden)
+				.listRowBackground(Color.msgBackground)
+				.msgAdaptiveBackground(Color.white, Color.msgBackground)
 		.onTapGesture {
             if SharedMainViewModel.shared.indexView == 0 {
                 withAnimation {

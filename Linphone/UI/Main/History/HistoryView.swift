@@ -32,28 +32,15 @@ struct HistoryView: View {
 	var body: some View {
 		NavigationView {
 			ZStack(alignment: .bottomTrailing) {
+				// DerindSIP: "new call" lives in the header (phone.badge.plus)
+				Color.msgBackground
+					.ignoresSafeArea()
+
 				HistoryFragment(
 					isShowEditContactFragment: $isShowEditContactFragment,
 					text: $text,
 					isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 				)
-				
-				Button {
-					withAnimation {
-						isShowStartCallFragment.toggle()
-					}
-				} label: {
-					Image("phone-plus")
-						.renderingMode(.template)
-						.foregroundStyle(.white)
-						.padding()
-						.background(Color.orangeMain500)
-						.clipShape(Circle())
-						.shadow(color: .black.opacity(0.2), radius: 4)
-
-				}
-				.accessibilityIdentifier("start_call_fab")
-				.padding()
 			}
 		}
 		.navigationViewStyle(.stack)

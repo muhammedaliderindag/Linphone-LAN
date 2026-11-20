@@ -39,6 +39,7 @@ struct HistoryFragment: View {
 							isShowEditContactFragment: $isShowEditContactFragment,
 							isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 						)
+							.msgDarkPresentation()
 						.presentationDetents([.fraction(0.4)])
 					}
 			} else {
@@ -49,6 +50,7 @@ struct HistoryFragment: View {
 							isShowEditContactFragment: $isShowEditContactFragment,
 							isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 						)
+							.msgDarkPresentation()
                         .environmentObject(historyListViewModel)
 					} onDismiss: {}
 			}

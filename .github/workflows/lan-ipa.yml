@@ -78,6 +78,8 @@ jobs:
           PL="$APP/Info.plist"
           plutil -replace CFBundleIdentifier -string "$BUNDLE_ID" "$PL"
           plutil -replace CFBundleDisplayName -string "$DISPLAY_NAME" "$PL"
+          # New build number every run: iOS refreshes its cached icon (notifications) on install-over
+          plutil -replace CFBundleVersion -string "${{ github.run_number }}" "$PL"
           # Own app group (data/config/db) so nothing is shared with App Store Linphone
           plutil -replace APP_GROUP_NAME -string "$APP_GROUP" "$PL"
           EXE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$PL")

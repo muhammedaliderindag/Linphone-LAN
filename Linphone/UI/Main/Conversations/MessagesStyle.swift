@@ -38,7 +38,8 @@ extension Color {
 	static let msgFieldStroke = Color(red: 0x3A/255, green: 0x3A/255, blue: 0x3C/255)
 	static let msgBar = Color(red: 0x12/255, green: 0x12/255, blue: 0x13/255)
 	static let msgElevated = Color(red: 0x2C/255, green: 0x2C/255, blue: 0x2E/255)
-	static let msgOutgoingMeta = Color(red: 1, green: 1, blue: 1).opacity(0.75)
+	static let msgMissed = Color(red: 0xFF/255, green: 0x45/255, blue: 0x3A/255)
+	static let msgOutgoingMeta =Color(red: 1, green: 1, blue: 1).opacity(0.75)
 }
 
 enum MessagesStyle {

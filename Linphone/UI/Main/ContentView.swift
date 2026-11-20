@@ -618,11 +618,42 @@ struct ContentView: View {
 													Image("magnifying-glass")
 														.renderingMode(.template)
 														.resizable()
-														.foregroundStyle(.white)
-														.frame(width: 25, height: 25, alignment: .leading)
+														.foregroundStyle(Color.msgAccent)
+														.frame(width: 23, height: 23, alignment: .leading)
 														.padding(.all, 10)
-												}
-												.padding(.trailing, 0)
+													}
+													.padding(.trailing, 0)
+
+													// DerindSIP: iOS-style "add" buttons in the header (replace the orange FABs)
+													if sharedMainViewModel.indexView == 0
+														&& !AppServices.corePreferences.disableAddContact && !AppServices.corePreferences.hideContactEdition {
+														Button {
+															withAnimation {
+																contactsListViewModel?.selectedEditFriend = nil
+																isShowEditContactFragment.toggle()
+															}
+														} label: {
+															Image(systemName: "plus")
+																.font(.system(size: 21, weight: .regular))
+																.foregroundStyle(Color.msgAccent)
+																.frame(width: 40, height: 44)
+														}
+														.accessibilityIdentifier("contacts_add_contact_button")
+													}
+
+													if sharedMainViewModel.indexView == 1 {
+														Button {
+															withAnimation {
+																isShowStartCallFragment.toggle()
+															}
+														} label: {
+															Image(systemName: "phone.badge.plus")
+																.font(.system(size: 20, weight: .regular))
+																.foregroundStyle(Color.msgAccent)
+																.frame(width: 40, height: 44)
+														}
+														.accessibilityIdentifier("start_call_fab")
+													}
 
 												if sharedMainViewModel.indexView == 2 {
 													Button {
@@ -679,7 +710,7 @@ struct ContentView: View {
 														Image(sharedMainViewModel.indexView == 0 ? "funnel" : "dots-three-vertical")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(.white)
+															.foregroundStyle(Color.msgAccent)
 															.frame(width: 25, height: 25, alignment: .leading)
 															.padding(.all, 10)
 													}
@@ -694,7 +725,7 @@ struct ContentView: View {
 														Image("trash-simple")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(.white)
+															.foregroundStyle(Color.msgAccent)
 															.frame(width: 25, height: 25, alignment: .leading)
 															.padding(.all, 10)
 													}
@@ -1186,8 +1217,9 @@ struct ContentView: View {
 								.environmentObject(contactsListVM)
 								.environmentObject(displayedFriend)
 								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
+								.background(Color.msgBackground)
 								.ignoresSafeArea(.keyboard)
+								.msgDarkScope()
 							} else if let historyListVM = historyListViewModel, let displayedCall = sharedMainViewModel.displayedCall, sharedMainViewModel.indexView == 1 {
 								HistoryContactFragment(
 									isShowDeleteAllHistoryPopup: $isShowDeleteAllHistoryPopup,
@@ -1197,8 +1229,9 @@ struct ContentView: View {
 								.environmentObject(historyListVM)
 								.environmentObject(displayedCall)
 								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
+								.background(Color.msgBackground)
 								.ignoresSafeArea(.keyboard)
+								.msgDarkScope()
 							} else if let conversationsListVM = conversationsListViewModel, let displayedConversation = sharedMainViewModel.displayedConversation, sharedMainViewModel.indexView == 2 {
 								ConversationFragment(
 									isShowConversationFragment: $isShowConversationFragment,
@@ -1293,6 +1326,8 @@ struct ContentView: View {
 								isShowEditContactFragmentAddress: isShowEditContactFragmentAddress
 							)
 							.frame(height: geometry.size.height)
+							.background(Color.msgBackground)
+							.msgDarkScope()
 							.onAppear {
 								if focusedField {
 									resetFilter()
@@ -1338,11 +1373,12 @@ struct ContentView: View {
 							}
 						}
 						.environmentObject(callViewModel)
+						.msgDarkScope()
 						.zIndex(6)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
-					}
-					
-					if let conversationsListVM = conversationsListViewModel, isShowStartConversationFragment {
+						}
+
+						if let conversationsListVM = conversationsListViewModel, isShowStartConversationFragment {
 						StartConversationFragment(
 							isShowStartConversationFragment: $isShowStartConversationFragment
 						)
@@ -1554,6 +1590,7 @@ struct ContentView: View {
 						)
 						.environmentObject(contactsListVM)
 						.environmentObject(displayedFriend)
+						.msgDarkScope()
 						.background(.black.opacity(0.65))
 						.zIndex(3)
 						.onTapGesture {
@@ -2176,15 +2213,7 @@ struct ContactsContainer: View {
 					text: $text
 				)
 				.environmentObject(contactsListVM)
-				.roundedCorner(25, corners: [.topRight, .topLeft])
-				.shadow(
-					color: (orientation == .landscapeLeft
-							|| orientation == .landscapeRight
-							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-					? .white.opacity(0.0)
-					: .black.opacity(0.2),
-					radius: 25
-				)
+				.msgDarkScope()
 			} else {
 				NavigationView {
 					VStack {
@@ -2224,15 +2253,7 @@ struct HistoryContainer: View {
 					isShowEditContactFragmentAddress: $isShowEditContactFragmentAddress
 				)
 				.environmentObject(historyListVM)
-				.roundedCorner(25, corners: [.topRight, .topLeft])
-				.shadow(
-					color: (orientation == .landscapeLeft
-							|| orientation == .landscapeRight
-							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-					? .white.opacity(0.0)
-					: .black.opacity(0.2),
-					radius: 25
-				)
+				.msgDarkScope()
 			} else {
 				NavigationView {
 					VStack {

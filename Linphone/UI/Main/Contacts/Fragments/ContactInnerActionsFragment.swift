@@ -58,14 +58,14 @@ struct ContactInnerActionsFragment: View {
 				Image(informationIsOpen ? "caret-up" : "caret-down")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(Color.grayMain2c600)
+					.foregroundStyle(Color.msgTextBody)
 					.frame(width: 25, height: 25, alignment: .leading)
 					.padding(.all, 10)
 			}
 			.padding(.top, 30)
 			.padding(.bottom, 10)
 			.padding(.horizontal, 16)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 			.onTapGesture {
 				withAnimation {
 					informationIsOpen.toggle()
@@ -95,14 +95,14 @@ struct ContactInnerActionsFragment: View {
 									Image("phone")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.grayMain2c600)
+										.foregroundStyle(Color.msgTextBody)
 										.frame(width: 25, height: 25)
 										.padding(.all, 10)
 								}
 								.padding(.vertical, 15)
 								.padding(.horizontal, 20)
 							}
-							.background(.white)
+							.background(Color.msgFieldBackground)
 							.onTapGesture {
 								CoreContext.shared.doOnCoreQueue { core in
 									do {
@@ -154,14 +154,14 @@ struct ContactInnerActionsFragment: View {
 								Image("phone")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
+									.foregroundStyle(Color.msgTextBody)
 									.frame(width: 25, height: 25)
 									.padding(.all, 10)
 							}
 							.padding(.vertical, 15)
 							.padding(.horizontal, 20)
 						}
-						.background(.white)
+						.background(Color.msgFieldBackground)
 						.onTapGesture {
 							CoreContext.shared.doOnCoreQueue { core in
 								let address = core.interpretUrl(url: contactAvatarModel.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core))
@@ -183,12 +183,12 @@ struct ContactInnerActionsFragment: View {
 						}
 					}
 				}
-				.background(.white)
+				.background(Color.msgFieldBackground)
 				.cornerRadius(15)
 				.padding(.horizontal)
 				.zIndex(-1)
 				.transition(.move(edge: .top))
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 			}
 		} else {
 			HStack {}
@@ -215,7 +215,7 @@ struct ContactInnerActionsFragment: View {
 						.frame(maxWidth: .infinity, alignment: .leading)
 				}
 			}
-			.background(.white)
+			.background(Color.msgFieldBackground)
 			.cornerRadius(15)
 			.padding(.top)
 			.padding(.horizontal)
@@ -234,7 +234,7 @@ struct ContactInnerActionsFragment: View {
 					Image("question")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.grayMain2c600)
+						.foregroundStyle(Color.msgTextBody)
 						.frame(width: 22, height: 22)
 				}
 			}
@@ -244,13 +244,13 @@ struct ContactInnerActionsFragment: View {
 			Image(trustIsOpen ? "caret-up" : "caret-down")
 				.renderingMode(.template)
 				.resizable()
-				.foregroundStyle(Color.grayMain2c600)
+				.foregroundStyle(Color.msgTextBody)
 				.frame(width: 25, height: 25, alignment: .leading)
 				.padding(.all, 10)
 		}
 		.padding(.vertical, 10)
 		.padding(.horizontal, 16)
-		.background(Color.gray100)
+		.background(Color.msgBackground)
 		.onTapGesture {
 			withAnimation {
 				trustIsOpen.toggle()
@@ -322,19 +322,19 @@ struct ContactInnerActionsFragment: View {
 											Image("warning-circle")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.orangeMain500)
+												.foregroundStyle(Color.msgAccent)
 												.frame(width: 25, height: 25)
 												.padding(.all, 6)
 											
 											Text("contact_make_call_check_device_trust")
-												.foregroundStyle(Color.orangeMain500)
+												.foregroundStyle(Color.msgAccent)
 												.default_text_style(styleSize: 14)
 												.lineLimit(1)
 												.padding(.leading, -5)
 												.padding(.trailing, 15)
 										}
 									}
-									.background(Color.orangeMain100)
+									.background(Color.msgElevated)
 									.cornerRadius(25)
 								} else {
 									ZStack {
@@ -344,19 +344,19 @@ struct ContactInnerActionsFragment: View {
 												Image("warning-circle")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(Color.orangeMain500)
+													.foregroundStyle(Color.msgAccent)
 													.frame(width: 25, height: 25)
 													.padding(.all, 6)
 												
 												Text("contact_make_call_check_device_trust")
-													.foregroundStyle(Color.orangeMain500)
+													.foregroundStyle(Color.msgAccent)
 													.default_text_style(styleSize: 14)
 													.lineLimit(1)
 													.padding(.leading, -5)
 													.padding(.trailing, 15)
 											}
 										}
-										.background(Color.orangeMain100)
+										.background(Color.msgElevated)
 										.cornerRadius(25)
 										.hidden()
 										
@@ -368,7 +368,7 @@ struct ContactInnerActionsFragment: View {
 							}
 							.frame(height: 40)
 						}
-						.background(.white)
+						.background(Color.msgFieldBackground)
 						.padding(.vertical, 10)
 						.padding(.horizontal, 20)
 					}
@@ -382,7 +382,7 @@ struct ContactInnerActionsFragment: View {
 				}
 			}
 			.padding(.bottom, 5)
-			.background(.white)
+			.background(Color.msgFieldBackground)
 			.cornerRadius(15)
 			.padding(.horizontal)
 			.zIndex(-2)
@@ -399,7 +399,7 @@ struct ContactInnerActionsFragment: View {
 				Image("caret-up")
 					.renderingMode(.template)
 					.resizable()
-					.foregroundStyle(Color.grayMain2c600)
+					.foregroundStyle(Color.msgTextBody)
 					.frame(width: 25, height: 25, alignment: .leading)
 					.padding(.all, 10)
 					.hidden()
@@ -407,7 +407,7 @@ struct ContactInnerActionsFragment: View {
 			.padding(.top, 20)
 			.padding(.bottom, 10)
 			.padding(.horizontal, 16)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 			
 			VStack(spacing: 0) {
 				Button {
@@ -419,7 +419,7 @@ struct ContactInnerActionsFragment: View {
 						Image("image")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
+							.foregroundStyle(Color.msgTextBody)
 							.frame(width: 25, height: 25)
 							.padding(.all, 10)
 						
@@ -448,7 +448,7 @@ struct ContactInnerActionsFragment: View {
 						Image("file-pdf")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
+							.foregroundStyle(Color.msgTextBody)
 							.frame(width: 25, height: 25)
 							.padding(.all, 10)
 						
@@ -463,7 +463,7 @@ struct ContactInnerActionsFragment: View {
 					.padding(.horizontal, 20)
 				}
 			}
-			.background(.white)
+			.background(Color.msgFieldBackground)
 			.cornerRadius(15)
 			.padding(.horizontal)
 			.zIndex(-1)
@@ -479,7 +479,7 @@ struct ContactInnerActionsFragment: View {
 			Image("caret-up")
 				.renderingMode(.template)
 				.resizable()
-				.foregroundStyle(Color.grayMain2c600)
+				.foregroundStyle(Color.msgTextBody)
 				.frame(width: 25, height: 25, alignment: .leading)
 				.padding(.all, 10)
 				.hidden()
@@ -487,7 +487,7 @@ struct ContactInnerActionsFragment: View {
 		.padding(.top, 20)
 		.padding(.bottom, 10)
 		.padding(.horizontal, 16)
-		.background(Color.gray100)
+		.background(Color.msgBackground)
 		
 		VStack(spacing: 0) {
 			if !contactAvatarModel.isReadOnly && !AppServices.corePreferences.hideContactEdition {
@@ -499,7 +499,7 @@ struct ContactInnerActionsFragment: View {
 							Image("pencil-simple")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c600)
+								.foregroundStyle(Color.msgTextBody)
 								.frame(width: 25, height: 25)
 								.padding(.all, 10)
 
@@ -522,7 +522,7 @@ struct ContactInnerActionsFragment: View {
 								Image("pencil-simple")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c600)
+									.foregroundStyle(Color.msgTextBody)
 									.frame(width: 25, height: 25)
 									.padding(.all, 10)
 
@@ -555,7 +555,7 @@ struct ContactInnerActionsFragment: View {
 						Image(contactAvatarModel.starred == true ? "heart-fill" : "heart")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(contactAvatarModel.starred == true ? Color.redDanger500 : Color.grayMain2c500)
+							.foregroundStyle(contactAvatarModel.starred == true ? Color.redDanger500 : Color.msgTextBody)
 							.frame(width: 25, height: 25)
 							.padding(.all, 10)
 						Text(contactAvatarModel.starred == true
@@ -584,7 +584,7 @@ struct ContactInnerActionsFragment: View {
 					Image("share-network")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.grayMain2c600)
+						.foregroundStyle(Color.msgTextBody)
 						.frame(width: 25, height: 25)
 						.padding(.all, 10)
 					
@@ -629,7 +629,7 @@ struct ContactInnerActionsFragment: View {
 				}
 			}
 		}
-		.background(.white)
+		.background(Color.msgFieldBackground)
 		.cornerRadius(15)
 		.padding(.horizontal)
 		.zIndex(-1)

@@ -42,17 +42,16 @@ struct HistoryContactFragment: View {
 		NavigationView {
 			VStack(spacing: 1) {
 				Rectangle()
-					.foregroundColor(Color.orangeMain500)
+					.foregroundColor(Color.msgFieldBackground)
 					.edgesIgnoringSafeArea(.top)
 					.frame(height: 0)
 				
 				HStack {
 					if !(orientation == .landscapeLeft || orientation == .landscapeRight
 						 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
-						Image("caret-left")
-							.renderingMode(.template)
-							.resizable()
-							.foregroundStyle(Color.orangeMain500)
+						Image(systemName: "chevron.left")
+							.font(.system(size: 22, weight: .semibold))
+							.foregroundStyle(Color.msgAccent)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
 							.padding(.top, 2)
@@ -153,7 +152,7 @@ struct HistoryContactFragment: View {
 						Image("dots-three-vertical")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
 					}
@@ -166,14 +165,14 @@ struct HistoryContactFragment: View {
 				.frame(height: 50)
 				.padding(.horizontal)
 				.padding(.bottom, 4)
-				.background(.white)
+				.background(Color.msgFieldBackground)
 				
 				ScrollView {
 					VStack(spacing: 0) {
 						VStack(spacing: 0) {
 							if #unavailable(iOS 16.0) {
 								Rectangle()
-									.foregroundColor(Color.gray100)
+									.foregroundColor(Color.msgBackground)
 									.frame(height: 7)
 							}
 							
@@ -184,15 +183,15 @@ struct HistoryContactFragment: View {
 									}
 									
 									Text(historyModel.addressName)
-										.foregroundStyle(Color.grayMain2c700)
+										.foregroundStyle(Color.msgTextPrimary)
 										.multilineTextAlignment(.center)
-										.default_text_style(styleSize: 14)
+										.font(.system(size: 26, weight: .semibold))
 										.frame(maxWidth: .infinity)
 										.padding(.top, 10)
 									
 									if !AppServices.corePreferences.hideSipAddresses {
 										Text(historyModel.address)
-											.foregroundStyle(Color.grayMain2c700)
+											.foregroundStyle(Color.msgTextBody)
 											.multilineTextAlignment(.center)
 											.default_text_style(styleSize: 14)
 											.frame(maxWidth: .infinity)
@@ -214,16 +213,16 @@ struct HistoryContactFragment: View {
 											.renderingMode(.template)
 											.resizable()
 											.frame(width: 60, height: 60)
-											.foregroundStyle(Color.grayMain2c600)
+											.foregroundStyle(Color.msgTextBody)
 									}
 									.frame(width: 100, height: 100)
-									.background(Color.grayMain2c200)
+									.background(Color.msgElevated)
 									.clipShape(Circle())
 									
 									Text(historyModel.subject)
-										.foregroundStyle(Color.grayMain2c700)
+										.foregroundStyle(Color.msgTextPrimary)
 										.multilineTextAlignment(.center)
-										.default_text_style(styleSize: 14)
+										.font(.system(size: 26, weight: .semibold))
 										.frame(maxWidth: .infinity)
 										.padding(.top, 10)
 								}
@@ -233,7 +232,7 @@ struct HistoryContactFragment: View {
 							.padding(.top, 10)
 							.padding(.bottom, 2)
 							.padding(.horizontal, 10)
-							.background(Color.gray100)
+							.background(Color.msgBackground)
 							
 							HStack {
 								Spacer()
@@ -247,11 +246,11 @@ struct HistoryContactFragment: View {
 												Image("phone")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
+													.foregroundStyle(Color.msgTextBody)
 													.frame(width: 25, height: 25)
 											}
 											.padding(16)
-											.background(Color.grayMain2c200)
+											.background(Color.msgElevated)
 											.cornerRadius(40)
 											
 											Text("contact_call_action")
@@ -271,11 +270,11 @@ struct HistoryContactFragment: View {
                                                     Image("chat-teardrop-text")
                                                         .renderingMode(.template)
                                                         .resizable()
-                                                        .foregroundStyle(Color.grayMain2c600)
+                                                        .foregroundStyle(Color.msgTextBody)
                                                         .frame(width: 25, height: 25)
                                                 }
                                                 .padding(16)
-                                                .background(Color.grayMain2c200)
+                                                .background(Color.msgElevated)
                                                 .cornerRadius(40)
                                                 
                                                 Text("contact_message_action")
@@ -296,11 +295,11 @@ struct HistoryContactFragment: View {
 													Image("video-camera")
 														.renderingMode(.template)
 														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
+														.foregroundStyle(Color.msgTextBody)
 														.frame(width: 25, height: 25)
 												}
 												.padding(16)
-												.background(Color.grayMain2c200)
+												.background(Color.msgElevated)
 												.cornerRadius(40)
 												
 												Text("contact_video_call_action")
@@ -329,11 +328,11 @@ struct HistoryContactFragment: View {
 												Image("video-conference")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(Color.grayMain2c600)
+													.foregroundStyle(Color.msgTextBody)
 													.frame(width: 25, height: 25)
 											}
 											.padding(16)
-											.background(Color.grayMain2c200)
+											.background(Color.msgElevated)
 											.cornerRadius(40)
 											
 											Text("meeting_waiting_room_join")
@@ -348,7 +347,7 @@ struct HistoryContactFragment: View {
 							.padding(.top, 20)
 							.padding(.bottom, 10)
 							.frame(maxWidth: .infinity)
-							.background(Color.gray100)
+							.background(Color.msgBackground)
 							
 							VStack(spacing: 0) {
 								let callLogsFilter = historyListViewModel.callLogsTmp.filter({ $0.address == historyModel.address })
@@ -384,7 +383,7 @@ struct HistoryContactFragment: View {
 												.foregroundStyle(
 													callLogsFilter[index].status != .Success
 													? Color.redDanger500
-													: Color.grayMain2c600
+													: Color.msgTextBody
 												)
 												.default_text_style_300(styleSize: 12)
 												.frame(maxWidth: .infinity, alignment: .leading)
@@ -402,7 +401,7 @@ struct HistoryContactFragment: View {
 									.frame(maxHeight: 65)
 								}
 							}
-							.background(.white)
+							.background(Color.msgFieldBackground)
 							.cornerRadius(15)
 							.padding(.all)
 						}
@@ -411,9 +410,9 @@ struct HistoryContactFragment: View {
 					.frame(maxWidth: .infinity)
 					.padding(.top, 2)
 				}
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 			}
-			.background(.white)
+			.background(Color.msgFieldBackground)
 			.navigationBarHidden(true)
 			.onRotate { newOrientation in
 				orientation = newOrientation

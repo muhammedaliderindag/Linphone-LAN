@@ -80,7 +80,7 @@ struct ContactsListBottomSheet: View {
 							.foregroundStyle(
 								contactsListViewModel.selectedFriend != nil && contactsListViewModel.selectedFriend!.starred == true
 								? Color.redDanger500
-								: Color.grayMain2c500
+								: Color.msgTextBody
 							)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
@@ -93,7 +93,7 @@ struct ContactsListBottomSheet: View {
 					.frame(maxHeight: .infinity)
 				}
 				.padding(.horizontal, 30)
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 				
 				VStack {
 					Divider()
@@ -125,7 +125,7 @@ struct ContactsListBottomSheet: View {
 					Image("share-network")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.grayMain2c500)
+						.foregroundStyle(Color.msgTextBody)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					Text("contact_details_share")
@@ -135,7 +135,7 @@ struct ContactsListBottomSheet: View {
 				.frame(maxHeight: .infinity)
 			}
 			.padding(.horizontal, 30)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 			
 			if !contactsListViewModel.selectedFriend!.isReadOnly && !AppServices.corePreferences.hideContactEdition {
 				VStack {
@@ -175,10 +175,10 @@ struct ContactsListBottomSheet: View {
 					.frame(maxHeight: .infinity)
 				}
 				.padding(.horizontal, 30)
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 			}
 		}
-		.background(Color.gray100)
+		.background(Color.msgBackground)
 		.frame(maxWidth: .infinity)
 		.onRotate { newOrientation in
 			orientation = newOrientation

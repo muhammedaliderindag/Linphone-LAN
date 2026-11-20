@@ -46,7 +46,7 @@ struct StartCallFragment: View {
 	
 	
 	@FocusState var isSearchFieldFocused: Bool
-	@State private var delayedColor = Color.white
+	@State private var delayedColor = Color.msgFieldBackground
 	
 	var resetCallView: () -> Void
 	
@@ -64,6 +64,7 @@ struct StartCallFragment: View {
 							isShowTransferPopup: $isShowTransferPopup,
 							currentCall: nil
 						)
+							.msgDarkPresentation()
 						.presentationDetents([.medium])
 						.presentationBackgroundInteraction(.enabled(upThrough: .medium))
 					}
@@ -79,6 +80,7 @@ struct StartCallFragment: View {
 							isShowTransferPopup: $isShowTransferPopup,
 							currentCall: nil
 						)
+							.msgDarkPresentation()
 					} onDismiss: {}
 			}
 		}
@@ -96,10 +98,9 @@ struct StartCallFragment: View {
 					.task(delayColor)
 				
 				HStack {
-					Image("caret-left")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.orangeMain500)
+					Image(systemName: "chevron.left")
+						.font(.system(size: 22, weight: .semibold))
+						.foregroundStyle(Color.msgAccent)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 						.padding(.top, 2)
@@ -146,7 +147,7 @@ struct StartCallFragment: View {
 				.frame(height: 50)
 				.padding(.horizontal)
 				.padding(.bottom, 4)
-				.background(.white)
+				.background(Color.msgFieldBackground)
 				
 				VStack(spacing: 0) {
 					if callViewModel.isTransferInsteadCall {
@@ -194,7 +195,7 @@ struct StartCallFragment: View {
 								Image("magnifying-glass")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
+									.foregroundStyle(Color.msgTextBody)
 									.frame(width: 25, height: 25)
 							})
 							
@@ -219,7 +220,7 @@ struct StartCallFragment: View {
 									Image(!showingDialer ? "dialer" : "keyboard")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
+										.foregroundStyle(Color.msgTextBody)
 										.frame(width: 25, height: 25)
 								})
 								.accessibilityIdentifier("dialer_keypad_toggle")
@@ -232,7 +233,7 @@ struct StartCallFragment: View {
 									Image("x")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
+										.foregroundStyle(Color.msgTextBody)
 										.frame(width: 25, height: 25)
 								})
 							}
@@ -244,7 +245,7 @@ struct StartCallFragment: View {
 					.overlay(
 						RoundedRectangle(cornerRadius: 60)
 							.inset(by: 0.5)
-							.stroke(isSearchFieldFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+							.stroke(isSearchFieldFocused ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 					)
 					.padding(.vertical)
 					.padding(.horizontal)
@@ -264,11 +265,11 @@ struct StartCallFragment: View {
 										.frame(width: 28, height: 28)
 								}
 								.padding(10)
-								.background(Color.orangeMain500)
+								.background(Color.msgAccent)
 								.cornerRadius(40)
 								
 								Text("history_call_start_create_group_call")
-									.foregroundStyle(.black)
+									.foregroundStyle(Color.msgTextPrimary)
 									.default_text_style_800(styleSize: 16)
 								
 								Spacer()
@@ -276,14 +277,14 @@ struct StartCallFragment: View {
 								Image("caret-right")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
+									.foregroundStyle(Color.msgTextBody)
 									.frame(width: 25, height: 25, alignment: .leading)
 							}
 						})
 						.padding(.vertical, 10)
 						.padding(.horizontal, 20)
 						.background(
-							LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
+							LinearGradient(gradient: Gradient(colors: [Color.msgElevated, Color.msgBackground]), startPoint: .leading, endPoint: .trailing)
 								.padding(.vertical, 10)
 								.padding(.horizontal, 40)
 						)
@@ -388,13 +389,13 @@ struct StartCallFragment: View {
 						if magicSearch.isLoading {
 							ProgressView()
 								.controlSize(.large)
-								.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+								.progressViewStyle(CircularProgressViewStyle(tint: Color.msgAccent))
 						}
 					}
 				}
 				.frame(maxWidth: .infinity)
 			}
-			.background(.white)
+			.background(Color.msgFieldBackground)
 			
 			if isShowSipAddressesPopup && contactAvatarModel != nil {
 				VStack(alignment: .leading) {
@@ -408,7 +409,7 @@ struct StartCallFragment: View {
 						Image("x")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
+							.foregroundStyle(Color.msgTextBody)
 							.frame(width: 25, height: 25)
 							.padding(.all, 10)
 					}
@@ -432,7 +433,7 @@ struct StartCallFragment: View {
 							.padding(.vertical, 15)
 							.padding(.horizontal, 10)
 						}
-						.background(.white)
+						.background(Color.msgFieldBackground)
 						.onTapGesture {
 							do {
 								let addr = try Factory.Instance.createAddress(addr: contactAvatarModel!.addresses[index])
@@ -487,7 +488,7 @@ struct StartCallFragment: View {
 							.padding(.vertical, 15)
 							.padding(.horizontal, 10)
 						}
-						.background(.white)
+						.background(Color.msgFieldBackground)
 						.onTapGesture {
 							CoreContext.shared.doOnCoreQueue { core in
 								if let addr = core.interpretUrl(url: contactAvatarModel!.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
@@ -528,10 +529,10 @@ struct StartCallFragment: View {
 				}
 				.padding(.horizontal, 20)
 				.padding(.vertical, 20)
-				.background(.white)
+				.background(Color.msgFieldBackground)
 				.cornerRadius(20)
 				.frame(maxHeight: .infinity)
-				.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
+				.shadow(color: Color.msgAccent, radius: 0, x: 0, y: 2)
 				.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 				.padding(.horizontal, 20)
 				.background(.black.opacity(0.65))
@@ -616,13 +617,13 @@ struct StartCallFragment: View {
 	
 	@Sendable private func delayColor() async {
 		try? await Task.sleep(nanoseconds: 250_000_000)
-		delayedColor = Color.orangeMain500
+		delayedColor = Color.msgFieldBackground
 	}
 	
 	func delayColorDismiss() {
 		Task {
 			try? await Task.sleep(nanoseconds: 80_000_000)
-			delayedColor = .white
+			delayedColor = Color.msgFieldBackground
 		}
 	}
 	
@@ -651,7 +652,7 @@ struct StartCallFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 						} else {
 							let nameTmp = remoteAddress.displayName
 							?? remoteAddress.username
@@ -668,13 +669,13 @@ struct StartCallFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 						}
 						
 						Image("phone-transfer")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
+							.foregroundStyle(Color.msgTextBody)
 							.frame(width: 25, height: 25)
 							.padding(.trailing, 10)
 						
@@ -687,7 +688,7 @@ struct StartCallFragment: View {
 						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 					}
 				}
 				.padding(.horizontal)
@@ -742,7 +743,7 @@ struct StartCallFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 						} else {
 							if let address = contactsManager.lastSearchSuggestions[index].address {
 								let nameTmp = address.displayName
@@ -760,7 +761,7 @@ struct StartCallFragment: View {
 									.default_text_style(styleSize: 16)
 									.lineLimit(1)
 									.frame(maxWidth: .infinity, alignment: .leading)
-									.foregroundStyle(Color.orangeMain500)
+									.foregroundStyle(Color.msgAccent)
 							}
 						}
 					} else {
@@ -772,7 +773,7 @@ struct StartCallFragment: View {
 						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 					}
 				}
 				.padding(.horizontal)

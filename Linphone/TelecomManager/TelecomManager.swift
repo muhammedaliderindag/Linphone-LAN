@@ -101,11 +101,13 @@ class TelecomManager: ObservableObject {
 		}
 	}
 	
-	func startCallCallKit(core: Core, addr: Address?, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
-		if addr == nil {
+	func startCallCallKit(core: Core, addr originalAddr: Address?, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
+		if originalAddr == nil {
 			Log.info("Can not start a call with null address!")
 			return
 		}
+		// DerindSIP LAN: never dial the bridge's loopback host (see lanRoutableAddress)
+		let addr: Address? = LinphoneUtils.lanRoutableAddress(originalAddr!, core: core)
 
 		if TelecomManager.callKitEnabled(core: core) {// && !nextCallIsTransfer != true {
 			let uuid = UUID()
@@ -226,7 +228,8 @@ class TelecomManager: ObservableObject {
 		return writablePath.path
 	}
 	
-	func doCall(core: Core, addr: Address, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
+	func doCall(core: Core, addr originalAddr: Address, isSas: Bool, isVideo: Bool, isConference: Bool = false) throws {
+		let addr = LinphoneUtils.lanRoutableAddress(originalAddr, core: core)
 		// let displayName = FastAddressBook.displayName(for: addr.getCobject)
 		
 		let lcallParams = try core.createCallParams(call: nil)

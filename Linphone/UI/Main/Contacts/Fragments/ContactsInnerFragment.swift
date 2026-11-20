@@ -39,20 +39,20 @@ struct ContactsInnerFragment: View {
 				if contactsManager.avatarListModel.contains(where: { $0.starred }) {
 					HStack(alignment: .center) {
 						Text("contacts_list_favourites_title")
-							.default_text_style_800(styleSize: 16)
+							.msgText(20, .bold)
 						
 						Spacer()
 						
 						Image(isFavoriteOpen ? "caret-up" : "caret-down")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
+							.foregroundStyle(Color.msgTextBody)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
 					}
-					.padding(.top, 10)
+					.padding(.top, 4)
 					.padding(.horizontal, 16)
-					.background(.white)
+					.background(Color.msgBackground)
 					.onTapGesture {
 						withAnimation {
 							isFavoriteOpen.toggle()
@@ -67,7 +67,7 @@ struct ContactsInnerFragment: View {
 					
 					HStack(alignment: .center) {
 						Text("contacts_list_all_contacts_title")
-							.default_text_style_800(styleSize: 16)
+							.msgText(20, .bold)
 						
 						Spacer()
 					}
@@ -80,9 +80,15 @@ struct ContactsInnerFragment: View {
 						ContactsListFragment(showingSheet: $showingSheet, startCallFunc: {_ in })}
 					.safeAreaInset(edge: .top, content: {
 						Spacer()
-							.frame(height: 12)
+							.frame(height: 4)
 					})
 					.listStyle(.plain)
+					.msgHideScrollBackground()
+					.background(Color.msgBackground)
+					.onAppear {
+						// iOS 15: List has no scrollContentBackground
+						UITableView.appearance().backgroundColor = .clear
+					}
 					.if(sharedMainViewModel.cardDavFriendsListsCount > 0) { view in
 						view.refreshable {
 							contactsManager.refreshCardDavContacts()
@@ -92,13 +98,12 @@ struct ContactsInnerFragment: View {
 						VStack {
 							if contactsManager.avatarListModel.isEmpty {
 								Spacer()
-								Image("illus-belledonne")
-									.resizable()
-									.scaledToFit()
-									.clipped()
+								Image(systemName: "person.crop.circle")
+									.font(.system(size: 56, weight: .light))
+									.foregroundStyle(Color.msgTextTertiary)
 									.padding(.all)
 								Text(!text.isEmpty ? "list_filter_no_result_found" : "contacts_list_empty")
-									.default_text_style_800(styleSize: 16)
+									.msgText(17, .semibold, color: .msgTextSecondary)
 								Spacer()
 								Spacer()
 							}
@@ -111,7 +116,7 @@ struct ContactsInnerFragment: View {
 			if magicSearch.isLoading {
 				ProgressView()
 					.controlSize(.large)
-					.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+					.progressViewStyle(CircularProgressViewStyle(tint: Color.msgAccent))
 			}
 		}
 		.navigationBarHidden(true)

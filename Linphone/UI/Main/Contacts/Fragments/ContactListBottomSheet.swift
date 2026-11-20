@@ -75,7 +75,7 @@ struct ContactListBottomSheet: View {
 					Image("copy")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.grayMain2c500)
+						.foregroundStyle(Color.msgTextBody)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					Text(contactsListViewModel.stringToCopy.prefix(4) == "sip:"
@@ -86,12 +86,12 @@ struct ContactListBottomSheet: View {
 				.frame(maxHeight: .infinity)
 			}
 			.padding(.horizontal, 30)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 		}
 		.onRotate { newOrientation in
 			orientation = newOrientation
 		}
-		.background(Color.gray100)
+		.background(Color.msgBackground)
 		.frame(maxWidth: .infinity)
 	}
 }

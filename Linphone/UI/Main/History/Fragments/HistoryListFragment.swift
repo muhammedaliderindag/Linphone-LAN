@@ -74,6 +74,12 @@ struct HistoryListFragment: View {
 					.frame(height: 6)
 			})
 			.listStyle(.plain)
+			.msgHideScrollBackground()
+			.background(Color.msgBackground)
+			.onAppear {
+				// iOS 15: List has no scrollContentBackground
+				UITableView.appearance().backgroundColor = .clear
+			}
 			.overlay(
 				VStack {
 					if historyListViewModel.callLogs.isEmpty &&
@@ -85,13 +91,12 @@ struct HistoryListFragment: View {
 							 contactsManager.lastSearchSuggestions.isEmpty)
 						) {
 						Spacer()
-						Image("illus-belledonne")
-							.resizable()
-							.scaledToFit()
-							.clipped()
+						Image(systemName: "phone")
+							.font(.system(size: 56, weight: .light))
+							.foregroundStyle(Color.msgTextTertiary)
 							.padding(.all)
 						Text(!text.isEmpty ? "list_filter_no_result_found" : (historyListViewModel.missedCallsOnly ? "history_list_empty_missed_history" : "history_list_empty_history"))
-							.default_text_style_800(styleSize: 16)
+							.msgText(17, .semibold, color: .msgTextSecondary)
 							.multilineTextAlignment(.center)
 						Spacer()
 						Spacer()
@@ -123,23 +128,25 @@ struct HistoryListFragment: View {
 				historyListViewModel.setMissedCallsOnly(true)
 			}
 		}
-		.background(Color.grayMain2c100)
-		.clipShape(RoundedRectangle(cornerRadius: 6))
-		.padding(.horizontal, 20)
-		.padding(.top, 12)
+		.padding(2)
+		.background(Color.msgFieldBackground)
+		.clipShape(RoundedRectangle(cornerRadius: 9, style: .continuous))
+		.padding(.horizontal, 16)
+		.padding(.top, 8)
+		.padding(.bottom, 4)
 	}
 	
 	func callLogsFilterTab(title: LocalizedStringKey, isSelected: Bool, action: @escaping () -> Void) -> some View {
 		Button(action: action) {
 			Text(title)
-				.font(Font.custom("NotoSans-Bold", size: 14))
-				.foregroundStyle(isSelected ? Color.white : Color.grayMain2c600)
+				.font(.system(size: 14, weight: isSelected ? .semibold : .medium))
+				.foregroundStyle(Color.msgTextPrimary)
 				.lineLimit(1)
 				.minimumScaleFactor(0.8)
 				.frame(maxWidth: .infinity)
-				.frame(height: 32)
-				.background(isSelected ? Color.orangeMain500 : Color.clear)
-				.clipShape(RoundedRectangle(cornerRadius: 6))
+				.frame(height: 30)
+				.background(isSelected ? Color.msgElevated : Color.clear)
+				.clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
 				.contentShape(Rectangle())
 		}
 		.buttonStyle(.plain)
@@ -170,7 +177,7 @@ struct HistoryListFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 						} else {
 							if let address = contactsManager.lastSearchSuggestions[index].address {
 								let nameTmp = address.displayName
@@ -188,7 +195,7 @@ struct HistoryListFragment: View {
 									.default_text_style(styleSize: 16)
 									.lineLimit(1)
 									.frame(maxWidth: .infinity, alignment: .leading)
-									.foregroundStyle(Color.orangeMain500)
+									.foregroundStyle(Color.msgAccent)
 							}
 						}
 					} else {
@@ -200,15 +207,16 @@ struct HistoryListFragment: View {
 						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 					}
 				}
 			}
 			.buttonStyle(.borderless)
 			.listRowSeparator(.hidden)
-		}
-	}
-}
+			.listRowBackground(Color.msgBackground)
+			}
+			}
+			}
 
 struct HistoryRow: View {
 	@ObservedObject var contactsManager = ContactsManager.shared
@@ -220,106 +228,75 @@ struct HistoryRow: View {
 	
 	@Binding var showingSheet: Bool
 
+	// DerindSIP: iOS Recents row — avatar | name (red when missed) + direction | time (i)
 	var body: some View {
-		HStack {
-			HStack {
-				if !historyModel.isConf {
-					if historyModel.avatarModel != nil {
-						Avatar(contactAvatarModel: historyModel.avatarModel!, avatarSize: 50)
-					} else {
-						if !historyModel.addressName.isEmpty {
-							Image(uiImage: contactsManager.textToImage(
-								firstName: historyModel.addressName,
-								lastName: historyModel.addressName.components(separatedBy: " ").count > 1
-								? historyModel.addressName.components(separatedBy: " ")[1]
-								: ""))
-							.resizable()
-							.frame(width: 50, height: 50)
-							.clipShape(Circle())
-						} else {
-							VStack {
-								Image("profil-picture-default")
-									.renderingMode(.template)
-									.resizable()
-									.frame(width: 28, height: 28)
-									.foregroundStyle(Color.grayMain2c600)
-							}
-							.frame(width: 50, height: 50)
-							.background(Color.grayMain2c200)
-							.clipShape(Circle())
-						}
-					}
-				} else {
-					VStack {
-						Image("video-conference")
-							.renderingMode(.template)
-							.resizable()
-							.frame(width: 28, height: 28)
-							.foregroundStyle(Color.grayMain2c600)
-					}
-					.frame(width: 50, height: 50)
-					.background(Color.grayMain2c200)
-					.clipShape(Circle())
-				}
-				
-				VStack(spacing: 0) {
-					Spacer()
-					if !historyModel.isConf {
-						Text(historyModel.addressName)
-							.default_text_style(styleSize: 14)
-							.frame(maxWidth: .infinity, alignment: .leading)
-							.lineLimit(1)
-					} else {
-						Text(historyModel.subject)
-							.default_text_style(styleSize: 14)
-							.frame(maxWidth: .infinity, alignment: .leading)
-							.lineLimit(1)
-					}
-					
-					HStack {
-						Image(historyListViewModel.getCallIconResId(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing))
-							.resizable()
-							.frame(
-								width: historyListViewModel.getCallIconResId(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing).contains("rejected") ? 12 : 8,
-								height: historyListViewModel.getCallIconResId(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing).contains("rejected") ? 6 : 8)
-						Text(historyListViewModel.getCallTime(startDate: historyModel.startDate))
-							.default_text_style_300(styleSize: 12)
-							.frame(maxWidth: .infinity, alignment: .leading)
-						
-						Spacer()
-					}
-					
-					Spacer()
-				}
-				
-				if !historyModel.isConf {
-					Image("phone")
-						.renderingMode(.template)
+		HStack(spacing: 10) {
+			rowAvatar
+
+			VStack(alignment: .leading, spacing: 1) {
+				Text(historyModel.isConf ? historyModel.subject : historyModel.addressName)
+					.msgText(17, .semibold, color: historyModel.isMissed ? Color.msgMissed : Color.msgTextPrimary)
+					.lineLimit(1)
+
+				HStack(spacing: 5) {
+					let iconName = historyListViewModel.getCallIconResId(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing)
+					Image(iconName)
 						.resizable()
-						.frame(width: 25, height: 25)
-						.foregroundStyle(Color.grayMain2c600)
-						.padding(.all, 10)
-						.padding(.trailing, 5)
-						.highPriorityGesture(
-							TapGesture()
-								.onEnded { _ in
-									withAnimation {
-										doCall(historyModel: historyModel)
-										SharedMainViewModel.shared.displayedCall = nil
-									}
-								}
+						.frame(
+							width: iconName.contains("rejected") ? 12 : 9,
+							height: iconName.contains("rejected") ? 6 : 9
 						)
+
+					Text(historyListViewModel.getCallText(callStatus: historyModel.status, isOutgoing: historyModel.isOutgoing))
+						.msgText(15, color: .msgTextSecondary)
+						.lineLimit(1)
 				}
 			}
+
+			Spacer(minLength: 4)
+
+			Text(recentTime)
+				.msgText(15, color: .msgTextSecondary)
+				.lineLimit(1)
+
+			Image(systemName: "info.circle")
+				.font(.system(size: 21, weight: .regular))
+				.foregroundStyle(Color.msgAccent)
+				.frame(width: 32, height: 44)
+				.contentShape(Rectangle())
+				.highPriorityGesture(
+					TapGesture()
+						.onEnded { _ in
+							withAnimation {
+								SharedMainViewModel.shared.displayedCall = historyModel
+							}
+						}
+				)
 		}
-		.frame(height: 50)
+		.padding(.vertical, 6)
+		.overlay(
+			Rectangle()
+				.fill(Color.msgSeparator)
+				.frame(height: 0.5)
+				.padding(.leading, 50),
+			alignment: .bottom
+		)
+		.frame(minHeight: 60)
+		.contentShape(Rectangle())
 		.buttonStyle(.borderless)
-		.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
+		.listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 8))
 		.listRowSeparator(.hidden)
-		.background(.white)
+		.listRowBackground(Color.msgBackground)
+		.background(Color.msgBackground)
 		.onTapGesture {
 			withAnimation {
-				SharedMainViewModel.shared.displayedCall = historyModel
+				if historyModel.isConf {
+					SharedMainViewModel.shared.displayedCall = historyModel
+				} else {
+					// iOS Recents: tapping a row calls back
+					doCall(historyModel: historyModel)
+					SharedMainViewModel.shared.displayedCall = nil
+				}
 			}
 		}
 		.onLongPressGesture(minimumDuration: 0.2) {
@@ -327,7 +304,60 @@ struct HistoryRow: View {
 			showingSheet.toggle()
 		}
 	}
-	
+
+	@ViewBuilder
+	private var rowAvatar: some View {
+		if !historyModel.isConf {
+			if historyModel.avatarModel != nil {
+				Avatar(contactAvatarModel: historyModel.avatarModel!, avatarSize: 40)
+			} else if !historyModel.addressName.isEmpty {
+				Image(uiImage: contactsManager.textToImage(
+					firstName: historyModel.addressName,
+					lastName: historyModel.addressName.components(separatedBy: " ").count > 1
+					? historyModel.addressName.components(separatedBy: " ")[1]
+					: ""))
+				.resizable()
+				.frame(width: 40, height: 40)
+				.clipShape(Circle())
+			} else {
+				Image(systemName: "person.fill")
+					.font(.system(size: 20))
+					.foregroundStyle(Color.msgTextBody)
+					.frame(width: 40, height: 40)
+					.background(Circle().fill(Color.msgElevated))
+			}
+		} else {
+			Image("video-conference")
+				.renderingMode(.template)
+				.resizable()
+				.frame(width: 22, height: 22)
+				.foregroundStyle(Color.msgTextBody)
+				.frame(width: 40, height: 40)
+				.background(Circle().fill(Color.msgElevated))
+		}
+	}
+
+	/// iOS-like relative time: today -> time, yesterday -> "Yesterday", this week -> weekday, else short date.
+	private var recentTime: String {
+		let date = Date(timeIntervalSince1970: TimeInterval(historyModel.startDate))
+		let calendar = Calendar.current
+		let formatter = DateFormatter()
+		if calendar.isDateInToday(date) {
+			formatter.dateStyle = .none
+			formatter.timeStyle = .short
+		} else if calendar.isDateInYesterday(date) {
+			formatter.doesRelativeDateFormatting = true
+			formatter.dateStyle = .short
+			formatter.timeStyle = .none
+		} else if let days = calendar.dateComponents([.day], from: date, to: Date()).day, days < 7 {
+			formatter.setLocalizedDateFormatFromTemplate("EEEE")
+		} else {
+			formatter.dateStyle = .short
+			formatter.timeStyle = .none
+		}
+		return formatter.string(from: date)
+	}
+
 	func doCall(historyModel: HistoryModel) {
 		telecomManager.doCallOrJoinConf(address: historyModel.addressLinphone)
 	}

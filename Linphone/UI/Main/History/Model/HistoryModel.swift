@@ -52,7 +52,7 @@ class HistoryModel: ObservableObject, Identifiable {
 		self.subject = ""
 		self.isConf = false
 		
-		self.addressLinphone = callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!
+		self.addressLinphone = LinphoneUtils.lanRoutableAddress(callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!)
 		self.address = ""
 		
 		self.addressName = ""
@@ -76,7 +76,7 @@ class HistoryModel: ObservableObject, Identifiable {
 			let subjectTmp = confInfoTmp != nil && confInfoTmp!.subject != nil ? confInfoTmp!.subject! : ""
 			let isConfTmp = confInfoTmp != nil
 			
-			let addressLinphoneTmp = callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!
+			let addressLinphoneTmp = LinphoneUtils.lanRoutableAddress(callLog.dir == .Outgoing && callLog.toAddress != nil ? callLog.toAddress! : callLog.fromAddress!)
 			
 			let addressNameTmp = confInfoTmp != nil && confInfoTmp!.subject != nil
 			? confInfoTmp!.subject!

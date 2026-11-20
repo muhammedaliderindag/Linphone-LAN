@@ -41,6 +41,7 @@ struct ContactsFragment: View {
 							showingSheet: $showingSheet,
 							showShareSheet: $showShareSheet
 						)
+							.msgDarkPresentation()
 						.presentationDetents(contactsListViewModel.selectedFriend?.isReadOnly == true ? [.fraction(0.1)] : [.fraction(0.4)])
 					}
 					.sheet(isPresented: $showShareSheet) {
@@ -56,6 +57,7 @@ struct ContactsFragment: View {
 							showingSheet: $showingSheet,
 							showShareSheet: $showShareSheet
 						)
+							.msgDarkPresentation()
                         .environmentObject(contactsListViewModel)
 					} onDismiss: {}
 					.sheet(isPresented: $showShareSheet) {

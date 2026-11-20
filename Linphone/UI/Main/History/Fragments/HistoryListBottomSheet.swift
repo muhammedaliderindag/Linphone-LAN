@@ -99,7 +99,7 @@ struct HistoryListBottomSheet: View {
 							Image("user-circle")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
+								.foregroundStyle(Color.msgTextBody)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 							Text("menu_see_existing_contact")
@@ -109,7 +109,7 @@ struct HistoryListBottomSheet: View {
 							Image("plus-circle")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
+								.foregroundStyle(Color.msgTextBody)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 							Text("menu_add_address_to_contacts")
@@ -120,7 +120,7 @@ struct HistoryListBottomSheet: View {
 					.frame(maxHeight: .infinity)
 				}
 				.padding(.horizontal, 30)
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 				
 				VStack {
 					Divider()
@@ -160,7 +160,7 @@ struct HistoryListBottomSheet: View {
 					Image("copy")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.grayMain2c500)
+						.foregroundStyle(Color.msgTextBody)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 					Text("menu_copy_sip_address")
@@ -170,7 +170,7 @@ struct HistoryListBottomSheet: View {
 				.frame(maxHeight: .infinity)
 			}
 			.padding(.horizontal, 30)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 			
 			VStack {
 				Divider()
@@ -209,10 +209,10 @@ struct HistoryListBottomSheet: View {
 				.frame(maxHeight: .infinity)
 			}
 			.padding(.horizontal, 30)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 			
 		}
-		.background(Color.gray100)
+		.background(Color.msgBackground)
 		.frame(maxWidth: .infinity)
 		.onRotate { newOrientation in
 			orientation = newOrientation
