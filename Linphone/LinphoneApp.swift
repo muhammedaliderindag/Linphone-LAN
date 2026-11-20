@@ -391,6 +391,11 @@ struct MainViewSwitcher: View {
 	@ViewBuilder
 	func selectedMainView() -> some View {
 		ContentView()
+			// DerindSIP: window always dark (light status bar over the black shell,
+			// dark menus/keyboard); content stays light except the Messages
+			// screens, which re-enter dark with msgDarkScope().
+			.environment(\.colorScheme, .light)
+			.preferredColorScheme(.dark)
 			.onAppear {
 				appDelegate.coreContext = coreContext
 				appDelegate.navigationManager = navigationManager

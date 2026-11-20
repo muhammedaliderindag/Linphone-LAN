@@ -33,7 +33,7 @@ struct ConversationDocumentsListFragment: View {
 					VStack(spacing: 1) {
 						
 						Rectangle()
-							.foregroundStyle(Color.orangeMain500)
+							.msgAdaptiveForeground(Color.orangeMain500, Color.msgBackground)
 							.edgesIgnoringSafeArea(.top)
 							.frame(height: 0)
 						
@@ -41,7 +41,7 @@ struct ConversationDocumentsListFragment: View {
 							Image("caret-left")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.orangeMain500)
+								.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 								.padding(.top, 2)
@@ -63,7 +63,7 @@ struct ConversationDocumentsListFragment: View {
 						.frame(height: 50)
 						.padding(.horizontal)
 						.padding(.bottom, 4)
-						.background(.white)
+						.msgAdaptiveBackground(Color.white, Color.msgBackground)
 						
 						VStack(spacing: 0) {
 							List {
@@ -101,7 +101,7 @@ struct ConversationDocumentsListFragment: View {
 						}
 						.frame(maxWidth: .infinity)
 					}
-					.background(Color.gray100)
+					.msgAdaptiveBackground(Color.gray100, Color.msgBackground)
 					
 					if conversationDocumentsListViewModel.operationInProgress {
 						PopupLoadingView()
@@ -133,18 +133,18 @@ struct DocumentRow: View {
 				Image(getImageOfType(filename: file.fileName, type: file.mimeTypeString))
 					   .renderingMode(.template)
 					   .resizable()
-					   .foregroundStyle(Color.grayMain2c700)
+					   .msgAdaptiveForeground(Color.grayMain2c700, Color.msgTextBody)
 					   .frame(width: 60, height: 60, alignment: .leading)
 			}
 			.frame(width: 100, height: 100)
-			.background(Color.grayMain2c200)
+			.msgAdaptiveBackground(Color.grayMain2c200, Color.msgElevated)
 			.onTapGesture {
 				selectedURLAttachment = URL(fileURLWithPath: file.originalPath)
 			}
 			
 			VStack {
 				Text(file.fileName)
-					.foregroundStyle(Color.grayMain2c700)
+					.msgAdaptiveForeground(Color.grayMain2c700, Color.msgTextBody)
 					.default_text_style_600(styleSize: 14)
 					.truncationMode(.middle)
 					.frame(maxWidth: .infinity, alignment: .leading)
@@ -161,7 +161,7 @@ struct DocumentRow: View {
 			.frame(maxWidth: .infinity, alignment: .leading)
 		}
 		.quickLookPreview($selectedURLAttachment, in: viewModel.documentsList.compactMap { URL(fileURLWithPath: $0.originalPath) })
-		.background(.white)
+		.msgAdaptiveBackground(Color.white, Color.msgBackground)
 		.clipShape(RoundedRectangle(cornerRadius: 10))
 		.onTapGesture {
 			selectedURLAttachment = URL(fileURLWithPath: file.originalPath)

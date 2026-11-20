@@ -79,7 +79,7 @@ struct ConversationsListBottomSheet: View {
 							Image("envelope-simple")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
+								.foregroundStyle(Color.msgTextBody)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 							Text("conversation_action_mark_as_read")
@@ -89,7 +89,7 @@ struct ConversationsListBottomSheet: View {
 						.frame(maxHeight: .infinity)
 					}
 					.padding(.horizontal, 30)
-					.background(Color.gray100)
+					.background(Color.msgBackground)
 					
 					VStack {
 						Divider()
@@ -116,7 +116,7 @@ struct ConversationsListBottomSheet: View {
 						Image(selectedConversation.isMuted ? "bell" : "bell-slash")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c500)
+							.foregroundStyle(Color.msgTextBody)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
 						Text(selectedConversation.isMuted ? "conversation_action_unmute" : "conversation_action_mute")
@@ -126,7 +126,7 @@ struct ConversationsListBottomSheet: View {
 					.frame(maxHeight: .infinity)
 				}
 				.padding(.horizontal, 30)
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 				
 				VStack {
 					Divider()
@@ -156,7 +156,7 @@ struct ConversationsListBottomSheet: View {
 							Image("phone")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
+								.foregroundStyle(Color.msgTextBody)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 							Text("conversation_action_call")
@@ -166,7 +166,7 @@ struct ConversationsListBottomSheet: View {
 						.frame(maxHeight: .infinity)
 					}
 					.padding(.horizontal, 30)
-					.background(Color.gray100)
+					.background(Color.msgBackground)
 					
 					VStack {
 						Divider()
@@ -205,7 +205,7 @@ struct ConversationsListBottomSheet: View {
                     .frame(maxHeight: .infinity)
                 }
                 .padding(.horizontal, 30)
-                .background(Color.gray100)
+                .background(Color.msgBackground)
                 
                 if !selectedConversation.isReadOnly {
                     VStack {
@@ -233,7 +233,7 @@ struct ConversationsListBottomSheet: View {
                             Image("sign-out")
                                 .renderingMode(.template)
                                 .resizable()
-                                .foregroundStyle(Color.grayMain2c500)
+                                .foregroundStyle(Color.msgTextBody)
                                 .frame(width: 25, height: 25, alignment: .leading)
                                 .padding(.all, 10)
                             Text("conversation_action_leave_group")
@@ -243,7 +243,7 @@ struct ConversationsListBottomSheet: View {
                         .frame(maxHeight: .infinity)
                     }
                     .padding(.horizontal, 30)
-					.background(Color.gray100)
+					.background(Color.msgBackground)
 				}
 			} else if let selectedConversation = conversationsListViewModel.selectedConversation, selectedConversation.isReadOnly {
 				Button {
@@ -277,10 +277,10 @@ struct ConversationsListBottomSheet: View {
 					.frame(maxHeight: .infinity)
 				}
 				.padding(.horizontal, 30)
-				.background(Color.gray100)
+				.background(Color.msgBackground)
 			}
 		}
-		.background(Color.gray100)
+		.background(Color.msgBackground)
 		.frame(maxWidth: .infinity)
 		.onRotate { newOrientation in
 			orientation = newOrientation

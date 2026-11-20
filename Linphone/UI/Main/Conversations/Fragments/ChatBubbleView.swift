@@ -48,7 +48,12 @@ struct ChatBubbleView: View {
 	@State private var selectedURLAttachment: URL?
 	
 	@State private var showShareSheet = false
-	
+
+	// DerindSIP: time / delivery status color inside the bubble
+	private var metaColor: Color {
+		eventLogMessage.message.isOutgoing ? Color.msgOutgoingMeta : Color.msgTextSecondary
+	}
+
 	var body: some View {
 		HStack {
 			if eventLogMessage.eventModel.eventLogType == .ConferenceChatMessage {
@@ -130,28 +135,28 @@ struct ChatBubbleView: View {
 											VStack(alignment: eventLogMessage.message.isOutgoing ? .trailing : .leading) {
 												if !eventLogMessage.message.replyMessage!.text.isEmpty {
 													Text(eventLogMessage.message.replyMessage!.text)
-														.foregroundStyle(Color.grayMain2c700)
+														.foregroundStyle(Color.msgTextSecondary)
 														.default_text_style(styleSize: 14)
 														.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
 												} else if !eventLogMessage.message.replyMessage!.attachmentsNames.isEmpty {
 													Text(eventLogMessage.message.replyMessage!.attachmentsNames)
-														.foregroundStyle(Color.grayMain2c700)
+														.foregroundStyle(Color.msgTextSecondary)
 														.default_text_style(styleSize: 14)
 														.lineLimit(/*@START_MENU_TOKEN@*/2/*@END_MENU_TOKEN@*/)
 												} else if eventLogMessage.message.replyMessage!.isRetracted {
 													Text(eventLogMessage.message.replyMessage!.isOutgoing ? "conversation_message_content_deleted_by_us_label" : "conversation_message_content_deleted_label")
 														.italic()
-														.foregroundStyle(Color.grayMain2c500)
+														.foregroundStyle(Color.msgTextSecondary)
 														.font(.system(size: 14))
 														.lineLimit(1)
 												}
 											}
 											.padding(.all, 15)
 											.padding(.bottom, 15)
-											.background(Color.gray200)
+											.background(Color.msgElevated)
 											.clipShape(RoundedRectangle(cornerRadius: 1))
 											.roundedCorner(
-												16,
+												MessagesStyle.bubbleRadius,
 												corners: eventLogMessage.message.isOutgoing ? [.topLeft, .topRight, .bottomLeft] : [.topLeft, .topRight, .bottomRight],
 												stroke: eventLogMessage.message.id == conversationViewModel.highlightedMessageID
 											)
@@ -185,13 +190,14 @@ struct ChatBubbleView: View {
 														text: eventLogMessage.message.text,
 														isMessageId: eventLogMessage.message.id == conversationViewModel.highlightedMessageID,
 														searchText: conversationViewModel.searchText,
-														participantConversationModel: conversationViewModel.participantConversationModel
-													)
+															participantConversationModel: conversationViewModel.participantConversationModel,
+															isOutgoing: eventLogMessage.message.isOutgoing
+														)
 												} else if eventLogMessage.message.isRetracted {
 													Text(eventLogMessage.message.isOutgoing ? "conversation_message_content_deleted_by_us_label" : "conversation_message_content_deleted_label")
 														.italic()
-														.foregroundStyle(Color.grayMain2c500)
-														.font(.system(size: 14))
+														.foregroundStyle(eventLogMessage.message.isOutgoing ? Color.msgOutgoingMeta : Color.msgTextSecondary)
+														.font(.system(size: 17))
 														.lineLimit(1)
 												}
 												
@@ -226,13 +232,13 @@ struct ChatBubbleView: View {
 																		.default_text_style_800(styleSize: 18)
 																		.lineLimit(1)
 																		.frame(width: 30, height: 30, alignment: .center)
-																		.background(Color.orangeMain500)
+																		.background(Color.msgAccent)
 																		.clipShape(Circle())
 																	
 																}
 																.padding(.all, 10)
 																.frame(width: 70, height: 70)
-																.background(.white)
+																.background(Color.msgElevated)
 																.cornerRadius(15)
 																.shadow(color: .black.opacity(0.1), radius: 15)
 																
@@ -241,7 +247,7 @@ struct ChatBubbleView: View {
 																		Image("video-conference")
 																			.renderingMode(.template)
 																			.resizable()
-																			.foregroundStyle(Color.grayMain2c600)
+																			.foregroundStyle(Color.msgTextBody)
 																			.frame(width: 25, height: 25)
 																		
 																		Text(eventLogMessage.message.messageConferenceInfo!.meetingSubject)
@@ -267,7 +273,7 @@ struct ChatBubbleView: View {
 														}
 														.padding(.all, 15)
 														.frame(maxWidth: .infinity)
-														.background(Color.gray100)
+														.background(Color.msgElevated)
 														
 														VStack(spacing: 2) {
 															if !eventLogMessage.message.messageConferenceInfo!.meetingDescription.isEmpty {
@@ -285,7 +291,7 @@ struct ChatBubbleView: View {
 																	Image("users")
 																		.renderingMode(.template)
 																		.resizable()
-																		.foregroundStyle(Color.grayMain2c600)
+																		.foregroundStyle(Color.msgTextBody)
 																		.frame(width: 20, height: 20)
 																	
 																	Text(eventLogMessage.message.messageConferenceInfo!.meetingParticipants)
@@ -300,7 +306,7 @@ struct ChatBubbleView: View {
 																	})
 																	.padding(.horizontal, 15)
 																	.padding(.vertical, 10)
-																	.background(Color.orangeMain500)
+																	.background(Color.msgAccent)
 																	.cornerRadius(60)
 																}
 																.padding(.top, !eventLogMessage.message.messageConferenceInfo!.meetingDescription.isEmpty ? 10 : 0)
@@ -312,18 +318,18 @@ struct ChatBubbleView: View {
 															? 15
 															: 0
 														)
-														.frame(maxWidth: .infinity)
-														.background(.white)
-													}
-													.frame(width: geometryProxy.size.width >= 110 ? geometryProxy.size.width - 110 : geometryProxy.size.width)
-													.background(.white)
+															.frame(maxWidth: .infinity)
+															.background(Color.msgFieldBackground)
+														}
+														.frame(width: geometryProxy.size.width >= 110 ? geometryProxy.size.width - 110 : geometryProxy.size.width)
+														.background(Color.msgFieldBackground)
 													.cornerRadius(10)
 												}
 												
 												HStack(alignment: .center) {
 													if eventLogMessage.message.isEphemeral && eventLogMessage.message.isOutgoing {
 														Text(ephemeralLifetime)
-															.foregroundStyle(Color.grayMain2c500)
+															.foregroundStyle(metaColor)
 															.default_text_style_300(styleSize: 12)
 															.padding(.top, 1)
 															.padding(.trailing, -4)
@@ -339,21 +345,21 @@ struct ChatBubbleView: View {
 														Image("clock-countdown")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c500)
+															.foregroundStyle(metaColor)
 															.frame(width: 15, height: 15)
 															.padding(.top, 1)
 													}
 													
 													if eventLogMessage.message.isEdited && eventLogMessage.message.isOutgoing {
 														Text("conversation_message_edited_label")
-														 .foregroundStyle(Color.grayMain2c500)
+														 .foregroundStyle(metaColor)
 														 .default_text_style_300(styleSize: 12)
 														 .padding(.top, 1)
 														 .padding(.trailing, -4)
 													}
 													
 													Text(conversationViewModel.getMessageTime(startDate: eventLogMessage.message.dateReceived))
-														.foregroundStyle(Color.grayMain2c500)
+														.foregroundStyle(metaColor)
 														.default_text_style_300(styleSize: 12)
 														.padding(.top, 1)
 														.padding(.trailing, -4)
@@ -363,14 +369,14 @@ struct ChatBubbleView: View {
 														if eventLogMessage.message.status == .sending {
 															ProgressView()
 																.controlSize(.mini)
-																.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+																.progressViewStyle(CircularProgressViewStyle(tint: metaColor))
 																.frame(width: 10, height: 10)
 																.padding(.top, 1)
 														} else if eventLogMessage.message.status != nil && !(CoreContext.shared.imdnToEverybodyThreshold && !eventLogMessage.message.isOutgoing) {
 															Image(conversationViewModel.getImageIMDN(status: eventLogMessage.message.status!))
 																.renderingMode(.template)
 																.resizable()
-																.foregroundStyle(Color.orangeMain500)
+																.foregroundStyle(metaColor)
 																.frame(width: 15, height: 15)
 																.padding(.top, 1)
 														}
@@ -378,7 +384,7 @@ struct ChatBubbleView: View {
 													
 													if eventLogMessage.message.isEdited && !eventLogMessage.message.isOutgoing {
 														Text("conversation_message_edited_label")
-														 .foregroundStyle(Color.grayMain2c500)
+														 .foregroundStyle(metaColor)
 														 .default_text_style_300(styleSize: 12)
 														 .padding(.top, 1)
 														 .padding(.trailing, -4)
@@ -388,13 +394,13 @@ struct ChatBubbleView: View {
 														Image("clock-countdown")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c500)
+															.foregroundStyle(metaColor)
 															.frame(width: 15, height: 15)
 															.padding(.top, 1)
 															.padding(.trailing, -4)
 														
 														Text(ephemeralLifetime)
-															.foregroundStyle(Color.grayMain2c500)
+															.foregroundStyle(metaColor)
 															.default_text_style_300(styleSize: 12)
 															.padding(.top, 1)
 															.onAppear {
@@ -416,11 +422,12 @@ struct ChatBubbleView: View {
 												.disabled(conversationViewModel.selectedMessage != nil)
 												.padding(.top, -4)
 											}
-											.padding(.all, 15)
-											.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+											.padding(.horizontal, 14)
+											.padding(.vertical, 9)
+											.background(eventLogMessage.message.isOutgoing ? Color.msgBubbleOut : Color.msgBubbleIn)
 											.clipShape(RoundedRectangle(cornerRadius: 3))
 											.roundedCorner(
-												16,
+												MessagesStyle.bubbleRadius,
 												corners: eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topLeft, .topRight, .bottomLeft] :
 													(!eventLogMessage.message.isOutgoing && eventLogMessage.message.isFirstMessage ? [.topRight, .bottomRight, .bottomLeft] : [.allCorners]),
 												stroke: eventLogMessage.message.id == conversationViewModel.highlightedMessageID
@@ -449,11 +456,11 @@ struct ChatBubbleView: View {
 												.disabled(conversationViewModel.selectedMessage != nil)
 												.padding(.vertical, 6)
 												.padding(.horizontal, 10)
-												.background(eventLogMessage.message.isOutgoing ? Color.orangeMain100 : Color.grayMain2c100)
+												.background(Color.msgElevated)
 												.cornerRadius(20)
 												.overlay(
 													RoundedRectangle(cornerRadius: 20)
-														.stroke(.white, lineWidth: 3)
+														.stroke(Color.msgBackground, lineWidth: 3)
 												)
 												.padding(.top, -20)
 												.padding(eventLogMessage.message.isOutgoing ? .trailing : .leading, 5)
@@ -521,19 +528,19 @@ struct ChatBubbleView: View {
 							eventLogMessage.eventModel.icon!
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
+								.foregroundStyle(Color.msgTextSecondary)
 								.frame(width: 25, height: 25, alignment: .leading)
 						}
 						
 						Text(eventLogMessage.eventModel.text)
-							.foregroundStyle(Color.grayMain2c500)
+							.foregroundStyle(Color.msgTextSecondary)
 							.default_text_style(styleSize: 12)
 					}
 					.padding(.horizontal, 10)
 					.padding(.vertical, 4)
 					.overlay(
 						RoundedRectangle(cornerRadius: 6)
-							.stroke(Color.grayMain2c200, lineWidth: 1)
+							.stroke(Color.msgSeparator, lineWidth: 1)
 					)
 					
 					Spacer()
@@ -564,7 +571,7 @@ struct ChatBubbleView: View {
 				let result = imageDimensions(url: eventLogMessage.message.attachments.first!.thumbnail.absoluteString)
 				ZStack {
 					Rectangle()
-						.fill(Color(.white))
+						.fill(Color.msgElevated)
 						.aspectRatio(result.0/result.1, contentMode: .fit)
 						.if(result.0 < geometryProxy.size.width - 110) { view in
 							view.frame(maxWidth: result.0)
@@ -677,12 +684,12 @@ struct ChatBubbleView: View {
 							Image(getImageOfType(type: eventLogMessage.message.attachments.first!.type))
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c700)
+								.foregroundStyle(Color.msgTextBody)
 								.frame(width: 60, height: 60, alignment: .leading)
 						}
 					}
 					.frame(width: 100, height: 100)
-					.background(Color.grayMain2c200)
+					.background(Color.msgElevated)
 					.onTapGesture {
 						if eventLogMessage.message.attachments.first!.type == .fileTransfer && eventLogMessage.message.attachments.first!.transferProgressIndication == -1 {
 							CoreContext.shared.doOnCoreQueue { _ in
@@ -710,7 +717,7 @@ struct ChatBubbleView: View {
 					
 					VStack {
 						Text(eventLogMessage.message.attachments.first!.name)
-							.foregroundStyle(Color.grayMain2c700)
+							.foregroundStyle(Color.msgTextBody)
 							.default_text_style_600(styleSize: 14)
 							.truncationMode(.middle)
 							.frame(maxWidth: .infinity, alignment: .leading)
@@ -738,7 +745,7 @@ struct ChatBubbleView: View {
 					.padding(.horizontal, 10)
 					.frame(maxWidth: .infinity, alignment: .leading)
 				}
-				.background(.white)
+				.background(Color.msgElevated)
 				.clipShape(RoundedRectangle(cornerRadius: 10))
 				.onTapGesture {
 					if !isPressed && !didLongPress {
@@ -756,7 +763,7 @@ struct ChatBubbleView: View {
 						|| $0.type == .video }), id: \.id) { attachment in
 							ZStack {
 								Rectangle()
-									.fill(Color(.white))
+									.fill(Color.msgElevated)
 									.frame(width: sizeCard, height: sizeCard)
 								
 								if #available(iOS 16.0, *) {
@@ -822,12 +829,12 @@ struct ChatBubbleView: View {
 								Image(getImageOfType(type: attachment.type))
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c700)
+									.foregroundStyle(Color.msgTextBody)
 									.frame(width: 60, height: 60, alignment: .leading)
 							}
 						}
 						.frame(width: 100, height: 100)
-						.background(Color.grayMain2c200)
+						.background(Color.msgElevated)
 						.onTapGesture {
 							if conversationViewModel.attachmentTransferInProgress == nil {
 								if attachment.type == .fileTransfer && attachment.transferProgressIndication == -1 {
@@ -849,7 +856,7 @@ struct ChatBubbleView: View {
 						
 						VStack {
 							Text(attachment.name)
-								.foregroundStyle(Color.grayMain2c700)
+								.foregroundStyle(Color.msgTextBody)
 								.default_text_style_600(styleSize: 14)
 								.truncationMode(.middle)
 								.frame(maxWidth: .infinity, alignment: .leading)
@@ -877,7 +884,7 @@ struct ChatBubbleView: View {
 						.padding(.horizontal, 10)
 						.frame(maxWidth: .infinity, alignment: .leading)
 					}
-					.background(.white)
+					.background(Color.msgElevated)
 					.clipShape(RoundedRectangle(cornerRadius: 10))
 					.onTapGesture {
 						if !isPressed && !didLongPress {
@@ -958,13 +965,18 @@ struct DynamicLinkText: View {
 	let isMessageId: Bool
 	let searchText: String
 	let participantConversationModel: [ContactAvatarModel]
-	
+	var isOutgoing: Bool = false
+
+	// DerindSIP: iOS Messages look, white text, accent links (white on green bubbles)
+	private var linkColor: Color { isOutgoing ? Color.msgTextPrimary : Color.msgAccent }
+
 	var body: some View {
 		Text(makeAttributedString(from: text))
 			.fixedSize(horizontal: false, vertical: true)
 			.multilineTextAlignment(.leading)
 			.lineLimit(nil)
-			.default_text_style(styleSize: fontSize)
+			.font(.system(size: fontSize))
+			.foregroundStyle(Color.msgTextPrimary)
 			.padding(.vertical, isOnlyEmojis ? -4 : 0)
 	}
 
@@ -973,7 +985,7 @@ struct DynamicLinkText: View {
 	}
 	
 	private var fontSize: CGFloat {
-		return text.isOnlyEmojis ? 45 : 14
+		return text.isOnlyEmojis ? 45 : 17
 	}
 	
 	// MARK: - Builder
@@ -1012,7 +1024,7 @@ struct DynamicLinkText: View {
 		{
 			var link = AttributedString(word)
 			link.link = url
-			link.foregroundColor = .blue
+			link.foregroundColor = linkColor
 			link.underlineStyle = .single
 			result.append(link)
 			return
@@ -1027,15 +1039,15 @@ struct DynamicLinkText: View {
 		{
 			var mention = AttributedString("@" + participant.name)
 			mention.link = mentionURL
-			mention.foregroundColor = Color.orangeMain500
-			mention.font = .system(size: 14)
+			mention.foregroundColor = linkColor
+			mention.font = .system(size: 17, weight: .semibold)
 			result.append(mention)
 			return
 		}
 		
 		// Text
 		var normal = AttributedString(word)
-		normal.foregroundColor = Color.grayMain2c700
+		normal.foregroundColor = Color.msgTextPrimary
 		result.append(normal)
 	}
 	
@@ -1065,7 +1077,7 @@ struct DynamicLinkText: View {
 				let end = AttributedString.Index(found.upperBound, within: attributed)
 			else { break }
 			
-			attributed[start..<end].font = .system(size: 14, weight: .bold)
+			attributed[start..<end].font = .system(size: 17, weight: .bold)
 			
 			searchRange = found.upperBound..<base.endIndex
 		}
@@ -1162,7 +1174,7 @@ extension View {
 		clipShape(RoundedCorner(radius: radius, corners: corners) )
 			.overlay(
 				RoundedCorner(radius: radius, corners: corners)
-					.stroke(Color.orangeMain500, lineWidth: (stroke ?? false) ? 1 : 0)
+					.stroke(Color.msgAccent, lineWidth: (stroke ?? false) ? 1 : 0)
 			)
 	}
 }
@@ -1178,7 +1190,7 @@ struct CustomSlider: View {
 	@State private var cancellable: AnyCancellable?
 	
 	var minTrackColor: Color = .white.opacity(0.5)
-	var maxTrackGradient: Gradient = Gradient(colors: [Color.orangeMain500.opacity(0.5), Color.orangeMain500])
+	var maxTrackGradient: Gradient = Gradient(colors: [Color.msgAccent.opacity(0.5), Color.msgAccent])
 	
 	
 	var body: some View {
@@ -1213,12 +1225,12 @@ struct CustomSlider: View {
 							Image(isPlaying ? "pause-fill" : "play-fill")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 								.frame(width: 20, height: 20)
 						}
 					)
 					.padding(8)
-					.background(.white)
+					.background(Color.msgElevated)
 					.clipShape(RoundedRectangle(cornerRadius: 25))
 					
 					Spacer()
@@ -1229,7 +1241,7 @@ struct CustomSlider: View {
 							.padding(.horizontal, 5)
 					}
 					.padding(8)
-					.background(.white)
+					.background(Color.msgElevated)
 					.clipShape(RoundedRectangle(cornerRadius: 25))
 				}
 				.padding(.horizontal, 10)
@@ -1330,14 +1342,14 @@ struct CircularProgressView: View {
 			Circle()
 				.trim(from: 0, to: progress)
 				.stroke(
-					Color.orangeMain500,
+					Color.msgAccent,
 					style: StrokeStyle(lineWidth: 5, lineCap: .round))
 				.rotationEffect(Angle(degrees: -90))
 				.animation(.easeInOut(duration: 0.5), value: progress)
 				.overlay(
 					Text("\(Int(progress * 100))%")
 						.font(.system(size: 15, weight: .bold, design: .rounded))
-						.foregroundColor(Color.orangeMain500)
+						.foregroundColor(Color.msgAccent)
 				)
 		}
 		.padding()

@@ -64,7 +64,7 @@ struct ConversationInfoFragment: View {
 				if SharedMainViewModel.shared.displayedConversation != nil {
 					VStack(spacing: 1) {
 						Rectangle()
-							.foregroundColor(Color.orangeMain500)
+							.foregroundColor(Color.msgFieldBackground)
 							.edgesIgnoringSafeArea(.top)
 							.frame(height: 0)
 						
@@ -72,7 +72,7 @@ struct ConversationInfoFragment: View {
 							Image("caret-left")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 								.padding(.top, 2)
@@ -86,7 +86,7 @@ struct ConversationInfoFragment: View {
 							Spacer()
 							
 							Rectangle()
-								.foregroundColor(.white)
+								.foregroundColor(Color.msgBackground)
 								.frame(width: 45, height: 45)
 								.onLongPressGesture(minimumDuration: 0.3) {
 									displayPeerAddress = true
@@ -96,14 +96,14 @@ struct ConversationInfoFragment: View {
 						.frame(height: 50)
 						.padding(.horizontal)
 						.padding(.bottom, 4)
-						.background(.white)
+						.background(Color.msgFieldBackground)
 						
 						ScrollView {
 							VStack(spacing: 0) {
 								VStack(spacing: 0) {
 									if #unavailable(iOS 16.0) {
 										Rectangle()
-											.foregroundColor(Color.gray100)
+											.foregroundColor(Color.msgBackground)
 											.frame(height: 7)
 									}
 									
@@ -114,7 +114,7 @@ struct ConversationInfoFragment: View {
 												.padding(.top, 4)
 											
 											Text(SharedMainViewModel.shared.displayedConversation!.avatarModel.name)
-												.foregroundStyle(Color.grayMain2c700)
+												.foregroundStyle(Color.msgTextBody)
 												.multilineTextAlignment(.center)
 												.default_text_style(styleSize: 14)
 												.frame(maxWidth: .infinity)
@@ -131,14 +131,14 @@ struct ConversationInfoFragment: View {
 												} label: {
 													HStack {
 														Text(conversationViewModel.participantConversationModel.first?.address ?? "")
-															.foregroundStyle(Color.grayMain2c700)
+															.foregroundStyle(Color.msgTextBody)
 															.default_text_style(styleSize: 14)
 															.padding(.top, 5)
 														
 														Image("copy")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c500)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25)
 													}
 												}
@@ -156,14 +156,14 @@ struct ConversationInfoFragment: View {
 												} label: {
 													HStack {
 														Text(conversationViewModel.peerAddress)
-															.foregroundStyle(Color.grayMain2c700)
+															.foregroundStyle(Color.msgTextBody)
 															.default_text_style(styleSize: 14)
 															.padding(.top, 5)
 														
 														Image("copy")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c500)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25, alignment: .leading)
 													}
 												}
@@ -193,7 +193,7 @@ struct ConversationInfoFragment: View {
 											
 											HStack {
 												Text(SharedMainViewModel.shared.displayedConversation!.avatarModel.name)
-													.foregroundStyle(Color.grayMain2c700)
+													.foregroundStyle(Color.msgTextBody)
 													.multilineTextAlignment(.center)
 													.default_text_style(styleSize: 14)
 													.padding(.top, 10)
@@ -207,7 +207,7 @@ struct ConversationInfoFragment: View {
 															Image("pencil-simple")
 																.renderingMode(.template)
 																.resizable()
-																.foregroundStyle(Color.orangeMain500)
+																.foregroundStyle(Color.msgAccent)
 																.frame(width: 20, height: 20)
 														}
 													)
@@ -227,14 +227,14 @@ struct ConversationInfoFragment: View {
 												} label: {
 													HStack {
 														Text(conversationViewModel.peerAddress)
-															.foregroundStyle(Color.grayMain2c700)
+															.foregroundStyle(Color.msgTextBody)
 															.default_text_style(styleSize: 14)
 															.padding(.top, 5)
 														
 														Image("copy")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c500)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25, alignment: .leading)
 													}
 												}
@@ -246,7 +246,7 @@ struct ConversationInfoFragment: View {
 									.frame(maxWidth: .infinity)
 									.padding(.top, 10)
 									.padding(.bottom, 2)
-									.background(Color.gray100)
+									.background(Color.msgBackground)
 									
 									if !SharedMainViewModel.shared.displayedConversation!.isReadOnly {
 										HStack {
@@ -261,11 +261,11 @@ struct ConversationInfoFragment: View {
 														Image(isMuted ? "bell-simple" : "bell-simple-slash")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25)
 													}
 													.padding(16)
-													.background(Color.grayMain2c200)
+													.background(Color.msgSeparator)
 													.cornerRadius(40)
 													
 													Text(isMuted ? "conversation_action_unmute" : "conversation_action_mute")
@@ -290,11 +290,11 @@ struct ConversationInfoFragment: View {
 														Image("phone")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25)
 													}
 													.padding(16)
-													.background(Color.grayMain2c200)
+													.background(Color.msgSeparator)
 													.cornerRadius(40)
 													
 													Text("conversation_action_call")
@@ -326,11 +326,11 @@ struct ConversationInfoFragment: View {
 														Image("video-conference")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25)
 													}
 													.padding(16)
-													.background(Color.grayMain2c200)
+													.background(Color.msgSeparator)
 													.cornerRadius(40)
 													
 													Text("meeting_schedule_meeting_label")
@@ -346,7 +346,7 @@ struct ConversationInfoFragment: View {
 										.padding(.top, 20)
 										.padding(.bottom, 10)
 										.frame(maxWidth: .infinity)
-										.background(Color.gray100)
+										.background(Color.msgBackground)
 									}
 									
 									if SharedMainViewModel.shared.displayedConversation!.isGroup {
@@ -360,14 +360,14 @@ struct ConversationInfoFragment: View {
 											Image(participantListIsOpen ? "caret-up" : "caret-down")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.grayMain2c600)
+												.foregroundStyle(Color.msgTextBody)
 												.frame(width: 25, height: 25, alignment: .leading)
 												.padding(.all, 10)
 										}
 										.padding(.top, 30)
 										.padding(.bottom, 10)
 										.padding(.horizontal, 20)
-										.background(Color.gray100)
+										.background(Color.msgBackground)
 										.onTapGesture {
 											withAnimation {
 												participantListIsOpen.toggle()
@@ -409,13 +409,13 @@ struct ConversationInfoFragment: View {
 														VStack {
 															if conversationViewModel.myParticipantConversationModel != nil && conversationViewModel.myParticipantConversationModel!.address != participantConversationModel.address {
 																Text(participantConversationModel.name)
-																	.foregroundStyle(Color.grayMain2c700)
+																	.foregroundStyle(Color.msgTextBody)
 																	.default_text_style(styleSize: 14)
 																	.frame(maxWidth: .infinity, alignment: .leading)
 																	.lineLimit(1)
 															} else {
 																Text(accountModel.displayName.isEmpty ? participantConversationModel.name : accountModel.displayName)
-																	.foregroundStyle(Color.grayMain2c700)
+																	.foregroundStyle(Color.msgTextBody)
 																	.default_text_style(styleSize: 14)
 																	.frame(maxWidth: .infinity, alignment: .leading)
 																	.lineLimit(1)
@@ -426,7 +426,7 @@ struct ConversationInfoFragment: View {
 															
 															if participantConversationModelIsAdmin != nil {
 																Text("conversation_info_participant_is_admin_label")
-																	.foregroundStyle(Color.grayMain2c400)
+																	.foregroundStyle(Color.msgTextSecondary)
 																	.default_text_style(styleSize: 12)
 																	.frame(maxWidth: .infinity, alignment: .leading)
 																	.lineLimit(1)
@@ -472,7 +472,7 @@ struct ConversationInfoFragment: View {
 																					Image("address-book")
 																						.renderingMode(.template)
 																						.resizable()
-																						.foregroundStyle(Color.grayMain2c600)
+																						.foregroundStyle(Color.msgTextBody)
 																						.frame(width: 25, height: 25)
 																					
 																					Text("conversation_info_menu_go_to_contact")
@@ -483,7 +483,7 @@ struct ConversationInfoFragment: View {
 																					Image("user-plus")
 																						.renderingMode(.template)
 																						.resizable()
-																						.foregroundStyle(Color.grayMain2c600)
+																						.foregroundStyle(Color.msgTextBody)
 																						.frame(width: 25, height: 25)
 																					
 																					Text("conversation_info_menu_add_to_contacts")
@@ -509,7 +509,7 @@ struct ConversationInfoFragment: View {
 																			Image("user-circle")
 																				.renderingMode(.template)
 																				.resizable()
-																				.foregroundStyle(Color.grayMain2c500)
+																				.foregroundStyle(Color.msgTextBody)
 																				.frame(width: 25, height: 25, alignment: .leading)
 																				.padding(.all, 10)
 																		}
@@ -525,7 +525,7 @@ struct ConversationInfoFragment: View {
 																			Image("trash-simple-red")
 																				.renderingMode(.template)
 																				.resizable()
-																				.foregroundStyle(Color.grayMain2c500)
+																				.foregroundStyle(Color.msgTextBody)
 																				.frame(width: 25, height: 25, alignment: .leading)
 																				.padding(.all, 10)
 																		}
@@ -535,7 +535,7 @@ struct ConversationInfoFragment: View {
 																Image("dots-three-vertical")
 																	.renderingMode(.template)
 																	.resizable()
-																	.foregroundStyle(Color.grayMain2c500)
+																	.foregroundStyle(Color.msgTextBody)
 																	.frame(width: 25, height: 25, alignment: .leading)
 																	.padding(.all, 10)
 																	.padding(.top, 4)
@@ -558,7 +558,7 @@ struct ConversationInfoFragment: View {
 															Image("plus-circle")
 																.renderingMode(.template)
 																.resizable()
-																.foregroundStyle(Color.orangeMain500)
+																.foregroundStyle(Color.msgAccent)
 																.frame(width: 20, height: 20)
 															
 															Text("conversation_info_add_participants_label")
@@ -569,7 +569,7 @@ struct ConversationInfoFragment: View {
 													})
 													.padding(.horizontal, 20)
 													.padding(.vertical, 5)
-													.background(Color.orangeMain100)
+													.background(Color.msgElevated)
 													.cornerRadius(60)
 													.padding(.top, 10)
 													.padding(.bottom, 20)
@@ -583,7 +583,7 @@ struct ConversationInfoFragment: View {
 																Image("plus-circle")
 																	.renderingMode(.template)
 																	.resizable()
-																	.foregroundStyle(Color.orangeMain500)
+																	.foregroundStyle(Color.msgAccent)
 																	.frame(width: 20, height: 20)
 																
 																Text("conversation_info_add_participants_label")
@@ -594,14 +594,14 @@ struct ConversationInfoFragment: View {
 													)
 													.padding(.horizontal, 20)
 													.padding(.vertical, 5)
-													.background(Color.orangeMain100)
+													.background(Color.msgElevated)
 													.cornerRadius(60)
 													.padding(.top, 10)
 													.padding(.bottom, 20)
 													 */
 												}
 											}
-											.background(.white)
+											.background(Color.msgFieldBackground)
 											.cornerRadius(15)
 											.padding(.horizontal)
 											.zIndex(-1)
@@ -627,7 +627,7 @@ struct ConversationInfoFragment: View {
 													Image("image")
 														.renderingMode(.template)
 														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
+														.foregroundStyle(Color.msgTextBody)
 														.frame(width: 25, height: 25)
 													
 													Text("conversation_menu_media_files")
@@ -653,7 +653,7 @@ struct ConversationInfoFragment: View {
 													Image("file-pdf")
 														.renderingMode(.template)
 														.resizable()
-														.foregroundStyle(Color.grayMain2c600)
+														.foregroundStyle(Color.msgTextBody)
 														.frame(width: 25, height: 25)
 													
 													Text("conversation_menu_documents_files")
@@ -668,7 +668,7 @@ struct ConversationInfoFragment: View {
 									}
 									.padding(.horizontal, 20)
 									.padding(.vertical, 4)
-									.background(.white)
+									.background(Color.msgFieldBackground)
 									.cornerRadius(15)
 									.padding(.all)
 									
@@ -720,7 +720,7 @@ struct ConversationInfoFragment: View {
 																Image("address-book")
 																 .renderingMode(.template)
 																 .resizable()
-																 .foregroundStyle(Color.grayMain2c600)
+																 .foregroundStyle(Color.msgTextBody)
 																 .frame(width: 25, height: 25)
 															 
 															 Text("conversation_info_menu_go_to_contact")
@@ -731,7 +731,7 @@ struct ConversationInfoFragment: View {
 																Image("user-plus")
 																	.renderingMode(.template)
 																	.resizable()
-																	.foregroundStyle(Color.grayMain2c600)
+																	.foregroundStyle(Color.msgTextBody)
 																	.frame(width: 25, height: 25)
 																
 																Text("conversation_info_menu_add_to_contacts")
@@ -758,7 +758,7 @@ struct ConversationInfoFragment: View {
 														Image("clock-countdown")
 															.renderingMode(.template)
 															.resizable()
-															.foregroundStyle(Color.grayMain2c600)
+															.foregroundStyle(Color.msgTextBody)
 															.frame(width: 25, height: 25)
 														
 														Text("conversation_action_configure_ephemeral_messages")
@@ -785,7 +785,7 @@ struct ConversationInfoFragment: View {
 															Image("sign-out")
 																.renderingMode(.template)
 																.resizable()
-																.foregroundStyle(Color.grayMain2c600)
+																.foregroundStyle(Color.msgTextBody)
 																.frame(width: 25, height: 25)
 															
 															Text("conversation_action_leave_group")
@@ -829,7 +829,7 @@ struct ConversationInfoFragment: View {
 									}
 									.padding(.horizontal, 20)
 									.padding(.vertical, 4)
-									.background(.white)
+									.background(Color.msgFieldBackground)
 									.cornerRadius(15)
 									.padding(.all)
 								}
@@ -838,9 +838,9 @@ struct ConversationInfoFragment: View {
 							.frame(maxWidth: .infinity)
 							.padding(.top, 2)
 						}
-						.background(Color.gray100)
+						.background(Color.msgBackground)
 					}
-					.background(.white)
+					.background(Color.msgFieldBackground)
 					.navigationBarHidden(true)
 					.onAppear {
 						conversationViewModel.getParticipants()

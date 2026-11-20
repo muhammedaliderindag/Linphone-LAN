@@ -45,13 +45,13 @@ struct AddParticipantsFragment: View {
 			VStack(spacing: 16) {
 				if #available(iOS 16.0, *) {
 					Rectangle()
-						.foregroundColor(Color.orangeMain500)
+						.msgAdaptiveForeground(Color.orangeMain500, Color.msgBackground)
 						.edgesIgnoringSafeArea(.top)
 						.frame(height: 0)
 				} else if idiom != .pad && !(orientation == .landscapeLeft || orientation == .landscapeRight
 											 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) {
 					Rectangle()
-						.foregroundColor(Color.orangeMain500)
+						.msgAdaptiveForeground(Color.orangeMain500, Color.msgBackground)
 						.edgesIgnoringSafeArea(.top)
 						.frame(height: 1)
 				}
@@ -59,7 +59,7 @@ struct AddParticipantsFragment: View {
 					Image("caret-left")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(Color.orangeMain500)
+						.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 						.frame(width: 25, height: 25, alignment: .leading)
 						.padding(.all, 10)
 						.padding(.top, 2)
@@ -88,7 +88,7 @@ struct AddParticipantsFragment: View {
 				.frame(height: 50)
 				.padding(.horizontal)
 				.padding(.bottom, 4)
-				.background(.white)
+				.msgAdaptiveBackground(Color.white, Color.msgBackground)
 				
 				ScrollView(.horizontal) {
 					HStack {
@@ -104,8 +104,8 @@ struct AddParticipantsFragment: View {
 								Image("x-circle")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.background(.white)
+									.msgAdaptiveForeground(Color.grayMain2c500, Color.msgTextBody)
+									.msgAdaptiveBackground(Color.white, Color.msgBackground)
 									.cornerRadius(12.5)
 									.frame(width: 25, height: 25)
 									.onTapGesture {
@@ -137,7 +137,7 @@ struct AddParticipantsFragment: View {
 							Image("magnifying-glass")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
+								.msgAdaptiveForeground(Color.grayMain2c500, Color.msgTextBody)
 								.frame(width: 25, height: 25)
 						})
 						
@@ -153,7 +153,7 @@ struct AddParticipantsFragment: View {
 								Image("x")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
+									.msgAdaptiveForeground(Color.grayMain2c500, Color.msgTextBody)
 									.frame(width: 25, height: 25)
 							})
 						}
@@ -207,7 +207,7 @@ struct AddParticipantsFragment: View {
 									Text(contactsManager.avatarListModel[index].name)
 										.default_text_style(styleSize: 16)
 										.frame(maxWidth: .infinity, alignment: .leading)
-										.foregroundStyle(Color.orangeMain500)
+										.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 									
 									if addParticipantsViewModel.participantsToAdd.contains(where: {
 										$0.address.asStringUriOnly() == contactsManager.avatarListModel[index].address
@@ -220,13 +220,13 @@ struct AddParticipantsFragment: View {
 										Image("check")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.orangeMain500)
+											.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 											.frame(width: 25, height: 25)
 											.padding(.horizontal)
 									}
 								}
 							}
-							.background(.white)
+							.msgAdaptiveBackground(Color.white, Color.msgBackground)
 							.onTapGesture {
 								CoreContext.shared.doOnCoreQueue { core in
 									self.contactAvatarModel = contactsManager.avatarListModel[index]
@@ -287,7 +287,7 @@ struct AddParticipantsFragment: View {
 					.renderingMode(.template)
 					.foregroundStyle(.white)
 					.padding()
-					.background(Color.orangeMain500)
+					.msgAdaptiveBackground(Color.orangeMain500, Color.msgAccent)
 					.clipShape(Circle())
 					.shadow(color: .black.opacity(0.2), radius: 4)
 				
@@ -306,7 +306,7 @@ struct AddParticipantsFragment: View {
 						Image("x")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c600)
+							.msgAdaptiveForeground(Color.grayMain2c600, Color.msgTextBody)
 							.frame(width: 25, height: 25)
 							.padding(.all, 10)
 					}
@@ -330,7 +330,7 @@ struct AddParticipantsFragment: View {
 							.padding(.vertical, 15)
 							.padding(.horizontal, 10)
 						}
-						.background(.white)
+						.msgAdaptiveBackground(Color.white, Color.msgBackground)
 						.onTapGesture {
 							do {
 								let addr = try Factory.Instance.createAddress(addr: contactAvatarModel!.addresses[index])
@@ -360,7 +360,7 @@ struct AddParticipantsFragment: View {
 							.padding(.vertical, 15)
 							.padding(.horizontal, 10)
 						}
-						.background(.white)
+						.msgAdaptiveBackground(Color.white, Color.msgBackground)
 						.onTapGesture {
 							CoreContext.shared.doOnCoreQueue { core in
 								if let phoneAddr = core.interpretUrl(url: contactAvatarModel!.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
@@ -375,7 +375,7 @@ struct AddParticipantsFragment: View {
 				}
 				.padding(.horizontal, 20)
 				.padding(.vertical, 20)
-				.background(.white)
+				.msgAdaptiveBackground(Color.white, Color.msgBackground)
 				.cornerRadius(20)
 				.frame(maxHeight: .infinity)
 				.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
@@ -420,7 +420,7 @@ struct AddParticipantsFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 						} else {
 							if let address = contactsManager.lastSearchSuggestions[index].address {
 								let nameTmp = address.displayName
@@ -438,7 +438,7 @@ struct AddParticipantsFragment: View {
 									.default_text_style(styleSize: 16)
 									.lineLimit(1)
 									.frame(maxWidth: .infinity, alignment: .leading)
-									.foregroundStyle(Color.orangeMain500)
+									.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 							}
 						}
 						
@@ -449,7 +449,7 @@ struct AddParticipantsFragment: View {
 								Image("check")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.orangeMain500)
+									.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 									.frame(width: 25, height: 25)
 									.padding(.horizontal)
 							}
@@ -463,7 +463,7 @@ struct AddParticipantsFragment: View {
 						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+							.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 					}
 				}
 				.padding(.horizontal)

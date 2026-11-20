@@ -340,7 +340,7 @@ struct ContentView: View {
 												Image("address-book")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(sharedMainViewModel.indexView == 0 ? Color.orangeMain500 : Color.grayMain2c600)
+													.foregroundStyle(sharedMainViewModel.indexView == 0 ? Color.msgAccent : Color.msgTextSecondary)
 													.frame(width: 25, height: 25)
 												if sharedMainViewModel.indexView == 0 {
 													Text("bottom_navigation_contacts_label")
@@ -392,7 +392,7 @@ struct ContentView: View {
 													Image("phone")
 														.renderingMode(.template)
 														.resizable()
-														.foregroundStyle(sharedMainViewModel.indexView == 1 ? Color.orangeMain500 : Color.grayMain2c600)
+														.foregroundStyle(sharedMainViewModel.indexView == 1 ? Color.msgAccent : Color.msgTextSecondary)
 														.frame(width: 25, height: 25)
 													if sharedMainViewModel.indexView == 1 {
 														Text("bottom_navigation_calls_label")
@@ -443,7 +443,7 @@ struct ContentView: View {
                                                         Image("chat-teardrop-text")
                                                             .renderingMode(.template)
                                                             .resizable()
-                                                            .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
+                                                            .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.msgAccent : Color.msgTextSecondary)
                                                             .frame(width: 25, height: 25)
 
                                                         if sharedMainViewModel.indexView == 2 {
@@ -480,7 +480,7 @@ struct ContentView: View {
 													Image("video-conference")
 														.renderingMode(.template)
 														.resizable()
-														.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.orangeMain500 : Color.grayMain2c600)
+														.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.msgAccent : Color.msgTextSecondary)
 														.frame(width: 25, height: 25)
 													if sharedMainViewModel.indexView == 0 {
 														Text("bottom_navigation_meetings_label")
@@ -499,6 +499,8 @@ struct ContentView: View {
 								}
 								.frame(width: 75, height: geometry.size.height)
 								.padding(.bottom, geometry.safeAreaInsets.bottom)
+								.background(Color.msgBar.ignoresSafeArea())
+								.msgDarkScope()
 								.padding(.leading,
 										 orientation == .landscapeRight && geometry.safeAreaInsets.bottom > 0
 										 ? -geometry.safeAreaInsets.leading
@@ -507,20 +509,14 @@ struct ContentView: View {
 							
 							VStack(spacing: 0) {
 								Rectangle()
-									.foregroundColor(Color.orangeMain500)
+									.foregroundColor(Color.msgBackground)
 									.edgesIgnoringSafeArea(.top)
 									.frame(height: 1)
 								
 								ZStack {
 									VStack {
 										Rectangle()
-											.foregroundColor(
-												(orientation == .landscapeLeft
-												 || orientation == .landscapeRight
-												 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-												? Color.white
-												: Color.orangeMain500
-											)
+											.foregroundColor(Color.msgBackground)
 											.frame(height: 100)
 										
 										Spacer()
@@ -607,7 +603,9 @@ struct ContentView: View {
                                                 }
 												
 												Text(String(localized: sharedMainViewModel.indexView == 0 ? "bottom_navigation_contacts_label" : (sharedMainViewModel.indexView == 1 ? "bottom_navigation_calls_label" : (sharedMainViewModel.indexView == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
-													.default_text_style_white_800(styleSize: 20)
+													.msgText(sharedMainViewModel.indexView == 2 ? 30 : 24, .bold)
+													.lineLimit(1)
+													.minimumScaleFactor(0.7)
 													.padding(.leading, 2)
 												
 												Spacer()
@@ -624,7 +622,21 @@ struct ContentView: View {
 														.frame(width: 25, height: 25, alignment: .leading)
 														.padding(.all, 10)
 												}
-												.padding(.trailing, sharedMainViewModel.indexView == 2 ? 10 : 0)
+												.padding(.trailing, 0)
+
+												if sharedMainViewModel.indexView == 2 {
+													Button {
+														withAnimation {
+															isShowStartConversationFragment = true
+														}
+													} label: {
+														Image(systemName: "square.and.pencil")
+															.font(.system(size: 21, weight: .regular))
+															.foregroundStyle(Color.msgAccent)
+															.frame(width: 44, height: 44)
+													}
+													.padding(.trailing, 6)
+												}
 												
 												if sharedMainViewModel.indexView == 0 {
 													Menu {
@@ -706,8 +718,8 @@ struct ContentView: View {
 											.padding(.leading)
 											.padding(.top, 2.5)
 											.padding(.bottom, 2.5)
-											.background(Color.orangeMain500)
-											.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
+											.background(Color.msgBackground)
+											.msgDarkScope()
 										} else {
 											HStack {
 												Button {
@@ -905,8 +917,9 @@ struct ContentView: View {
 											.frame(height: 50)
 											.padding(.horizontal)
 											.padding(.bottom, 5)
-											.background(Color.orangeMain500)
-											.roundedCorner(10, corners: [.bottomRight, .bottomLeft])
+											.background(Color.msgBar)
+											.msgHairline(.bottom)
+											.msgDarkScope()
 										}
 										
 										if sharedMainViewModel.indexView == 0 {
@@ -957,11 +970,7 @@ struct ContentView: View {
 								   ? geometry.size.width/100*40
 								   : .infinity
 							)
-							.background(
-								Color.white
-									.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
-									.mask(Rectangle().padding(.horizontal, -8))
-							)
+							.background(Color.msgBackground)
 							
 							if orientation == .landscapeLeft
 								|| orientation == .landscapeRight
@@ -988,7 +997,7 @@ struct ContentView: View {
 											Image("address-book")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(sharedMainViewModel.indexView == 0 ? Color.orangeMain500 : Color.grayMain2c600)
+												.foregroundStyle(sharedMainViewModel.indexView == 0 ? Color.msgAccent : Color.msgTextSecondary)
 												.frame(width: 25, height: 25)
 											if sharedMainViewModel.indexView == 0 {
 												Text("bottom_navigation_contacts_label")
@@ -1041,7 +1050,7 @@ struct ContentView: View {
 												Image("phone")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(sharedMainViewModel.indexView == 1 ? Color.orangeMain500 : Color.grayMain2c600)
+													.foregroundStyle(sharedMainViewModel.indexView == 1 ? Color.msgAccent : Color.msgTextSecondary)
 													.frame(width: 25, height: 25)
 												if sharedMainViewModel.indexView == 1 {
 													Text("bottom_navigation_calls_label")
@@ -1092,7 +1101,7 @@ struct ContentView: View {
                                                     Image("chat-teardrop-text")
                                                         .renderingMode(.template)
                                                         .resizable()
-                                                        .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.orangeMain500 : Color.grayMain2c600)
+                                                        .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.msgAccent : Color.msgTextSecondary)
                                                         .frame(width: 25, height: 25)
                                                     
                                                     if sharedMainViewModel.indexView == 2 {
@@ -1128,7 +1137,7 @@ struct ContentView: View {
 												Image("video-conference")
 													.renderingMode(.template)
 													.resizable()
-													.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.orangeMain500 : Color.grayMain2c600)
+													.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.msgAccent : Color.msgTextSecondary)
 													.frame(width: 25, height: 25)
 												if sharedMainViewModel.indexView == 3 {
 													Text("bottom_navigation_meetings_label")
@@ -1147,11 +1156,9 @@ struct ContentView: View {
 								}
 							}
 							.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 15)
-							.background(
-								Color.white
-									.shadow(color: Color.gray200, radius: 4, x: 0, y: 0)
-									.mask(Rectangle().padding(.top, -8))
-							)
+							.background(Color.msgBar.ignoresSafeArea(.all, edges: .bottom))
+							.msgHairline(.top)
+							.msgDarkScope()
 						}
 					}
 					
@@ -1213,8 +1220,9 @@ struct ContentView: View {
 								.environmentObject(conversationsListVM)
 								.environmentObject(accountProfileViewModel)
 								.frame(maxWidth: .infinity)
-								.background(Color.gray100)
+								.background(Color.msgBackground)
 								.ignoresSafeArea(.keyboard)
+								.msgDarkScope()
 							} else if let meetingsListVM = meetingsListViewModel, let displayedMeeting = sharedMainViewModel.displayedMeeting, sharedMainViewModel.indexView == 3 {
 								MeetingFragment(isShowScheduleMeetingFragment: $isShowScheduleMeetingFragment, isShowSendCancelMeetingNotificationPopup: $isShowSendCancelMeetingNotificationPopup)
 									.environmentObject(meetingsListVM)
@@ -1363,11 +1371,12 @@ struct ContentView: View {
 							}
 						}
 						.environmentObject(conversationsListVM)
+						.msgDarkScope()
 						.zIndex(6)
 						.transition(.opacity.combined(with: .move(edge: .bottom)))
-					}
-					
-					if let contactsListVM = contactsListViewModel, isShowDeleteContactPopup {
+						}
+
+						if let contactsListVM = contactsListViewModel, isShowDeleteContactPopup {
 						PopupView(
 							isShowPopup: $isShowDeleteContactPopup,
 							title: Text(
@@ -2271,15 +2280,7 @@ struct ConversationsContainer: View {
 					isShowRemoveParticipantPopup: $isShowRemoveParticipantPopup
 				)
 				.environmentObject(conversationsListVM)
-				.roundedCorner(25, corners: [.topRight, .topLeft])
-				.shadow(
-					color: (orientation == .landscapeLeft
-							|| orientation == .landscapeRight
-							|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)
-					? .white.opacity(0.0)
-					: .black.opacity(0.2),
-					radius: 25
-				)
+				.msgDarkScope()
 			} else {
 				NavigationView {
 					VStack {

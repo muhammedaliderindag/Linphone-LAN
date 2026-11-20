@@ -62,7 +62,7 @@ class FloatingButton: UIButton {
 			self.setImage(resizedImage, for: .normal)
 			self.tintColor = .white
 		}
-		self.backgroundColor = UIColor(Color.orangeMain500)
+		self.backgroundColor = UIColor(Color.msgElevated)
 		self.layer.cornerRadius = 30
 		self.layer.shadowColor = UIColor.black.withAlphaComponent(0.2).cgColor
 		self.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -133,7 +133,8 @@ struct UIList: UIViewRepresentable {
 		tableView.estimatedSectionHeaderHeight = 1
 		tableView.estimatedSectionFooterHeight = UITableView.automaticDimension
 		tableView.keyboardDismissMode = .interactive
-		tableView.backgroundColor = UIColor(.white)
+		tableView.backgroundColor = MessagesStyle.uiBackground
+		tableView.indicatorStyle = .white
 		tableView.scrollsToTop = true
 		
 		if let displayedConversation = SharedMainViewModel.shared.displayedConversation, displayedConversation.isEndToEndEncryptionAvailable {
@@ -482,9 +483,10 @@ struct UIList: UIViewRepresentable {
 				let header = UIHostingController(rootView:
 					ProgressView()
 						.frame(height: 50)
+						.msgDarkScope()
 						.frame(idealWidth: .infinity, maxWidth: .infinity, alignment: .center)
 				).view
-				header?.backgroundColor = UIColor(.white)
+				header?.backgroundColor = MessagesStyle.uiBackground
 				return header
 			}
 			return nil
@@ -494,7 +496,7 @@ struct UIList: UIViewRepresentable {
 			
 			let tableViewCell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
 			tableViewCell.selectionStyle = .none
-			tableViewCell.backgroundColor = UIColor(.white)
+			tableViewCell.backgroundColor = MessagesStyle.uiBackground
 			
 			let row = sections[indexPath.section].rows[indexPath.row]
 			
@@ -514,6 +516,7 @@ struct UIList: UIViewRepresentable {
 				tableViewCell.contentConfiguration = UIHostingConfiguration {
 					ChatBubbleView(eventLogMessage: row, geometryProxy: geometryProxy)
 						.environmentObject(parent.conversationViewModel)
+						.msgDarkScope()
 						.padding(.vertical, 2)
 						.padding(.horizontal, 10)
 						.onTapGesture { }

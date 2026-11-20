@@ -33,7 +33,7 @@ struct ConversationForwardMessageFragment: View {
 	@Binding var isShowConversationForwardMessageFragment: Bool
 	
 	@FocusState var isSearchFieldFocused: Bool
-	@State private var delayedColor = Color.white
+	@State private var delayedColor = Color.msgBackground
 	
 	@FocusState var isMessageTextFocused: Bool
 	
@@ -48,7 +48,7 @@ struct ConversationForwardMessageFragment: View {
 				VStack(spacing: 1) {
 					
 					Rectangle()
-						.foregroundStyle(Color.orangeMain500)
+						.foregroundStyle(Color.msgFieldBackground)
 						.edgesIgnoringSafeArea(.top)
 						.frame(height: 0)
 					
@@ -56,7 +56,7 @@ struct ConversationForwardMessageFragment: View {
 						Image("caret-left")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
 							.padding(.top, 2)
@@ -83,7 +83,7 @@ struct ConversationForwardMessageFragment: View {
 					.frame(height: 50)
 					.padding(.horizontal)
 					.padding(.bottom, 4)
-					.background(.white)
+					.background(Color.msgFieldBackground)
 					
 					VStack(spacing: 0) {
 						ZStack(alignment: .trailing) {
@@ -108,7 +108,7 @@ struct ConversationForwardMessageFragment: View {
 									Image("magnifying-glass")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
+										.foregroundStyle(Color.msgTextBody)
 										.frame(width: 25, height: 25)
 								})
 								
@@ -124,7 +124,7 @@ struct ConversationForwardMessageFragment: View {
 										Image("x")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
+											.foregroundStyle(Color.msgTextBody)
 											.frame(width: 25, height: 25)
 									})
 								}
@@ -136,7 +136,7 @@ struct ConversationForwardMessageFragment: View {
 						.overlay(
 							RoundedRectangle(cornerRadius: 60)
 								.inset(by: 0.5)
-								.stroke(isSearchFieldFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+								.stroke(isSearchFieldFocused ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 						)
 						.padding(.vertical)
 						.padding(.horizontal)
@@ -192,13 +192,13 @@ struct ConversationForwardMessageFragment: View {
 							if magicSearch.isLoading {
 								ProgressView()
 									.controlSize(.large)
-									.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+									.progressViewStyle(CircularProgressViewStyle(tint: Color.msgAccent))
 							}
 						}
 					}
 					.frame(maxWidth: .infinity)
 				}
-				.background(.white)
+				.background(Color.msgFieldBackground)
 				
 				if conversationForwardMessageViewModel.operationInProgress {
 					PopupLoadingView()
@@ -295,7 +295,7 @@ struct ConversationForwardMessageFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 						} else {
 							if let address = contactsManager.lastSearchSuggestions[index].address {
 								let nameTmp = address.displayName
@@ -313,7 +313,7 @@ struct ConversationForwardMessageFragment: View {
 									.default_text_style(styleSize: 16)
 									.lineLimit(1)
 									.frame(maxWidth: .infinity, alignment: .leading)
-									.foregroundStyle(Color.orangeMain500)
+									.foregroundStyle(Color.msgAccent)
 							}
 						}
 					} else {
@@ -325,7 +325,7 @@ struct ConversationForwardMessageFragment: View {
 						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 					}
 				}
 				.padding(.horizontal)

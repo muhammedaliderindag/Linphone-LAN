@@ -45,6 +45,7 @@ struct ConversationsFragment: View {
 							showDeleteConversationPopup: $showDeleteConversationPopup,
 							showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 						)
+						.msgDarkPresentation()
 						.presentationDetents(
 							conversationsListViewModel.selectedConversation != nil && !conversationsListViewModel.selectedConversation!.isReadOnly
 							? [.fraction(0.4)]
@@ -60,6 +61,7 @@ struct ConversationsFragment: View {
 							showDeleteConversationPopup: $showDeleteConversationPopup,
 							showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup
 						)
+						.msgDarkPresentation()
                         .environmentObject(conversationsListViewModel)
 					} onDismiss: {}
 			}

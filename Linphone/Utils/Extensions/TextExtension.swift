@@ -36,32 +36,32 @@ extension View {
 	
 	func default_text_style_300(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Light", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func default_text_style(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Regular", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func default_text_style_500(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Medium", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func default_text_style_600(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func default_text_style_700(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Bold", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func default_text_style_800(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func default_text_style_white_300(styleSize: CGFloat) -> some View {
@@ -96,32 +96,32 @@ extension View {
 	
 	func default_text_style_orange_300(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Light", size: styleSize))
-			.foregroundStyle(Color.orangeMain500)
+			.modifier(MsgAdaptiveForeground(light: Color.orangeMain500, dark: Color.msgAccent))
 	}
 	
 	func default_text_style_orange(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Regular", size: styleSize))
-			.foregroundStyle(Color.orangeMain500)
+			.modifier(MsgAdaptiveForeground(light: Color.orangeMain500, dark: Color.msgAccent))
 	}
 	
 	func default_text_style_orange_500(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Medium", size: styleSize))
-			.foregroundStyle(Color.orangeMain500)
+			.modifier(MsgAdaptiveForeground(light: Color.orangeMain500, dark: Color.msgAccent))
 	}
 	
 	func default_text_style_orange_600(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-SemiBold", size: styleSize))
-			.foregroundStyle(Color.orangeMain500)
+			.modifier(MsgAdaptiveForeground(light: Color.orangeMain500, dark: Color.msgAccent))
 	}
 	
 	func default_text_style_orange_700(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Bold", size: styleSize))
-			.foregroundStyle(Color.orangeMain500)
+			.modifier(MsgAdaptiveForeground(light: Color.orangeMain500, dark: Color.msgAccent))
 	}
 	
 	func default_text_style_orange_800(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-			.foregroundStyle(Color.orangeMain500)
+			.modifier(MsgAdaptiveForeground(light: Color.orangeMain500, dark: Color.msgAccent))
 	}
 	
 	func welcome_text_style_white_800(styleSize: CGFloat) -> some View {
@@ -131,32 +131,32 @@ extension View {
 	
 	func welcome_text_style_gray_800(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func welcome_text_style_gray(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Regular", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
 	
 	func profile_mode_text_style_gray_800(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-ExtraBold", size: styleSize))
-			.foregroundStyle(Color.gray900)
+			.modifier(MsgAdaptiveForeground(light: Color.gray900, dark: Color.msgTextPrimary))
 	}
 	
 	func profile_mode_text_style_gray(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans-Regular", size: styleSize))
-			.foregroundStyle(Color.grayMain2c600)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c600, dark: Color.msgTextBody))
 	}
     
     func contact_text_style_500(styleSize: CGFloat) -> some View {
         self.font(Font.custom("NotoSans-Medium", size: styleSize))
-            .foregroundStyle(Color.grayMain2c400)
+            .modifier(MsgAdaptiveForeground(light: Color.grayMain2c400, dark: Color.msgTextSecondary))
     }
 	
 	func default_text_style_grey_400(styleSize: CGFloat) -> some View {
 		self.font(Font.custom("NotoSans", size: styleSize))
-			.foregroundStyle(Color.grayMain2c700)
+			.modifier(MsgAdaptiveForeground(light: Color.grayMain2c700, dark: Color.msgTextBody))
 	}
 	
 	func default_text_style_uncolored(styleSize: CGFloat) -> some View {

@@ -121,7 +121,7 @@ struct ConversationFragment: View {
 			GeometryReader { geometry in
 				if #available(iOS 16.0, *), idiom != .pad {
 					innerView(geometry: geometry)
-						.background(.white)
+					.background(Color.msgBackground)
 						.navigationBarHidden(true)
 						.onRotate { newOrientation in
 							orientation = newOrientation
@@ -137,7 +137,8 @@ struct ConversationFragment: View {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}, content: {
 							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex, isImdnOrReactionsSheetVisible: $isImdnOrReactionsSheetVisible)
-								.environmentObject(conversationViewModel)
+							.environmentObject(conversationViewModel)
+							.msgDarkPresentation()
 								.presentationDetents([.medium])
 				 				.presentationDragIndicator(.visible)
 						})
@@ -148,6 +149,7 @@ struct ConversationFragment: View {
 								showingSheet: $isShowDeleteMessagePopup
 							)
 							.environmentObject(conversationViewModel)
+							.msgDarkPresentation()
 							.presentationDetents([.fraction(0.15)])
 							.ignoresSafeArea(.all)
 						})
@@ -196,6 +198,7 @@ struct ConversationFragment: View {
 						})
 						.sheet(isPresented: $showPicker) {
 							EmojiPickerView(selected: $chosen, isSheetVisible: $isSheetVisible)
+							.msgDarkPresentation()
 								.presentationDetents([.medium])
 								.edgesIgnoringSafeArea(.all)
 						}
@@ -210,10 +213,10 @@ struct ConversationFragment: View {
 								.environmentObject(conversationViewModel)
 								.edgesIgnoringSafeArea(.all)
 						}
-						.background(Color.gray100.ignoresSafeArea(.keyboard))
+						.background(Color.msgBackground.ignoresSafeArea(.keyboard))
 				} else {
 					innerView(geometry: geometry)
-						.background(.white)
+					.background(Color.msgBackground)
 						.navigationBarHidden(true)
 						.onRotate { newOrientation in
 							orientation = newOrientation
@@ -227,7 +230,8 @@ struct ConversationFragment: View {
 						}
 						.halfSheet(showSheet: $conversationViewModel.isShowSelectedMessageToDisplayDetails) {
 							ImdnOrReactionsSheet(selectedCategoryIndex: $selectedCategoryIndex, isImdnOrReactionsSheetVisible: $isImdnOrReactionsSheetVisible)
-								.environmentObject(conversationViewModel)
+							.environmentObject(conversationViewModel)
+							.msgDarkPresentation()
 						} onDismiss: {
 							conversationViewModel.isShowSelectedMessageToDisplayDetails = false
 						}
@@ -236,6 +240,7 @@ struct ConversationFragment: View {
 								showingSheet: $isShowDeleteMessagePopup
 							)
 							.environmentObject(conversationViewModel)
+							.msgDarkPresentation()
 						} onDismiss: {
 							isShowDeleteMessagePopup = false
 						}
@@ -259,6 +264,7 @@ struct ConversationFragment: View {
 						})
 						.sheet(isPresented: $showPicker) {
 							EmojiPickerView(selected: $chosen, isSheetVisible: $isSheetVisible)
+							.msgDarkPresentation()
 								.edgesIgnoringSafeArea(.all)
 						}
 						.onChange(of: chosen ?? "") { newValue in
@@ -271,7 +277,7 @@ struct ConversationFragment: View {
 							ImagePicker(selectedMedia: self.$conversationViewModel.mediasToSend)
 								.environmentObject(conversationViewModel)
 						}
-						.background(Color.gray100.ignoresSafeArea(.keyboard))
+						.background(Color.msgBackground.ignoresSafeArea(.keyboard))
 				}
 			}
 			.onChange(of: scenePhase) { newPhase in
@@ -319,22 +325,20 @@ struct ConversationFragment: View {
 			VStack(spacing: 1) {
 				if SharedMainViewModel.shared.displayedConversation != nil || cachedConversation != nil {
 					Rectangle()
-						.foregroundColor(Color.orangeMain500)
+						.foregroundColor(Color.msgBar)
 						.edgesIgnoringSafeArea(.top)
 						.frame(height: 0)
 					
 					if !isSearchVisible {
-						HStack {
+					HStack(spacing: 0) {
+					HStack(spacing: 0) {
 							if (!(orientation == .landscapeLeft || orientation == .landscapeRight
 								  || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height)) || isShowConversationFragment {
-								Image("caret-left")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.orangeMain500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-									.padding(.top, 4)
-									.padding(.leading, -10)
+								Image(systemName: "chevron.left")
+									.font(.system(size: 22, weight: .semibold))
+									.foregroundStyle(Color.msgAccent)
+									.frame(width: 44, height: 44, alignment: .leading)
+									.contentShape(Rectangle())
 									.onTapGesture {
 										withAnimation {
 											if isShowConversationFragment {
@@ -342,18 +346,26 @@ struct ConversationFragment: View {
 											}
 											SharedMainViewModel.shared.displayedConversation = nil
 										}
+											}
+										}
+										Spacer(minLength: 0)
 									}
-							}
-							
-							Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation?.avatarModel ?? cachedConversation!.avatarModel, avatarSize: 50)
-								.padding(.top, 4)
-							
-							VStack(spacing: 1) {
-								Text(SharedMainViewModel.shared.displayedConversation?.subject ?? cachedConversation!.subject)
-									.default_text_style(styleSize: 16)
-									.frame(maxWidth: .infinity, alignment: .leading)
-									.padding(.top, 4)
-									.lineLimit(1)
+									.frame(width: 92, alignment: .leading)
+
+									Spacer(minLength: 0)
+
+									VStack(spacing: 3) {
+										Avatar(contactAvatarModel: SharedMainViewModel.shared.displayedConversation?.avatarModel ?? cachedConversation!.avatarModel, avatarSize: 44)
+
+										HStack(spacing: 3) {
+											Text(SharedMainViewModel.shared.displayedConversation?.subject ?? cachedConversation!.subject)
+												.msgText(12, .medium)
+												.lineLimit(1)
+
+											Image(systemName: "chevron.right")
+												.font(.system(size: 9, weight: .bold))
+												.foregroundStyle(Color.msgTextSecondary)
+										}
 								
 								if isMuted || conversationViewModel.ephemeralTime != NSLocalizedString("conversation_ephemeral_messages_duration_disabled", comment: "") || ((SharedMainViewModel.shared.displayedConversation?.encryptionEnabled ?? cachedConversation!.encryptionEnabled) == false && (SharedMainViewModel.shared.displayedConversation?.isEndToEndEncryptionAvailable ?? cachedConversation!.isEndToEndEncryptionAvailable) == true) {
 									HStack {
@@ -361,7 +373,7 @@ struct ConversationFragment: View {
 											Image("bell-slash")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.orangeMain500)
+												.foregroundStyle(Color.msgAccent)
 												.frame(width: 16, height: 16, alignment: .trailing)
 										}
 										
@@ -369,7 +381,7 @@ struct ConversationFragment: View {
 											Image("clock-countdown")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.orangeMain500)
+												.foregroundStyle(Color.msgAccent)
 												.frame(width: 16, height: 16, alignment: .trailing)
 											
 											Text(conversationViewModel.ephemeralTime)
@@ -400,15 +412,17 @@ struct ConversationFragment: View {
 									}
 								}
 							}
-							.background(.white)
+							.contentShape(Rectangle())
 							.onTapGesture {
 								withAnimation {
 									isShowInfoConversationFragment = true
 								}
 							}
-							.padding(.vertical, 10)
-							
-							Spacer()
+
+							Spacer(minLength: 0)
+
+							HStack(spacing: 0) {
+							Spacer(minLength: 0)
 							
 							if !(SharedMainViewModel.shared.displayedConversation?.isReadOnly ?? cachedConversation!.isReadOnly) {
 								Button {
@@ -420,13 +434,10 @@ struct ConversationFragment: View {
 										}
 									}
 								} label: {
-									Image("phone")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
-										.frame(width: 25, height: 25, alignment: .leading)
-										.padding(.all, 10)
-										.padding(.top, 4)
+									Image(systemName: "phone")
+										.font(.system(size: 19, weight: .regular))
+										.foregroundStyle(Color.msgAccent)
+										.frame(width: 42, height: 44)
 								}
 							}
 							
@@ -443,7 +454,7 @@ struct ConversationFragment: View {
 										Image("info")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
+											.foregroundStyle(Color.msgTextBody)
 											.frame(width: 25, height: 25, alignment: .leading)
 											.padding(.all, 10)
 									}
@@ -462,7 +473,7 @@ struct ConversationFragment: View {
 										Image("magnifying-glass")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
+											.foregroundStyle(Color.msgTextBody)
 											.frame(width: 25, height: 25, alignment: .leading)
 											.padding(.all, 10)
 									}
@@ -482,7 +493,7 @@ struct ConversationFragment: View {
 											Image(isMuted ? "bell-simple" : "bell-simple-slash")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.grayMain2c500)
+												.foregroundStyle(Color.msgTextBody)
 												.frame(width: 25, height: 25, alignment: .leading)
 												.padding(.all, 10)
 										}
@@ -500,7 +511,7 @@ struct ConversationFragment: View {
 											Image("clock-countdown")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.grayMain2c500)
+												.foregroundStyle(Color.msgTextBody)
 												.frame(width: 25, height: 25, alignment: .leading)
 												.padding(.all, 10)
 										}
@@ -519,7 +530,7 @@ struct ConversationFragment: View {
 										Image("image")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
+											.foregroundStyle(Color.msgTextBody)
 											.frame(width: 25, height: 25, alignment: .leading)
 											.padding(.all, 10)
 									}
@@ -537,43 +548,39 @@ struct ConversationFragment: View {
 										Image("file-pdf")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
+											.foregroundStyle(Color.msgTextBody)
 											.frame(width: 25, height: 25, alignment: .leading)
 											.padding(.all, 10)
 									}
 								}
 							} label: {
-								Image("dots-three-vertical")
-									.renderingMode(.template)
-									.resizable()
-									.foregroundStyle(Color.grayMain2c500)
-									.frame(width: 25, height: 25, alignment: .leading)
-									.padding(.all, 10)
-									.padding(.top, 4)
+								Image(systemName: "ellipsis.circle")
+									.font(.system(size: 20, weight: .regular))
+									.foregroundStyle(Color.msgAccent)
+									.frame(width: 42, height: 44)
 									.onChange(of: isMuted) { _ in }
 									.onAppear {
 										isMuted = SharedMainViewModel.shared.displayedConversation?.isMuted ?? cachedConversation?.isMuted ?? false
 									}
 							}
-							.onTapGesture {
-								isMenuOpen = true
+								.onTapGesture {
+									isMenuOpen = true
+								}
 							}
-						}
-						.frame(maxWidth: .infinity)
-						.frame(height: 50)
-						.padding(.horizontal)
-						.padding(.bottom, 4)
-						.background(.white)
-					} else {
+							.frame(width: 92, alignment: .trailing)
+							}
+							.frame(maxWidth: .infinity)
+							.padding(.horizontal, 8)
+							.padding(.vertical, 6)
+							.background(Color.msgBar)
+							.msgHairline(.bottom)
+							} else {
 						HStack {
-							Image("caret-left")
-								.renderingMode(.template)
-								.resizable()
-								.foregroundStyle(Color.grayMain2c500)
-								.frame(width: 25, height: 25, alignment: .leading)
-								.padding(.all, 10)
-								.padding(.top, 4)
-								.padding(.leading, -10)
+							Image(systemName: "chevron.left")
+								.font(.system(size: 22, weight: .semibold))
+								.foregroundStyle(Color.msgAccent)
+								.frame(width: 36, height: 44, alignment: .leading)
+								.contentShape(Rectangle())
 								.onTapGesture {
 									searchText = ""
 									conversationViewModel.searchText = ""
@@ -600,7 +607,7 @@ struct ConversationFragment: View {
 								Image("caret-up")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(searchText.isEmpty ? Color.grayMain2c300 : Color.grayMain2c500)
+									.foregroundStyle(searchText.isEmpty ? Color.msgTextTertiary : Color.msgTextBody)
 									.frame(width: 25, height: 25, alignment: .leading)
 									.padding(.all, 10)
 									.padding(.top, 4)
@@ -613,19 +620,20 @@ struct ConversationFragment: View {
 								Image("caret-down")
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle((searchText.isEmpty || !conversationViewModel.canSearchDown) ? Color.grayMain2c300 : Color.grayMain2c500)
+									.foregroundStyle((searchText.isEmpty || !conversationViewModel.canSearchDown) ? Color.msgTextTertiary : Color.msgTextBody)
 									.frame(width: 25, height: 25, alignment: .leading)
 									.padding(.all, 10)
 									.padding(.top, 4)
 							}
 							.disabled(searchText.isEmpty || !conversationViewModel.canSearchDown)
-							
-						}
-						.frame(maxWidth: .infinity)
-						.frame(height: 50)
-						.padding(.horizontal)
-						.padding(.bottom, 4)
-						.background(.white)
+
+							}
+							.frame(maxWidth: .infinity)
+							.frame(height: 50)
+							.padding(.horizontal)
+							.padding(.bottom, 4)
+							.background(Color.msgBar)
+							.msgHairline(.bottom)
 					}
 					
 					if #available(iOS 16.0, *) {
@@ -712,7 +720,7 @@ struct ConversationFragment: View {
 												.renderingMode(.template)
 												.foregroundStyle(.white)
 												.padding()
-												.background(Color.orangeMain500)
+												.background(Color.msgAccent)
 												.clipShape(Circle())
 												.shadow(color: .black.opacity(0.2), radius: 4)
 											
@@ -799,7 +807,7 @@ struct ConversationFragment: View {
 								}
 								.frame(maxWidth: .infinity)
 								.padding(.all, 20)
-								.background(Color.gray100)
+								.background(Color.msgBar)
 								
 								HStack {
 									Spacer()
@@ -835,7 +843,7 @@ struct ConversationFragment: View {
 								}
 								.frame(maxWidth: .infinity)
 								.padding(.all, 20)
-								.background(Color.gray100)
+								.background(Color.msgBar)
 								
 								HStack {
 									Spacer()
@@ -877,7 +885,7 @@ struct ConversationFragment: View {
 											ForEach(conversationViewModel.mediasToSend, id: \.id) { attachment in
 												ZStack {
 													Rectangle()
-														.fill(Color(.white))
+														.fill(Color.msgElevated)
 														.frame(width: 100, height: 100)
 													
 													VStack {
@@ -905,7 +913,7 @@ struct ConversationFragment: View {
 																VStack {
 																	Spacer()
 																	Text(attachment.name)
-																		.foregroundStyle(Color.grayMain2c700)
+																		.foregroundStyle(Color.msgTextBody)
 																		.default_text_style_800(styleSize: 14)
 																		.truncationMode(.middle)
 																		.frame(maxWidth: .infinity, alignment: .center)
@@ -913,7 +921,7 @@ struct ConversationFragment: View {
 																		.lineLimit(2)
 																	Spacer()
 																}
-																.background(Color.grayMain2c200)
+																.background(Color.msgElevated)
 															}
 															
 															VStack {
@@ -923,9 +931,9 @@ struct ConversationFragment: View {
 																	Image("x")
 																		.renderingMode(.template)
 																		.resizable()
-																		.foregroundStyle(Color.orangeMain500)
+																		.foregroundStyle(Color.msgAccent)
 																		.padding(4)
-																		.background(.white)
+																		.background(Color.msgElevated)
 																		.cornerRadius(12.5)
 																		.frame(width: 20, height: 20)
 																		.padding(4)
@@ -961,7 +969,7 @@ struct ConversationFragment: View {
 								}
 								.frame(maxWidth: .infinity)
 								.padding(.all, conversationViewModel.mediasToSend.isEmpty ? 0 : 10)
-								.background(Color.gray100)
+								.background(Color.msgBar)
 								
 								if !mediasIsLoading {
 									HStack {
@@ -994,11 +1002,11 @@ struct ConversationFragment: View {
 											Image("camera")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.msgTextTertiary : Color.msgTextBody)
 												.frame(width: 25, height: 25, alignment: .leading)
 											
 											Text("conversation_take_picture_label")
-												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.msgTextTertiary : Color.msgTextBody)
 												.default_text_style_300(styleSize: 15)
 												.frame(maxWidth: .infinity, alignment: .center)
 												.lineLimit(1)
@@ -1015,11 +1023,11 @@ struct ConversationFragment: View {
 											Image("image")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.msgTextTertiary : Color.msgTextBody)
 												.frame(width: 25, height: 25, alignment: .leading)
 											
 											Text("conversation_pick_file_from_gallery_label")
-												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.msgTextTertiary : Color.msgTextBody)
 												.default_text_style_300(styleSize: 15)
 												.frame(maxWidth: .infinity, alignment: .center)
 												.lineLimit(1)
@@ -1036,11 +1044,11 @@ struct ConversationFragment: View {
 											Image("file")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.msgTextTertiary : Color.msgTextBody)
 												.frame(width: 25, height: 25, alignment: .leading)
 											
 											Text("conversation_pick_any_file_label")
-												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
+												.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.msgTextTertiary : Color.msgTextBody)
 												.default_text_style_300(styleSize: 15)
 												.frame(maxWidth: .infinity, alignment: .center)
 												.lineLimit(1)
@@ -1050,7 +1058,7 @@ struct ConversationFragment: View {
 								}
 								.frame(maxWidth: .infinity)
 								.padding(.all, 20)
-								.background(Color.gray100)
+								.background(Color.msgBar)
 							}
 							.transition(.move(edge: .bottom))
 						}
@@ -1089,7 +1097,7 @@ struct ConversationFragment: View {
 													Spacer()
 												}
 												.frame(maxWidth: .infinity)
-												.background(Color.gray100)
+												.background(Color.msgBar)
 												.padding(.horizontal)
 											}
 											.frame(height: rowHeight)
@@ -1104,7 +1112,7 @@ struct ConversationFragment: View {
 									)
 								)
 								.clipped()
-								.background(Color.gray100)
+								.background(Color.msgBar)
 
 								HStack {
 									Spacer()
@@ -1128,13 +1136,12 @@ struct ConversationFragment: View {
 										areFilePickersOpen.toggle()
 									}
 								} label: {
-									Image(areFilePickersOpen ? "x" : "paperclip")
-										.renderingMode(.template)
-										.resizable()
-										.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.grayMain2c300 : Color.grayMain2c500)
-										.frame(width: 28, height: 28, alignment: .leading)
-										.padding(.all, 6)
-										.padding(.top, 4)
+									Image(systemName: areFilePickersOpen ? "xmark" : "plus")
+										.font(.system(size: 17, weight: .semibold))
+										.foregroundStyle(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading ? Color.msgTextTertiary : Color.msgTextPrimary)
+										.frame(width: 36, height: 36)
+										.background(Circle().fill(Color.msgElevated))
+										.padding(.trailing, 6)
 										.disabled(conversationViewModel.maxMediaCount <= conversationViewModel.mediasToSend.count || mediasIsLoading)
 										.animation(.none, value: areFilePickersOpen)
 								}
@@ -1143,7 +1150,7 @@ struct ConversationFragment: View {
 								HStack {
 									if #available(iOS 16.0, *) {
 										TextField("conversation_text_field_hint", text: $messageText, axis: .vertical)
-											.default_text_style(styleSize: 15)
+											.msgText(17)
 											.focused($isMessageTextFocused)
 											.padding(.vertical, 5)
 											.onChange(of: messageText) { text in
@@ -1156,7 +1163,7 @@ struct ConversationFragment: View {
 												.multilineTextAlignment(.leading)
 												.frame(maxHeight: 160)
 												.fixedSize(horizontal: false, vertical: true)
-												.default_text_style(styleSize: 15)
+												.msgText(17)
 												.focused($isMessageTextFocused)
 												.onChange(of: messageText) { text in
 													conversationViewModel.compose(stop: text.isEmpty)
@@ -1167,7 +1174,7 @@ struct ConversationFragment: View {
 													.padding(.leading, 4)
 													.lineLimit(1)
 													.opacity(messageText.isEmpty ? 1 : 0)
-													.foregroundStyle(Color.gray300)
+													.foregroundStyle(Color.msgTextTertiary)
 													.default_text_style(styleSize: 15)
 											}
 										}
@@ -1181,13 +1188,10 @@ struct ConversationFragment: View {
 											Button {
 												voiceRecordingInProgress = true
 											} label: {
-												Image("microphone")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(Color.grayMain2c500)
-													.frame(width: 28, height: 28, alignment: .leading)
-													.padding(.all, 6)
-													.padding(.top, 4)
+												Image(systemName: "mic")
+													.font(.system(size: 19, weight: .regular))
+													.foregroundStyle(Color.msgTextSecondary)
+													.frame(width: 32, height: 32)
 											}
 										} else {
 											Button {
@@ -1204,16 +1208,13 @@ struct ConversationFragment: View {
 													conversationViewModel.sendMessage(messageText: messageTextTmp)
 												}
 											} label: {
-												Image("paper-plane-tilt")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(Color.orangeMain500)
-													.frame(width: 28, height: 28, alignment: .leading)
-													.padding(.all, 6)
-													.padding(.top, 4)
-													.rotationEffect(.degrees(45))
-											}
-											.padding(.trailing, 4)
+													Image(systemName: "arrow.up.circle.fill")
+														.font(.system(size: 30, weight: .regular))
+														.symbolRenderingMode(.palette)
+														.foregroundStyle(Color.msgTextPrimary, Color.msgGreen)
+														.frame(width: 32, height: 32)
+												}
+												.padding(.trailing, 0)
 										}
 									} else {
 										Button {
@@ -1226,28 +1227,26 @@ struct ConversationFragment: View {
 												conversationViewModel.sendMessage(messageText: messageTextTmp)
 											}
 										} label: {
-											Image("pencil-simple")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(messageText.isEmpty ? Color.gray300 : Color.orangeMain500)
-												.frame(width: 28, height: 28, alignment: .leading)
-												.padding(.all, 6)
-												.padding(.top, 4)
+											Image(systemName: "checkmark.circle.fill")
+												.font(.system(size: 30, weight: .regular))
+												.symbolRenderingMode(.palette)
+												.foregroundStyle(Color.msgTextPrimary, messageText.isEmpty ? Color.msgTextTertiary : Color.msgAccent)
+												.frame(width: 32, height: 32)
 										}
 										.padding(.trailing, 4)
 										.disabled(messageText.isEmpty)
 									}
 								}
-								.padding(.leading, 15)
-								.padding(.trailing, 5)
-								.padding(.vertical, 6)
-								.frame(maxWidth: .infinity, minHeight: 55)
-								.background(.white)
-								.cornerRadius(30)
+								.padding(.leading, 14)
+								.padding(.trailing, 3)
+								.padding(.vertical, 3)
+								.frame(maxWidth: .infinity, minHeight: 38)
+								.background(Color.msgFieldBackground)
+								.clipShape(RoundedRectangle(cornerRadius: 19, style: .continuous))
 								.overlay(
-									RoundedRectangle(cornerRadius: 30)
+									RoundedRectangle(cornerRadius: 19, style: .continuous)
 										.inset(by: 0.5)
-										.stroke(Color.gray200, lineWidth: 1.5)
+										.stroke(Color.msgFieldStroke, lineWidth: 1)
 								)
 								.padding(.horizontal, 4)
 							} else {
@@ -1256,15 +1255,15 @@ struct ConversationFragment: View {
 									.frame(maxHeight: 60)
 							}
 						}
-						.frame(maxWidth: .infinity, minHeight: 60)
-						.padding(.top, 12)
+						.frame(maxWidth: .infinity, minHeight: 50)
+						.padding(.top, 8)
 						.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? (isMessageTextFocused ? 12 : 0) : 12)
 						.padding(.horizontal, 10)
-						.background(Color.gray100)
-					}
-				}
-			}
-			.blur(radius: conversationViewModel.selectedMessage != nil ? 8 : 0)
+						.background(Color.msgBackground)
+						}
+						}
+						}
+						.blur(radius: conversationViewModel.selectedMessage != nil ? 8 : 0)
 			
 			if conversationViewModel.selectedMessage != nil, let displayed = SharedMainViewModel.shared.displayedConversation {
 				let iconSize = ((geometry.size.width - (displayed.isGroup ? 43 : 10) - 10) / 6) - 30
@@ -1288,7 +1287,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.message.ownReaction == "👍" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "👍" ? Color.msgFieldStroke : Color.msgElevated)
 										.cornerRadius(10)
 										
 										Button {
@@ -1298,7 +1297,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.message.ownReaction == "❤️" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "❤️" ? Color.msgFieldStroke : Color.msgElevated)
 										.cornerRadius(10)
 										
 										Button {
@@ -1308,7 +1307,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😂" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😂" ? Color.msgFieldStroke : Color.msgElevated)
 										.cornerRadius(10)
 										
 										Button {
@@ -1318,7 +1317,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😮" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😮" ? Color.msgFieldStroke : Color.msgElevated)
 										.cornerRadius(10)
 										
 										Button {
@@ -1328,7 +1327,7 @@ struct ConversationFragment: View {
 												.default_text_style(styleSize: iconSize > 50 ? 50 : iconSize)
 										}
 										.padding(.horizontal, 8)
-										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😢" ? Color.gray200 : .white)
+										.background(conversationViewModel.selectedMessage?.message.ownReaction == "😢" ? Color.msgFieldStroke : Color.msgElevated)
 										.cornerRadius(10)
 										
 										Button {
@@ -1338,7 +1337,7 @@ struct ConversationFragment: View {
 											Image("plus-circle")
 												.renderingMode(.template)
 												.resizable()
-												.foregroundStyle(Color.grayMain2c500)
+												.foregroundStyle(Color.msgTextBody)
 												.frame(width: iconSize > 50 ? 55 : iconSize + 5, height: iconSize > 50 ? 55 : iconSize + 5, alignment: .leading)
 										}
 										.padding(.top, 3)
@@ -1348,7 +1347,7 @@ struct ConversationFragment: View {
 									}
 									.padding(.vertical, 5)
 									.padding(.horizontal, 10)
-									.background(.white)
+									.background(Color.msgElevated)
 									.cornerRadius(20)
 									
 									if !conversationViewModel.selectedMessage!.message.isOutgoing {
@@ -1444,7 +1443,7 @@ struct ConversationFragment: View {
 													Image("pencil-simple")
 														.renderingMode(.template)
 													 	.resizable()
-														.foregroundStyle(Color.grayMain2c600)
+														.foregroundStyle(Color.msgTextBody)
 														.frame(width: 20, height: 20, alignment: .leading)
 												}
 												.padding(.vertical, 5)
@@ -1550,7 +1549,7 @@ struct ConversationFragment: View {
 									}
 									.frame(maxWidth: geometry.size.width / 1.5)
 									.padding(.vertical, 8)
-									.background(.white)
+									.background(Color.msgElevated)
 									.cornerRadius(20)
 									
 									if !conversationViewModel.selectedMessage!.message.isOutgoing {
@@ -1750,7 +1749,7 @@ struct ImdnOrReactionsSheet: View {
 										
 										if participant.isMe {
 											Text("message_reaction_click_to_remove_label")
-												.foregroundStyle(Color.grayMain2c400)
+												.foregroundStyle(Color.msgTextSecondary)
 												.default_text_style_300(styleSize: 14)
 												.frame(maxWidth: .infinity, alignment: .leading)
 												.lineLimit(1)
@@ -1767,7 +1766,7 @@ struct ImdnOrReactionsSheet: View {
 							.disabled(!participant.isMe)
 							.padding(.horizontal)
 							.buttonStyle(.borderless)
-							.background(.white)
+							.background(Color.msgElevated)
 						}
 					}
 				}
@@ -1784,7 +1783,7 @@ struct ImdnOrReactionsSheet: View {
 			isImdnOrReactionsSheetVisible = true
 		}
 		.padding(.top)
-		.background(.white)
+		.background(Color.msgElevated)
 	}
 }
 
@@ -1883,7 +1882,7 @@ struct VoiceRecorderPlayer: View {
 	@State private var timer: Timer?
 	
 	var minTrackColor: Color = .white.opacity(0.5)
-	var maxTrackGradient: Gradient = Gradient(colors: [Color.orangeMain500.opacity(0.5), Color.orangeMain500])
+	var maxTrackGradient: Gradient = Gradient(colors: [Color.msgAccent.opacity(0.5), Color.msgAccent])
 	
 	var body: some View {
 		GeometryReader { geometry in
@@ -1898,12 +1897,12 @@ struct VoiceRecorderPlayer: View {
 						Image("x")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 							.frame(width: 25, height: 25)
 					}
 				)
 				.padding(10)
-				.background(.white)
+				.background(Color.msgElevated)
 				.clipShape(RoundedRectangle(cornerRadius: 25))
 				
 				ZStack(alignment: .leading) {
@@ -1945,12 +1944,12 @@ struct VoiceRecorderPlayer: View {
 								Image(isRecording ? "stop-fill" : (isPlaying ? "pause-fill" : "play-fill"))
 									.renderingMode(.template)
 									.resizable()
-									.foregroundStyle(Color.orangeMain500)
+									.foregroundStyle(Color.msgAccent)
 									.frame(width: 20, height: 20)
 							}
 						)
 						.padding(8)
-						.background(.white)
+						.background(Color.msgElevated)
 						.clipShape(RoundedRectangle(cornerRadius: 25))
 						
 						Spacer()
@@ -1960,7 +1959,7 @@ struct VoiceRecorderPlayer: View {
 								Image("record-fill")
 								 .renderingMode(.template)
 								 .resizable()
-								 .foregroundStyle(isRecording ? Color.redDanger500 : Color.orangeMain500)
+								 .foregroundStyle(isRecording ? Color.redDanger500 : Color.msgAccent)
 								 .frame(width: 18, height: 18)
 							}
 							
@@ -1969,7 +1968,7 @@ struct VoiceRecorderPlayer: View {
 								.padding(.horizontal, 5)
 						}
 						.padding(8)
-						.background(.white)
+						.background(Color.msgElevated)
 						.clipShape(RoundedRectangle(cornerRadius: 25))
 					}
 					.padding(.horizontal, 10)
@@ -1983,16 +1982,13 @@ struct VoiceRecorderPlayer: View {
 					conversationViewModel.sendMessage(messageText: "", audioRecorder: self.audioRecorder)
 					voiceRecordingInProgress = false
 				} label: {
-					Image("paper-plane-tilt")
-						.renderingMode(.template)
-						.resizable()
-						.foregroundStyle(Color.orangeMain500)
-						.frame(width: 28, height: 28, alignment: .leading)
-						.padding(.all, 6)
-						.padding(.top, 4)
-						.rotationEffect(.degrees(45))
-				}
-				.padding(.trailing, 4)
+						Image(systemName: "arrow.up.circle.fill")
+							.font(.system(size: 30, weight: .regular))
+							.symbolRenderingMode(.palette)
+							.foregroundStyle(Color.msgTextPrimary, Color.msgGreen)
+							.frame(width: 32, height: 32)
+					}
+					.padding(.trailing, 0)
 			}
 			.padding(.horizontal, 4)
 			.padding(.vertical, 5)

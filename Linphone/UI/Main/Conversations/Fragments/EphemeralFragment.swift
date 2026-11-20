@@ -42,7 +42,7 @@ struct EphemeralFragment: View {
 					VStack(spacing: 1) {
 						
 						Rectangle()
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgFieldBackground)
 							.edgesIgnoringSafeArea(.top)
 							.frame(height: 0)
 						
@@ -50,7 +50,7 @@ struct EphemeralFragment: View {
 							Image("caret-left")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 								.padding(.top, 2)
@@ -73,7 +73,7 @@ struct EphemeralFragment: View {
 						.frame(height: 50)
 						.padding(.horizontal)
 						.padding(.bottom, 4)
-						.background(.white)
+						.background(Color.msgFieldBackground)
 						
 						VStack(spacing: 0) {
 							ScrollView {
@@ -106,16 +106,16 @@ struct EphemeralFragment: View {
 														Divider()
 													}
 												}
-												.background(.white)
+												.background(Color.msgFieldBackground)
 											 	.frame(maxWidth: .infinity)
 											}
-											.background(.white)
+											.background(Color.msgFieldBackground)
 											.frame(maxWidth: .infinity)
 											.buttonStyle(PlainButtonStyle())
 										}
 									}
 									.padding()
-									.background(.white)
+									.background(Color.msgFieldBackground)
 									.cornerRadius(10)
 								}
 								.padding(.horizontal, 10)
@@ -127,7 +127,7 @@ struct EphemeralFragment: View {
 						}
 						.frame(maxWidth: .infinity)
 					}
-					.background(Color.gray100)
+					.background(Color.msgBackground)
 				}
 				.navigationTitle("")
 				.navigationBarHidden(true)

@@ -36,7 +36,7 @@ struct StartConversationFragment: View {
 	@State private var isShowSipAddressesPopup: Bool = false
 	
 	@FocusState var isSearchFieldFocused: Bool
-	@State private var delayedColor = Color.white
+	@State private var delayedColor = Color.msgFieldBackground
 	
 	@State var operationInProgress: Bool = false
 	
@@ -55,7 +55,7 @@ struct StartConversationFragment: View {
 						Image("caret-left")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 							.frame(width: 25, height: 25, alignment: .leading)
 							.padding(.all, 10)
 							.padding(.top, 2)
@@ -81,7 +81,7 @@ struct StartConversationFragment: View {
 					.frame(height: 50)
 					.padding(.horizontal)
 					.padding(.bottom, 4)
-					.background(.white)
+					.background(Color.msgFieldBackground)
 					
 					VStack(spacing: 0) {
 						ZStack(alignment: .trailing) {
@@ -101,7 +101,7 @@ struct StartConversationFragment: View {
 									Image("magnifying-glass")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
+										.foregroundStyle(Color.msgTextBody)
 										.frame(width: 25, height: 25)
 								})
 								
@@ -116,7 +116,7 @@ struct StartConversationFragment: View {
 										Image("x")
 											.renderingMode(.template)
 											.resizable()
-											.foregroundStyle(Color.grayMain2c500)
+											.foregroundStyle(Color.msgTextBody)
 											.frame(width: 25, height: 25)
 									})
 								}
@@ -128,7 +128,7 @@ struct StartConversationFragment: View {
 						.overlay(
 							RoundedRectangle(cornerRadius: 60)
 								.inset(by: 0.5)
-								.stroke(isSearchFieldFocused ? Color.orangeMain500 : Color.gray200, lineWidth: 1)
+								.stroke(isSearchFieldFocused ? Color.msgAccent : Color.msgSeparator, lineWidth: 1)
 						)
 						.padding(.vertical)
 						.padding(.horizontal)
@@ -147,11 +147,11 @@ struct StartConversationFragment: View {
 											.frame(width: 28, height: 28)
 									}
 									.padding(10)
-									.background(Color.orangeMain500)
+									.background(Color.msgAccent)
 									.cornerRadius(40)
 									
 									Text("new_conversation_create_group")
-										.foregroundStyle(.black)
+										.foregroundStyle(Color.msgTextPrimary)
 										.default_text_style_800(styleSize: 16)
 										.lineLimit(1)
 									
@@ -160,14 +160,14 @@ struct StartConversationFragment: View {
 									Image("caret-right")
 										.renderingMode(.template)
 										.resizable()
-										.foregroundStyle(Color.grayMain2c500)
+										.foregroundStyle(Color.msgTextBody)
 										.frame(width: 25, height: 25, alignment: .leading)
 								}
 							})
 							.padding(.vertical, 10)
 							.padding(.horizontal, 20)
 							.background(
-								LinearGradient(gradient: Gradient(colors: [.grayMain2c100, .white]), startPoint: .leading, endPoint: .trailing)
+								LinearGradient(gradient: Gradient(colors: [Color.msgElevated, Color.msgBackground]), startPoint: .leading, endPoint: .trailing)
 									.padding(.vertical, 10)
 									.padding(.horizontal, 40)
 							)
@@ -225,13 +225,13 @@ struct StartConversationFragment: View {
 							if magicSearch.isLoading {
 								ProgressView()
 									.controlSize(.large)
-									.progressViewStyle(CircularProgressViewStyle(tint: .orangeMain500))
+									.progressViewStyle(CircularProgressViewStyle(tint: Color.msgAccent))
 							}
 						}
 					}
 					.frame(maxWidth: .infinity)
 				}
-				.background(.white)
+				.background(Color.msgFieldBackground)
 				
 				if isShowSipAddressesPopup && contactAvatarModel != nil {
 					VStack(alignment: .leading) {
@@ -245,7 +245,7 @@ struct StartConversationFragment: View {
 							Image("x")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.grayMain2c600)
+								.foregroundStyle(Color.msgTextBody)
 								.frame(width: 25, height: 25)
 								.padding(.all, 10)
 						}
@@ -269,7 +269,7 @@ struct StartConversationFragment: View {
 								.padding(.vertical, 15)
 								.padding(.horizontal, 10)
 							}
-							.background(.white)
+							.background(Color.msgFieldBackground)
 							.onTapGesture {
 								do {
 									let addr = try Factory.Instance.createAddress(addr: contactAvatarModel!.addresses[index])
@@ -298,7 +298,7 @@ struct StartConversationFragment: View {
 								.padding(.vertical, 15)
 								.padding(.horizontal, 10)
 							}
-							.background(.white)
+							.background(Color.msgFieldBackground)
 							.onTapGesture {
 								CoreContext.shared.doOnCoreQueue { core in
 									if let phoneAddr = core.interpretUrl(url: contactAvatarModel!.phoneNumbersWithLabel[index].phoneNumber, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core)) {
@@ -314,10 +314,10 @@ struct StartConversationFragment: View {
 					}
 					.padding(.horizontal, 20)
 					.padding(.vertical, 20)
-					.background(.white)
+					.background(Color.msgFieldBackground)
 					.cornerRadius(20)
 					.frame(maxHeight: .infinity)
-					.shadow(color: Color.orangeMain500, radius: 0, x: 0, y: 2)
+					.shadow(color: Color.msgAccent, radius: 0, x: 0, y: 2)
 					.frame(maxWidth: SharedMainViewModel.shared.maxWidth)
 					.padding(.horizontal, 20)
 					.background(.black.opacity(0.65))
@@ -359,13 +359,13 @@ struct StartConversationFragment: View {
 	
 	@Sendable private func delayColor() async {
 		try? await Task.sleep(nanoseconds: 250_000_000)
-		delayedColor = Color.orangeMain500
+		delayedColor = Color.msgFieldBackground
 	}
 	
 	func delayColorDismiss() {
 		Task {
 			try? await Task.sleep(nanoseconds: 80_000_000)
-			delayedColor = .white
+			delayedColor = Color.msgFieldBackground
 		}
 	}
 	
@@ -391,7 +391,7 @@ struct StartConversationFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 						} else {
 							if let address = contactsManager.lastSearchSuggestions[index].address {
 								let nameTmp = address.displayName
@@ -409,7 +409,7 @@ struct StartConversationFragment: View {
 									.default_text_style(styleSize: 16)
 									.lineLimit(1)
 									.frame(maxWidth: .infinity, alignment: .leading)
-									.foregroundStyle(Color.orangeMain500)
+									.foregroundStyle(Color.msgAccent)
 							}
 						}
 					} else {
@@ -421,7 +421,7 @@ struct StartConversationFragment: View {
 						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 					}
 				}
 				.padding(.horizontal)

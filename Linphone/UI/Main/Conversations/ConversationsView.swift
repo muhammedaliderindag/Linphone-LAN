@@ -34,7 +34,11 @@ struct ConversationsView: View {
 	
 	var body: some View {
 		NavigationView {
+			// DerindSIP: iOS Messages look; "new message" lives in the header (square.and.pencil)
 			ZStack(alignment: .bottomTrailing) {
+				Color.msgBackground
+					.ignoresSafeArea()
+
 				ConversationsFragment(
 					text: $text,
 					showLeaveConversationPopup: $showLeaveConversationPopup,
@@ -42,22 +46,6 @@ struct ConversationsView: View {
 					showDeleteConversationHistoryPopup: $showDeleteConversationHistoryPopup,
 					isShowRemoveParticipantPopup: $isShowRemoveParticipantPopup
 				)
-				
-				Button {
-					withAnimation {
-						isShowStartConversationFragment = true
-					}
-				} label: {
-					Image("conversation")
-						.renderingMode(.template)
-						.foregroundStyle(.white)
-						.padding()
-						.background(Color.orangeMain500)
-						.clipShape(Circle())
-						.shadow(color: .black.opacity(0.2), radius: 4)
-					
-				}
-				.padding()
 			}
 		}
 		.navigationViewStyle(.stack)

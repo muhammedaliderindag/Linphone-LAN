@@ -32,7 +32,7 @@ struct ConversationMediaListFragment: View {
 					VStack(spacing: 1) {
 						
 						Rectangle()
-							.foregroundStyle(Color.orangeMain500)
+							.msgAdaptiveForeground(Color.orangeMain500, Color.msgBackground)
 							.edgesIgnoringSafeArea(.top)
 							.frame(height: 0)
 						
@@ -40,7 +40,7 @@ struct ConversationMediaListFragment: View {
 							Image("caret-left")
 								.renderingMode(.template)
 								.resizable()
-								.foregroundStyle(Color.orangeMain500)
+								.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 								.frame(width: 25, height: 25, alignment: .leading)
 								.padding(.all, 10)
 								.padding(.top, 2)
@@ -62,11 +62,11 @@ struct ConversationMediaListFragment: View {
 						.frame(height: 50)
 						.padding(.horizontal)
 						.padding(.bottom, 4)
-						.background(.white)
+						.msgAdaptiveBackground(Color.white, Color.msgBackground)
 						
 						ConversationMediaGridView(viewModel: conversationMediaListViewModel)
 					}
-					.background(Color.gray100)
+					.msgAdaptiveBackground(Color.gray100, Color.msgBackground)
 					
 					if conversationMediaListViewModel.operationInProgress {
 						PopupLoadingView()

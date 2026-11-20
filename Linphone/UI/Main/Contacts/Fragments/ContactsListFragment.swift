@@ -85,14 +85,14 @@ struct ContactRow: View {
 				Text(contactAvatarModel.name)
 					.default_text_style(styleSize: 16)
 					.frame(maxWidth: .infinity, alignment: .leading)
-					.foregroundStyle(Color.orangeMain500)
+					.msgAdaptiveForeground(Color.orangeMain500, Color.msgAccent)
 			}
 		}
 		.frame(height: 50)
 		.buttonStyle(.borderless)
 		.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
 		.listRowSeparator(.hidden)
-		.background(.white)
+		.msgAdaptiveBackground(Color.white, Color.msgBackground)
 		.onTapGesture {
             if SharedMainViewModel.shared.indexView == 0 {
                 withAnimation {

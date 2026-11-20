@@ -74,17 +74,17 @@ struct ConversationDeleteMessageBottomSheet: View {
 					Image("trash-simple")
 						.renderingMode(.template)
 						.resizable()
-						.foregroundStyle(conversationViewModel.selectedMessage?.message.isRetractable == true ? Color.redDanger500 : Color.gray200)
+						.foregroundStyle(conversationViewModel.selectedMessage?.message.isRetractable == true ? Color.redDanger500 : Color.msgSeparator)
 						.frame(width: 25, height: 25, alignment: .leading)
 					Text("conversation_dialog_delete_for_everyone_label")
-						.foregroundStyle(conversationViewModel.selectedMessage?.message.isRetractable == true ? Color.redDanger500 : Color.gray200)
+						.foregroundStyle(conversationViewModel.selectedMessage?.message.isRetractable == true ? Color.redDanger500 : Color.msgSeparator)
 						.default_text_style(styleSize: 16)
 					Spacer()
 				}
 				.frame(maxHeight: .infinity)
 			}
 			.padding(.horizontal, 30)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 			.disabled(conversationViewModel.selectedMessage?.message.isRetractable == false)
 			
 			VStack {
@@ -121,10 +121,10 @@ struct ConversationDeleteMessageBottomSheet: View {
 				.frame(maxHeight: .infinity)
 			}
 			.padding(.horizontal, 30)
-			.background(Color.gray100)
+			.background(Color.msgBackground)
 		}
 		.padding(.bottom)
-		.background(Color.gray100)
+		.background(Color.msgBackground)
 		.frame(maxWidth: .infinity)
 		.onRotate { newOrientation in
 			orientation = newOrientation

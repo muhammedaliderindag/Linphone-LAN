@@ -75,9 +75,15 @@ struct ConversationsListFragment: View {
 			}
 			.safeAreaInset(edge: .top, content: {
 				Spacer()
-					.frame(height: 12)
+					.frame(height: 4)
 			})
 			.listStyle(.plain)
+			.msgHideScrollBackground()
+			.background(Color.msgBackground)
+			.onAppear {
+				// iOS 15: List has no scrollContentBackground
+				UITableView.appearance().backgroundColor = .clear
+			}
 			.overlay(
 				VStack {
 					if conversationsListViewModel.conversationsList.isEmpty &&
@@ -88,13 +94,12 @@ struct ConversationsListFragment: View {
 							 contactsManager.lastSearchSuggestions.isEmpty)
 						) {
 						Spacer()
-						Image("illus-belledonne")
-							.resizable()
-							.scaledToFit()
-							.clipped()
+						Image(systemName: "message")
+							.font(.system(size: 56, weight: .light))
+							.foregroundStyle(Color.msgTextTertiary)
 							.padding(.all)
 						Text(!text.isEmpty ? "list_filter_no_result_found" : "conversations_list_empty")
-							.default_text_style_800(styleSize: 16)
+							.msgText(17, .semibold, color: .msgTextSecondary)
 						Spacer()
 						Spacer()
 					}
@@ -143,7 +148,7 @@ struct ConversationsListFragment: View {
 								.default_text_style(styleSize: 16)
 								.lineLimit(1)
 								.frame(maxWidth: .infinity, alignment: .leading)
-								.foregroundStyle(Color.orangeMain500)
+								.foregroundStyle(Color.msgAccent)
 						} else {
 							if let address = contactsManager.lastSearchSuggestions[index].address {
 								let nameTmp = address.displayName
@@ -161,7 +166,7 @@ struct ConversationsListFragment: View {
 									.default_text_style(styleSize: 16)
 									.lineLimit(1)
 									.frame(maxWidth: .infinity, alignment: .leading)
-									.foregroundStyle(Color.orangeMain500)
+									.foregroundStyle(Color.msgAccent)
 							}
 						}
 					} else {
@@ -173,15 +178,16 @@ struct ConversationsListFragment: View {
 						Text("username_error")
 							.default_text_style(styleSize: 16)
 							.frame(maxWidth: .infinity, alignment: .leading)
-							.foregroundStyle(Color.orangeMain500)
+							.foregroundStyle(Color.msgAccent)
 					}
 				}
 			}
 			.buttonStyle(.borderless)
 			.listRowSeparator(.hidden)
-		}
-	}
-}
+			.listRowBackground(Color.msgBackground)
+			}
+			}
+			}
 
 struct ConversationRow: View {
 	@EnvironmentObject var navigationManager: NavigationManager
@@ -194,28 +200,34 @@ struct ConversationRow: View {
 	@Binding var text: String
 	
 	var body: some View {
-		HStack {
+		// DerindSIP: iOS 26 Messages row (unread dot | avatar | name + time > | 2-line preview)
+		HStack(alignment: .center, spacing: 8) {
+			MsgUnreadDot(visible: conversation.unreadMessagesCount > 0)
+
 			Avatar(contactAvatarModel: conversation.avatarModel, avatarSize: 50)
-			
-			VStack(spacing: 0) {
-				Spacer()
-				
-				Text(conversation.subject)
-					.foregroundStyle(Color.grayMain2c800)
-					.if(conversation.unreadMessagesCount > 0) { view in
-						view.default_text_style_700(styleSize: 14)
-					}
-					.default_text_style(styleSize: 14)
-					.frame(maxWidth: .infinity, alignment: .leading)
-					.lineLimit(1)
-				
-				HStack(spacing: 0) {
+
+			VStack(alignment: .leading, spacing: 2) {
+				HStack(alignment: .firstTextBaseline, spacing: 6) {
+					Text(conversation.subject)
+						.msgText(17, .semibold)
+						.lineLimit(1)
+
+					Spacer(minLength: 4)
+
+					rowStatusIcons
+
+					Text(conversationsListViewModel.getCallTime(startDate: conversation.lastUpdateTime))
+						.msgText(15, color: .msgTextSecondary)
+						.lineLimit(1)
+
+					Image(systemName: "chevron.right")
+						.font(.system(size: 13, weight: .semibold))
+						.foregroundStyle(Color.msgTextTertiary)
+				}
+
+				HStack(alignment: .top, spacing: 0) {
 					Text(conversation.lastMessagePrefixText)
-						.foregroundStyle(Color.grayMain2c400)
-						.if(conversation.unreadMessagesCount > 0) { view in
-							view.default_text_style_700(styleSize: 14)
-						}
-						.default_text_style(styleSize: 14)
+						.msgText(15, color: .msgTextSecondary)
 						.lineLimit(1)
 						.layoutPriority(1)
 					
@@ -223,81 +235,78 @@ struct ConversationRow: View {
 						Image(conversation.lastMessageIcon)
 							.resizable()
 							.frame(width: 16, height: 16)
+							.foregroundStyle(Color.msgTextSecondary)
 							.layoutPriority(0)
 							.padding(.trailing, 2)
 					}
 					
 					if conversation.lastMessageInItalic {
-						Text(conversation.lastMessageText)
-							.italic()
-							.if(conversation.unreadMessagesCount > 0) { view in
-								view.bold()
+										Text(conversation.lastMessageText)
+											.italic()
+											.font(.system(size: 15))
+											.foregroundStyle(Color.msgTextSecondary)
+											.lineLimit(2)
+											.layoutPriority(-1)
+									} else {
+										Text(conversation.lastMessageText)
+											.msgText(15, color: .msgTextSecondary)
+											.lineLimit(2)
+											.multilineTextAlignment(.leading)
+											.layoutPriority(-1)
+									}
+								}
+								.frame(maxWidth: .infinity, alignment: .leading)
 							}
-							.foregroundStyle(Color.grayMain2c400)
-							.font(.system(size: 14))
-							.lineLimit(1)
-							.layoutPriority(-1)
-					} else {
-						Text(conversation.lastMessageText)
-							.foregroundStyle(Color.grayMain2c400)
-							.if(conversation.unreadMessagesCount > 0) { view in
-								view.default_text_style_700(styleSize: 14)
-							}
-							.default_text_style(styleSize: 14)
-							.lineLimit(1)
-							.layoutPriority(-1)
-					}
-				}
-				.frame(maxWidth: .infinity, alignment: .leading)
-				
-				Spacer()
-			}
-			
-			Spacer()
-			
-			VStack(alignment: .trailing, spacing: 0) {
-				Spacer()
-				
-				HStack {
-					Text(conversationsListViewModel.getCallTime(startDate: conversation.lastUpdateTime))
-						.foregroundStyle(Color.grayMain2c400)
-						.default_text_style(styleSize: 14)
-						.lineLimit(1)
-				}
-				
-				Spacer()
-				
-				HStack {
-					if conversation.isMuted == false
-						&& !(!conversation.lastMessageText.isEmpty
-							 && conversation.lastMessageIsOutgoing == true)
-						&& conversation.unreadMessagesCount == 0 {
-						Text("")
-							.frame(width: 18, height: 18, alignment: .trailing)
-					}
-					
-					if !conversation.encryptionEnabled && conversation.isEndToEndEncryptionAvailable {
+							.padding(.vertical, 10)
+							.overlay(
+								Rectangle()
+									.fill(Color.msgSeparator)
+									.frame(height: 0.5),
+								alignment: .bottom
+							)
+						}
+						.frame(minHeight: 76)
+						.contentShape(Rectangle())
+						.buttonStyle(.borderless)
+						.listRowInsets(EdgeInsets(top: 0, leading: 6, bottom: 0, trailing: 16))
+						.listRowSeparator(.hidden)
+						.listRowBackground(Color.msgBackground)
+						.background(Color.msgBackground)
+						.onTapGesture {
+							conversationsListViewModel.changeDisplayedChatRoom(conversationModel: conversation)
+						}
+						.onLongPressGesture(minimumDuration: 0.2) {
+							conversationsListViewModel.selectedConversation = conversation
+							showingSheet.toggle()
+						}
+						}
+
+						/// Small state icons next to the time (encryption warning, ephemeral, muted, delivery state).
+						@ViewBuilder
+						private var rowStatusIcons: some View {
+						HStack(spacing: 4) {
+						if !conversation.encryptionEnabled && conversation.isEndToEndEncryptionAvailable {
 						Image("lock-simple-open")
 							.renderingMode(.template)
 							.resizable()
 							.foregroundStyle(Color.orangeWarning600)
-							.frame(width: 16, height: 16, alignment: .trailing)
-					}
+							.frame(width: 14, height: 14)
+							}
 					
 					if conversation.isEphemeral {
 						Image("clock-countdown")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c400)
-							.frame(width: 18, height: 18, alignment: .trailing)
+							.foregroundStyle(Color.msgTextSecondary)
+							.frame(width: 14, height: 14)
 					}
 					
 					if conversation.isMuted {
 						Image("bell-slash")
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.grayMain2c400)
-							.frame(width: 18, height: 18, alignment: .trailing)
+							.foregroundStyle(Color.msgTextSecondary)
+							.frame(width: 14, height: 14)
 					}
 					
 					if !conversation.lastMessageText.isEmpty
@@ -306,44 +315,11 @@ struct ConversationRow: View {
 						Image(imageName)
 							.renderingMode(.template)
 							.resizable()
-							.foregroundStyle(Color.orangeMain500)
-							.frame(width: 18, height: 18, alignment: .trailing)
-					}
-					
-					if conversation.unreadMessagesCount > 0 {
-						HStack {
-							Text(
-								conversation.unreadMessagesCount < 99
-								? String(conversation.unreadMessagesCount)
-								: "99+"
-							)
-							.foregroundStyle(.white)
-							.default_text_style(styleSize: 10)
-							.lineLimit(1)
-						}
-						.frame(width: 18, height: 18)
-						.background(Color.redDanger500)
-						.cornerRadius(50)
-					}
-				}
-				
-				Spacer()
-			}
-			.padding(.trailing, 10)
-		}
-		.frame(height: 50)
-		.buttonStyle(.borderless)
-		.listRowInsets(EdgeInsets(top: 6, leading: 20, bottom: 6, trailing: 20))
-		.listRowSeparator(.hidden)
-		.background(.white)
-		.onTapGesture {
-			conversationsListViewModel.changeDisplayedChatRoom(conversationModel: conversation)
-		}
-		.onLongPressGesture(minimumDuration: 0.2) {
-			conversationsListViewModel.selectedConversation = conversation
-			showingSheet.toggle()
-		}
-	}
+								.foregroundStyle(Color.msgTextSecondary)
+								.frame(width: 14, height: 14)
+							}
+							}
+							}
 }
 
 #Preview {
