@@ -452,7 +452,7 @@
 "DTLS" = "DTLS";
 "GC_MSG" = "Sie wurden zu einem Chatroom hinzugefügt";
 "help_dialog_update_available_message" = "Eine neue Version %@ ist verfügbar. Möchten Sie aktualisieren?";
-"manage_account_dialog_international_prefix_help_message" = "Wählen Sie Ihr Land aus, um Linphone die Zuordnung Ihrer Kontakte zuzulassen.";
+"manage_account_dialog_international_prefix_help_message" = "Wählen Sie Ihr Land aus, um DerindSIP die Zuordnung Ihrer Kontakte zuzulassen.";
 "meeting_call_remove_no_participants" = "Zur Zeit kein Teilnehmer…";
 "meeting_call_remove_participant_confirmation_message" = "Sind Sie sicher, dass Sie %@ entfernen möchten?";
 "meeting_call_remove_participant_confirmation_title" = "Einen Teilnehmer entfernen";
@@ -503,10 +503,10 @@
 "ZRTP" = "ZRTP";
 "welcome_page_1_message" = "Eine **sichere** **Open Source** Kommunikations-App aus Frankreich.";
 "welcome_page_3_message" = "Eine **kostenlose** Open-Source Anwendung seit **2001**.";
-"help_about_contribute_translations_title" = "Zur Übersetzung von Linphone beitragen";
-"help_about_privacy_policy_subtitle" = "Welche Informationen Linphone sammelt und nutzt";
-"help_about_title" = "Über Linphone";
-"help_about_user_guide_title" = "Linphone Benutzerhandbuch";
+"help_about_contribute_translations_title" = "Zur Übersetzung von DerindSIP beitragen";
+"help_about_privacy_policy_subtitle" = "Welche Informationen DerindSIP sammelt und nutzt";
+"help_about_title" = "Über DerindSIP";
+"help_about_user_guide_title" = "DerindSIP Benutzerhandbuch";
 "help_about_open_source_licenses_title" = "GNU General Public License v3.0";
 "help_about_open_source_licenses_subtitle" = "© Belledonne Communications 2010-2024";
 "authentication_id" = "Authentifizierungs ID (falls anders)";

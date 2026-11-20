@@ -102,7 +102,7 @@
 "generic_address_picker_suggestions_list_title" = "Пропозиції";
 "help_about_advanced_title" = "Розширений";
 "help_about_check_for_update" = "Перевірити оновлення";
-"help_about_user_guide_title" = "Linphone посібник користувача";
+"help_about_user_guide_title" = "DerindSIP посібник користувача";
 "help_about_user_guide_subtitle" = "Дізнайтеся, як опанувати всі функції програми крок за кроком.";
 "help_about_version_title" = "Версія";
 "help_dialog_update_available_title" = "Доступне оновлення";
@@ -408,7 +408,7 @@
 "call_dialog_zrtp_validate_trust_message" = "Для вашої безпеки нам потрібно автентифікувати пристрій вашого співрозмовника. Будь ласка, обміняйтеся кодами:";
 "account_settings_cpim_in_basic_conversations_title" = "Використовуйте CPIM у «базових» розмовах";
 "account_settings_mwi_uri_title" = "URI сервера MWI (індикатор очікування повідомлення)";
-"help_about_title" = "Про Linphone";
+"help_about_title" = "Про DerindSIP";
 "settings_calls_calibrate_echo_canceller_done" = "%@ мс";
 "welcome_page_1_message" = "**Захищений**, **з відкритим вихідним кодом** та **французький** застосунок для спілкування.";
 "help_dialog_update_available_message" = "Доступна нова версія %@. Бажаєте оновити?";
@@ -441,8 +441,8 @@
 "conversation_reply_to_message_title" = "Відповісти на: ";
 "debug_logs_copied_to_clipboard_toast" = "Логи налагодження скопійовано в буфер обміну";
 "Default" = "За замовчуванням";
-"help_about_contribute_translations_title" = "Зробіть свій внесок у переклад Linphone";
-"manage_account_dialog_international_prefix_help_message" = "Оберіть свою країну, щоб Linphone міг зіставляти ваші контакти.";
+"help_about_contribute_translations_title" = "Зробіть свій внесок у переклад DerindSIP";
+"manage_account_dialog_international_prefix_help_message" = "Оберіть свою країну, щоб DerindSIP міг зіставляти ваші контакти.";
 "meeting_call_remove_no_participants" = "Наразі учасники відсутні…";
 "meeting_call_remove_participant_confirmation_message" = "Ви впевнені що хочете видалити %@ ?";
 "meeting_call_remove_participant_confirmation_title" = "Видалити учасника";
@@ -505,7 +505,7 @@
 "GC_MSG" = "Вас додали до чату";
 "help_about_open_source_licenses_subtitle" = "© Belledonne Communications 2010-2024";
 "help_about_open_source_licenses_title" = "GNU General Public License v3.0";
-"help_about_privacy_policy_subtitle" = "Яку інформацію збирає та використовує Linphone";
+"help_about_privacy_policy_subtitle" = "Яку інформацію збирає та використовує DerindSIP";
 "history_list_empty_with_filter_history" = "Немає записів, що відповідають вашому пошуку";
 "history_title" = "Історія дзвінків";
 "IM_MSG" = "Ви отримали повідомлення";

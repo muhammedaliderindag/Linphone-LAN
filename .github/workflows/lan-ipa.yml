@@ -1,11 +1,11 @@
-# Builds the "Linphone LAN" variant as an UNSIGNED .ipa for sideloading with a free Apple ID
+# Builds the "DerindSIP" (LAN) variant as an UNSIGNED .ipa for sideloading with a free Apple ID
 # (AltStore / SideStore / Sideloadly). LAN variant = Swift flag LAN_BUILD:
 #   - core keeps running in background (silent audio keep-alive) instead of stopping,
 #     so a UDP account on a local SIP server keeps receiving calls -> CallKit
 #   - no PushKit / APNs, no Crashlytics
 #   - app extensions removed (they need push and eat free-account App IDs)
 #   - bundle id org.linphone.phone.lan so it installs NEXT TO App Store Linphone
-name: Linphone LAN IPA
+name: DerindSIP IPA
 
 on:
   workflow_dispatch:
@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 120
     env:
       BUNDLE_ID: org.linphone.phone.lan
-      DISPLAY_NAME: Linphone LAN
+      DISPLAY_NAME: DerindSIP
       APP_GROUP: group.org.linphone.phone.lan   # must match Linphone/LinphoneLAN.entitlements
     steps:
       - uses: actions/checkout@v4
@@ -85,13 +85,13 @@ jobs:
           echo "Embedded entitlements:"; ldid -e "$APP/$EXE"
           mkdir -p out/Payload
           cp -R "$APP" out/Payload/
-          (cd out && zip -qry "../Linphone-LAN.ipa" Payload)
-          ls -lh Linphone-LAN.ipa
+          (cd out && zip -qry "../DerindSIP.ipa" Payload)
+          ls -lh DerindSIP.ipa
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Linphone-LAN-ipa
-          path: Linphone-LAN.ipa
+          name: DerindSIP-ipa
+          path: DerindSIP.ipa
           retention-days: 30
 
       - uses: actions/upload-artifact@v4

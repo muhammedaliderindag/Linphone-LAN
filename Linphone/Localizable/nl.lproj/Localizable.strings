@@ -392,7 +392,7 @@
 "call_transfer_current_call_title" = "Verbind oproep door";
 "call_zrtp_sas_validation_skip" = "Sla over";
 "contact_dialog_delete_title" = "Verwijder %@?";
-"help_about_title" = "Over Linphone";
+"help_about_title" = "Over DerindSIP";
 "settings_contacts_ldap_search_filter_title" = "Filter";
 "[https://sip.linphone.org](https://sip.linphone.org)" = "[https://sip.linphone.org](https://sip.linphone.org)";
 "5" = "5";

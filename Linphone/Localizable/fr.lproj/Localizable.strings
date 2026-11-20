@@ -241,7 +241,7 @@
 "conversation_end_to_end_encrypted_event_title" = "Conversation chiffrée de bout en bout";
 "conversation_end_to_end_encrypted_event_subtitle" = "Les messages de cette conversation sont chiffrés de bout en bout. Seul votre correspondant peut les déchiffrer.";
 "conversation_end_to_end_encrypted_bottom_sheet_title" = "La confidentialité de vos échanges garantie";
-"conversation_end_to_end_encrypted_bottom_sheet_message" = "Grâce à la technologie de chiffrement de bout en bout de Linphone, la confidentialité de vos messages, appels et réunions avec vos correspondants est garantie. Personne ne pourra déchiffrer vos conversations, pas même Linphone.";
+"conversation_end_to_end_encrypted_bottom_sheet_message" = "Grâce à la technologie de chiffrement de bout en bout de DerindSIP, la confidentialité de vos messages, appels et réunions avec vos correspondants est garantie. Personne ne pourra déchiffrer vos conversations, pas même DerindSIP.";
 "conversation_ephemeral_messages_duration_disabled" = "Désactiver";
 "conversation_ephemeral_messages_duration_multiple_days" = "%d jours";
 "conversation_ephemeral_messages_duration_one_day" = "1 jour";
@@ -354,13 +354,13 @@
 "generic_address_picker_suggestions_list_title" = "Suggestions";
 "help_about_advanced_title" = "Avancé";
 "help_about_check_for_update" = "Vérifier les mises à jour";
-"help_about_contribute_translations_title" = "Aider à traduire Linphone";
+"help_about_contribute_translations_title" = "Aider à traduire DerindSIP";
 "help_about_open_source_licenses_subtitle" = "© Belledonne Communications 2010-2024";
 "help_about_open_source_licenses_title" = "GNU General Public License v3.0";
-"help_about_privacy_policy_subtitle" = "Quelles informations Linphone collecte et utilise";
+"help_about_privacy_policy_subtitle" = "Quelles informations DerindSIP collecte et utilise";
 "help_about_privacy_policy_title" = "Politique de confidentialité";
-"help_about_title" = "À propos de Linphone";
-"help_about_user_guide_title" = "Guide utilisateur Linphone";
+"help_about_title" = "À propos de DerindSIP";
+"help_about_user_guide_title" = "Guide utilisateur DerindSIP";
 "help_about_user_guide_subtitle" = "Apprenez à maîtriser toutes les fonctionnalités de l'application, pas à pas.";
 "help_about_version_title" = "Version";
 "help_dialog_update_available_message" = "Une nouvelle version %@ est disponible. Voulez-vous mettre à jour ?";
@@ -404,7 +404,7 @@
 "manage_account_device_last_connection" = "Dernière connexion :";
 "manage_account_device_remove" = "Supprimer";
 "manage_account_devices_title" = "Appareils";
-"manage_account_dialog_international_prefix_help_message" = "Choisissez votre pays pour permettre à Linphone de faire le lien avec vos contacts.";
+"manage_account_dialog_international_prefix_help_message" = "Choisissez votre pays pour permettre à DerindSIP de faire le lien avec vos contacts.";
 "manage_account_dialog_remove_account_message" = "Si vous souhaitez supprimer définitivement votre compte rendez-vous sur : https://sip.linphone.org";
 "manage_account_dialog_remove_account_title" = "Se déconnecter du compte ?";
 "manage_account_outbound_proxy" = "Proxy SIP sortant";

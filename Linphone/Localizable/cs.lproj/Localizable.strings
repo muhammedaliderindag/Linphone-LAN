@@ -191,7 +191,7 @@
 "help_about_advanced_title" = "Pokročilé";
 "help_about_check_for_update" = "Kontrola aktualizací";
 "help_about_privacy_policy_title" = "Zásady ochrany soukromí";
-"help_about_user_guide_title" = "Průvodce Linphone";
+"help_about_user_guide_title" = "Průvodce DerindSIP";
 "help_about_user_guide_subtitle" = "Naučte se krok za krokem ovládat všechny funkce aplikace.";
 "help_about_version_title" = "Verze";
 "help_dialog_update_available_title" = "Je dostupná nová aktualizace";
@@ -426,8 +426,8 @@
 "conversation_event_participant_removed" = "%@ se odpojil";
 "conversation_one_to_one_hidden_subject" = "Skrytý předmět";
 "conversation_reply_to_message_title" = "Odpovídá na: ";
-"help_about_contribute_translations_title" = "Přispět do překladu Linphone";
-"help_about_title" = "O aplikaci Linphone";
+"help_about_contribute_translations_title" = "Přispět do překladu DerindSIP";
+"help_about_title" = "O aplikaci DerindSIP";
 "debug_logs_copied_to_clipboard_toast" = "Ladící protokoly zkopírovány do schránky";
 "Default" = "Výchozí";
 "Default mode" = "Výchozí režim";
@@ -454,7 +454,7 @@
 "conversation_message_meeting_cancelled_label" = "Schůzka byla zrušena!";
 "failed_meeting_ics_invitation_not_sent_toast" = "Pozvánky ICS na schůzku nelze odeslat žádnému účastníkovi";
 "help_about_open_source_licenses_title" = "GNU General Public License v3.0";
-"help_about_privacy_policy_subtitle" = "Jaké informace Linphone shromažďuje a používá";
+"help_about_privacy_policy_subtitle" = "Jaké informace DerindSIP shromažďuje a používá";
 "help_dialog_update_available_message" = "Je k dispozici nová verze %@. Chcete provést aktualizaci?";
 "GC_MSG" = "Byli jste přidáni do chatovací místnosti";
 "help_about_open_source_licenses_subtitle" = "© Belledonne Communications 2010-2024";
@@ -462,7 +462,7 @@
 "history_title" = "Historie hovorů";
 "IM_MSG" = "Obdrželi jste zprávu";
 "Interoperable" = "Interoperabilní";
-"manage_account_dialog_international_prefix_help_message" = "Vyberte svou zemi, aby Linphone mohl najít vaše kontakty.";
+"manage_account_dialog_international_prefix_help_message" = "Vyberte svou zemi, aby DerindSIP mohl najít vaše kontakty.";
 "meeting_call_remove_participant_confirmation_message" = "Opravdu chcete odstranit %@?";
 "meeting_call_remove_participant_confirmation_title" = "Odstranit účastníka";
 "meeting_exported_as_calendar_event" = "Schůzka přidána do kalendáře iPhone";
@@ -621,7 +621,7 @@
 "conversation_info_dialog_delete_chatroom_title" = "Smazat tuto konverzaci?";
 "conversation_info_dialog_leave_chatroom_title" = "Opustit tuto konverzaci?";
 "conversation_info_chatroom_deleted_toast" = "Konverzace smazána";
-"conversation_end_to_end_encrypted_bottom_sheet_message" = "Díky technologii koncového šifrování v aplikaci Linphone je zaručena důvěrnost zpráv, hovorů a schůzek. Vyměňovaná data nedokáže dešifrovat nikdo, ani my sami.";
+"conversation_end_to_end_encrypted_bottom_sheet_message" = "Díky technologii koncového šifrování v aplikaci DerindSIP je zaručena důvěrnost zpráv, hovorů a schůzek. Vyměňovaná data nedokáže dešifrovat nikdo, ani my sami.";
 "conversation_info_dialog_delete_chatroom_message" = "Tato konverzace bude pro vás trvale smazána.";
 "early_push_missed_call_body" = "Zatímco bylo vaše zařízení uzamčené, přišel vám hovor.";
 "early_push_unknown_caller" = "Neznámé";

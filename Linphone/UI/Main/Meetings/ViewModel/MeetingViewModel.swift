@@ -393,7 +393,7 @@ class MeetingViewModel: ObservableObject {
 		event.endDate = toDate
 		event.notes = description
 		event.calendar = eventStore.defaultCalendarForNewEvents
-		event.location = "Linphone video meeting"
+		event.location = "\(Bundle.main.displayName) video meeting"
 		return event
 	}
 	// For iOS 16 and below
