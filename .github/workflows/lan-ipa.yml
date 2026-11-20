@@ -68,6 +68,13 @@ jobs:
             | tee build/xcodebuild.log | grep -E "error:|warning: .*LanKeepAlive|BUILD (SUCCEEDED|FAILED)" || true
           grep -q "BUILD SUCCEEDED" build/xcodebuild.log
 
+      - name: Report compile errors as annotations
+        if: failure()
+        run: |
+          grep -E "error:" build/xcodebuild.log | sort -u | head -40 | while IFS= read -r line; do
+            echo "::error::${line}"
+          done
+
       - name: Package IPA
         run: |
           brew install ldid
