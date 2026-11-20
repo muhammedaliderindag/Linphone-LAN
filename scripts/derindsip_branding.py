@@ -6,6 +6,8 @@ Writes:
   Linphone/Assets.xcassets/linphone.imageset/linphone.svg   in-app logo (single colour; the app
                                                             tints it as a template image)
   Linphone/Assets.xcassets/AppIcon.appiconset/1024x1024.png app icon (RGB, no alpha)
+  Linphone/Assets.xcassets/AppIcon.appiconset/1024x1024-dark.png    iOS 18+ dark appearance
+  Linphone/Assets.xcassets/AppIcon.appiconset/1024x1024-tinted.png  iOS 18+ tinted appearance
 
 Needs Pillow and PyMuPDF (fitz, used to rasterise the SVG).
 """
@@ -18,6 +20,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ASSETS = os.path.join(ROOT, "Linphone", "Assets.xcassets")
 LOGO_SVG = os.path.join(ASSETS, "linphone.imageset", "linphone.svg")
 ICON_PNG = os.path.join(ASSETS, "AppIcon.appiconset", "1024x1024.png")
+ICON_DARK_PNG = os.path.join(ASSETS, "AppIcon.appiconset", "1024x1024-dark.png")
+ICON_TINTED_PNG = os.path.join(ASSETS, "AppIcon.appiconset", "1024x1024-tinted.png")
 FONT = os.path.join(ROOT, "Linphone", "Fonts", "NotoSans-ExtraBold.ttf")
 
 # "D" (even-odd ring) with a phone handset inside. Handset = Material "call" glyph (Apache 2.0).
@@ -66,12 +70,36 @@ def make_icon():
     icon.save(ICON_PNG)
 
 
+def make_icon_variant(path, rgb):
+    """iOS 18+ dark / tinted appearance: transparent background (the system fills it
+    with its own neutral dark tone) and a monochrome glyph. iOS uses the dark variant
+    on the CallKit incoming-call screen, so this keeps that screen neutral (no brand
+    colour behind the call)."""
+    s = 1024
+    icon = Image.new("RGBA", (s, s), (0, 0, 0, 0))
+    logo_w, logo_h = 520, int(520 * 102 / 100)
+    hex_color = "#%02X%02X%02X" % rgb
+    logo = rasterise(logo_svg(hex_color, (logo_w * 2, logo_h * 2)), logo_w, logo_h)
+    icon.alpha_composite(logo, ((s - logo_w) // 2 + 20, 130))
+
+    draw = ImageDraw.Draw(icon)
+    font = ImageFont.truetype(FONT, 170)
+    text = "SIP"
+    w = draw.textlength(text, font=font)
+    draw.text(((s - w) / 2, 680), text, font=font, fill=rgb + (255,))
+    icon.save(path)
+
+
 def main():
     with open(LOGO_SVG, "w", newline="\n") as f:
         f.write(logo_svg())
     make_icon()
+    make_icon_variant(ICON_DARK_PNG, (0xE5, 0xE5, 0xEA))
+    make_icon_variant(ICON_TINTED_PNG, (0xFF, 0xFF, 0xFF))
     print("wrote", LOGO_SVG)
     print("wrote", ICON_PNG)
+    print("wrote", ICON_DARK_PNG)
+    print("wrote", ICON_TINTED_PNG)
 
 
 if __name__ == "__main__":
