@@ -187,6 +187,9 @@ class CoreContext: ObservableObject {
 			for key in ["sip_port", "sip_tcp_port", "sip_tls_port"] {
 				AppServices.config.setInt(section: "sip", key: key, value: -1)
 			}
+			// Battery: no NAT on the local hotspot, so UDP keep-alives have nothing to keep
+			// open; send them rarely (default 30 s wakes the Wi-Fi radio twice a minute).
+			AppServices.config.setInt(section: "sip", key: "keepalive_period", value: 120000)
 #endif
 
 			if FileUtil.appGroupAvailable {
@@ -610,13 +613,15 @@ class CoreContext: ObservableObject {
 		}
 	}
 
-	/// LAN build: force a REGISTER refresh every 60 s while in background (core queue).
+	/// LAN build: insurance REGISTER refresh every 5 min while in background (core queue).
+	/// The SDK refreshes on its own (bridge v7.2 echoes the requested Expires); this only
+	/// covers a lost refresh. Kept rare because every refresh wakes the Wi-Fi radio.
 	private var lanRegisterRefreshTimer: DispatchSourceTimer?
 
 	private func startLanRegisterRefresh() {
 		guard lanRegisterRefreshTimer == nil else { return }
 		let timer = DispatchSource.makeTimerSource(queue: coreQueue)
-		timer.schedule(deadline: .now() + 60, repeating: 60, leeway: .seconds(5))
+		timer.schedule(deadline: .now() + 300, repeating: 300, leeway: .seconds(30))
 		timer.setEventHandler { [weak self] in
 			guard let self = self, self.mCore.globalState == .On, self.mCore.calls.isEmpty else { return }
 			Log.info("[LanKeepAlive] periodic REGISTER refresh in background")
@@ -638,6 +643,7 @@ class CoreContext: ObservableObject {
 			if LanKeepAlive.isEnabled {
 				LanKeepAlive.shared.stop(deactivateSession: self.mCore.calls.isEmpty)
 				self.stopLanRegisterRefresh()
+				self.mCore.enterForeground()
 			}
 			try? self.mCore.start()
 			AppServices.corePreferences.reloadFromConfig()
@@ -657,10 +663,10 @@ class CoreContext: ObservableObject {
 				if self.mCore.globalState == .Off {
 					try? self.mCore.start()
 				}
-				// Do NOT call mCore.enterBackground(): measured 2026-11-19, after it the SDK
-				// kept sending UDP keep-alives but never refreshed the REGISTER (Expires 120,
-				// no refresh for 17 min) -> the bridge saw the registration expire.
-				// The core keeps behaving as in foreground, plus a periodic forced refresh.
+				// Battery: enterBackground() switches the core's auto-iterate timer to the
+				// background schedule (~500 ms instead of 20 ms). The missing REGISTER refresh
+				// once blamed on it was the bridge answering Expires 3600 (fixed in v7.2).
+				self.mCore.enterBackground()
 				self.startLanRegisterRefresh()
 				if self.mCore.calls.isEmpty {
 					Log.info("[onEnterForegroundOrBackground] LAN keep-alive: core stays running in background")

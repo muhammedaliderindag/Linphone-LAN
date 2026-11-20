@@ -140,10 +140,11 @@ final class LanKeepAlive {
 		}
 	}
 
-	/// 1 s of 8 kHz mono 16-bit PCM silence, as an in-memory WAV file.
+	/// 10 s of 8 kHz mono 16-bit PCM silence, as an in-memory WAV file
+	/// (long loop = fewer loop restarts in the player).
 	private static func silentWav() -> Data {
 		let sampleRate: UInt32 = 8000
-		let numSamples: UInt32 = 8000
+		let numSamples: UInt32 = 8000 * 10
 		let dataSize = numSamples * 2
 		var data = Data()
 		func append<T: FixedWidthInteger>(_ value: T) {
