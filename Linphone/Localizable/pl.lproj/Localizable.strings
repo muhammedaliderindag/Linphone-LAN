@@ -73,3 +73,33 @@
 "early_push_missed_call_title" = "Nieodebrane połączenie";
 "conversation_info_delete_history_confirm" = "Usuń";
 "conversation_info_delete_chatroom_confirm" = "Usuń";
+
+/* DerindSIP iOS-style call screen */
+"call_native_speaker" = "Speaker";
+"call_native_audio" = "Audio";
+"call_native_video" = "Video";
+"call_native_mute" = "Mute";
+"call_native_more" = "More";
+"call_native_end" = "End";
+"call_native_keypad" = "Keypad";
+"call_native_hide" = "Hide";
+"call_native_calling" = "calling…";
+"call_native_ringing" = "ringing…";
+"call_native_ended" = "Call Ended";
+"call_native_on_hold" = "On Hold";
+"call_native_held_by_remote" = "On Hold by Remote";
+"call_native_record" = "Record";
+"call_native_stop_recording" = "Stop Recording";
+"call_native_hold" = "Hold";
+"call_native_resume" = "Resume";
+"call_native_add_call" = "Add Call";
+"call_native_transfer" = "Transfer";
+"call_native_calls" = "Calls";
+"call_native_participants" = "Participants";
+"call_native_layout" = "Layout";
+"call_native_messages" = "Messages";
+"call_native_switch_camera" = "Switch Camera";
+"call_native_audio_output" = "Audio Output";
+"call_native_call_quality" = "Call Quality";
+"call_native_encryption" = "Encryption";
+"call_native_back_to_app" = "Back to App";

@@ -74,7 +74,17 @@ struct CallView: View {
 	@Binding var isShowScheduleMeetingFragment: Bool
 	
 	@State private var didInit = false
-	
+
+	// DerindSIP iOS-style call screen
+	@State private var keypadShown = false
+	@State private var dtmfDigits = ""
+
+	/// 1:1 audio call → full iOS Phone-like screen. Video / conference keep the Linphone
+	/// video & participant views with the iOS-style buttons at the bottom.
+	private var useNativeAudioLayout: Bool {
+		callViewModel.isOneOneCall && !telecomManager.remoteConfVideo && !callViewModel.videoDisplayed
+	}
+
 	var body: some View {
 		GeometryReader { geo in
 			let isLandscape = geo.size.width > geo.size.height
@@ -286,6 +296,82 @@ struct CallView: View {
 	
 	@ViewBuilder
 	func innerView(geometry: GeometryProxy, isLandscape: Bool, minHeight: CGFloat, maxHeight: CGFloat, topBarCallCounter: CGFloat, minBottomSheetHeight: CGFloat, maxBottomSheetHeight: CGFloat) -> some View {
+		if useNativeAudioLayout || keypadShown {
+			nativeCallView(geometry: geometry, isLandscape: isLandscape, topBarCallCounter: topBarCallCounter)
+		} else {
+			classicInnerView(geometry: geometry, isLandscape: isLandscape, minHeight: minHeight, maxHeight: maxHeight, topBarCallCounter: topBarCallCounter, minBottomSheetHeight: minBottomSheetHeight, maxBottomSheetHeight: maxBottomSheetHeight)
+		}
+	}
+
+	/// Button diameter of the iOS-style grid, fitted to the screen width.
+	func nativeButtonSize(geometry: GeometryProxy, isLandscape: Bool) -> CGFloat {
+		if isLandscape {
+			return min(64, max(44, (geometry.size.width - 92) / 6 - 24))
+		}
+		return min(78, max(50, (geometry.size.width - 84) / 3 - 24))
+	}
+
+	func nativeControls(isLandscape: Bool, size: CGFloat) -> some View {
+		NativeCallControls(
+			isLandscape: isLandscape,
+			buttonSize: size,
+			optionsAudioRoute: $optionsAudioRoute,
+			optionsChangeLayout: $optionsChangeLayout,
+			audioRouteSheet: $audioRouteSheet,
+			changeLayoutSheet: $changeLayoutSheet,
+			mediaEncryptedSheet: $mediaEncryptedSheet,
+			callStatisticsSheet: $callStatisticsSheet,
+			isShowStartCallFragment: $isShowStartCallFragment,
+			isShowCallsListFragment: $isShowCallsListFragment,
+			isShowParticipantsListFragment: $isShowParticipantsListFragment,
+			keypadShown: $keypadShown
+		)
+	}
+
+	/// iOS Phone-like screen: status + big name on top, round button grid (or keypad) at the bottom.
+	func nativeCallView(geometry: GeometryProxy, isLandscape: Bool, topBarCallCounter: CGFloat) -> some View {
+		let size = nativeButtonSize(geometry: geometry, isLandscape: isLandscape)
+		let keypadSize = isLandscape ? min(size, max(36, (geometry.size.height - topBarCallCounter - 110) / 5.8)) : size
+
+		return ZStack {
+			NativeCallBackground()
+
+			VStack(spacing: 0) {
+				NativeCallHeader(
+					dtmfDigits: keypadShown ? dtmfDigits : "",
+					compact: isLandscape,
+					onMinimize: {
+						withAnimation {
+							telecomManager.callDisplayed = false
+						}
+					},
+					onEncryptionWarning: {
+						mediaEncryptedSheet = true
+					}
+				)
+				.padding(.top, topBarCallCounter)
+
+				Spacer(minLength: 8)
+
+				if keypadShown {
+					NativeKeypad(digits: $dtmfDigits, keypadShown: $keypadShown, buttonSize: keypadSize)
+						.transition(.opacity)
+				} else if telecomManager.callStarted || telecomManager.callEnded {
+					nativeControls(isLandscape: isLandscape, size: size)
+						.transition(.opacity)
+				}
+			}
+			.padding(.bottom, isLandscape ? 8 : 36)
+		}
+	}
+
+	@ViewBuilder
+	func classicInnerView(geometry: GeometryProxy, isLandscape: Bool, minHeight: CGFloat, maxHeight: CGFloat, topBarCallCounter: CGFloat, minBottomSheetHeight: CGFloat, maxBottomSheetHeight: CGFloat) -> some View {
+		let controlsSize = min(nativeButtonSize(geometry: geometry, isLandscape: isLandscape), 64)
+		let controlsHeight: CGFloat = isLandscape
+			? controlsSize + 24 + 34 + topBarCallCounter
+			: 2 * (controlsSize + 26) + 22 + 44 + topBarCallCounter
+
 		ZStack(alignment: .bottom) {
 			VStack(spacing: 0) {
 				if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
@@ -457,55 +543,34 @@ struct CallView: View {
 					.background(Color.gray900)
 					.safeAreaInset(edge: .bottom) {
 						if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
-							Color.clear.frame(height: minHeight)
+							Color.clear.frame(height: controlsHeight)
 						}
 					}
-				
-				if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
-					Color.gray600
-						.frame(height: 1)
-				}
 			}
-			
+
 			if !fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) {
-				if telecomManager.callStarted {
-					BottomSheetView(
-						content: BottomSheetContent(
-							geo: geometry,
-							buttonSize: $buttonSize,
-							pointingUp: $pointingUp,
-							currentOffset: $currentOffset,
-							minBottomSheetHeight: minBottomSheetHeight,
-							maxBottomSheetHeight: maxBottomSheetHeight,
-							optionsAudioRoute: $optionsAudioRoute,
-							optionsChangeLayout: $optionsChangeLayout,
-							showingDialer: $showingDialer,
-							audioRouteSheet: $audioRouteSheet,
-							changeLayoutSheet: $changeLayoutSheet,
-							isShowStartCallFragment: $isShowStartCallFragment,
-							isShowCallsListFragment: $isShowCallsListFragment,
-							isShowParticipantsListFragment: $isShowParticipantsListFragment,
-							imageAudioRoute: $imageAudioRoute
-						),
-						minHeight: minHeight,
-						maxHeight: maxHeight,
-						currentOffset: $currentOffset,
-						pointingUp: $pointingUp
-					)
-					.onAppear {
-						currentOffset = minHeight
-						pointingUp = -(((currentOffset - minHeight) / (maxHeight - minHeight)) - 0.5) * 2
-					}
-					.onChange(of: optionsChangeLayout) { _ in
-						currentOffset = minHeight
-						pointingUp = -(((currentOffset - minHeight) / (maxHeight - minHeight)) - 0.5) * 2
-					}
+				if telecomManager.callStarted || telecomManager.callEnded {
+					nativeControls(isLandscape: isLandscape, size: controlsSize)
+						.padding(.top, 16)
+						.padding(.bottom, isLandscape ? 8 : 28)
+						.frame(maxWidth: .infinity)
+						.background(Color.gray900.ignoresSafeArea())
 				}
 			}
 		}
-		.background(!fullscreenVideo || (fullscreenVideo && telecomManager.isPausedByRemote) ? Color.gray600 : Color.gray900)
+		.background(Color.gray900)
 	}
 	
+	/// Conference / pending state label (replaces the old centered spinner).
+	func nativeCallStatusLabel() -> some View {
+		Text(callViewModel.callStatusText())
+			.font(.system(size: 22).monospacedDigit())
+			.foregroundStyle(NativeCallStyle.secondaryText)
+			.onReceive(callViewModel.timer) { _ in
+				callViewModel.refreshTimeElapsed()
+			}
+	}
+
 	// swiftlint:disable:next cyclomatic_complexity
 	func simpleCallView(geometry: GeometryProxy, minBottomSheetHeight: Double, isLandscape: Bool, topBarCallCounter: CGFloat) -> some View {
 		ZStack {
@@ -645,25 +710,22 @@ struct CallView: View {
 				}
 				
 				if telecomManager.outgoingCallStarted {
+					// DerindSIP: "calling…" / "ringing…" text instead of Linphone's spinner.
 					VStack {
-						ActivityIndicator(color: .white)
-							.frame(width: 20, height: 20)
-							.padding(.top, 60)
-						
-						Text(callViewModel.counterToMinutes())
+						Text(callViewModel.callStatusText())
+							.font(.system(size: 17).monospacedDigit())
+							.foregroundStyle(NativeCallStyle.secondaryText)
 							.onAppear {
 								callViewModel.timeElapsed = 0
 							}
 							.onReceive(callViewModel.timer) { _ in
-								callViewModel.timeElapsed = callViewModel.currentCall?.duration ?? 0
-								
+								callViewModel.refreshTimeElapsed()
 							}
 							.onDisappear {
 								callViewModel.timeElapsed = 0
 							}
-							.padding(.top)
-							.foregroundStyle(.white)
-						
+							.padding(.top, 60)
+
 						Spacer()
 					}
 					.background(.clear)
@@ -772,24 +834,20 @@ struct CallView: View {
 			} else if telecomManager.outgoingCallStarted {
 				VStack {
 					Spacer()
-					
-					ProgressView()
-						.progressViewStyle(CircularProgressViewStyle(tint: .white))
-						.frame(width: 60, height: 60, alignment: .center)
+
+					nativeCallStatusLabel()
 						.onDisappear {
 							callViewModel.resetCallView()
 						}
-					
+
 					Spacer()
 				}
 			} else {
 				VStack {
 					Spacer()
-					
-					ProgressView()
-						.progressViewStyle(CircularProgressViewStyle(tint: .white))
-						.frame(width: 60, height: 60, alignment: .center)
-					
+
+					nativeCallStatusLabel()
+
 					Spacer()
 				}
 			}

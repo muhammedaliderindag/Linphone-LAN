@@ -1092,6 +1092,56 @@ class CallViewModel: ObservableObject {
 		}
 	}
 	
+	/// Status line of the iOS-style call screen (calling…/ringing…/timer/on hold/Call Ended).
+	func callStatusText() -> String {
+		if telecomManager.callEnded {
+			return NSLocalizedString("call_native_ended", comment: "")
+		}
+		if telecomManager.outgoingCallStarted {
+			return NSLocalizedString(telecomManager.outgoingCallRinging ? "call_native_ringing" : "call_native_calling", comment: "")
+		}
+		if isPaused {
+			return NSLocalizedString("call_native_on_hold", comment: "")
+		}
+		if telecomManager.isPausedByRemote {
+			return NSLocalizedString("call_native_held_by_remote", comment: "")
+		}
+		return durationText()
+	}
+
+	/// mm:ss, or h:mm:ss after one hour.
+	func durationText() -> String {
+		let total = max(timeElapsed, 0)
+		let hours = total / 3600
+		let minutes = (total % 3600) / 60
+		let seconds = total % 60
+		if hours > 0 {
+			return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+		}
+		return String(format: "%02d:%02d", minutes, seconds)
+	}
+
+	/// Refreshes `timeElapsed` from the current call; frozen once the call has ended.
+	func refreshTimeElapsed() {
+		guard !telecomManager.callEnded, let call = currentCall else { return }
+		timeElapsed = call.duration
+	}
+
+	func sendDtmf(dtmf: CChar) {
+		coreContext.doOnCoreQueue { core in
+			guard let call = self.currentCall, call.state == .StreamsRunning else {
+				Log.warn("\(CallViewModel.TAG) Cannot send DTMF: call not active")
+				return
+			}
+			do {
+				try call.sendDtmf(dtmf: dtmf)
+				core.playDtmf(dtmf: dtmf, durationMs: 200)
+			} catch {
+				Log.error("\(CallViewModel.TAG) Cannot send DTMF \(dtmf): \(error)")
+			}
+		}
+	}
+
 	func isHeadPhoneAvailable() -> Bool {
 		guard let availableInputs = AVAudioSession.sharedInstance().availableInputs else {return false}
 		for inputDevice in availableInputs {

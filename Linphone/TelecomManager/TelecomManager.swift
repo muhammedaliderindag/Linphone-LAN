@@ -52,6 +52,10 @@ class TelecomManager: ObservableObject {
 	@Published var refreshCallViewModel: Bool = false
 	@Published var remainingCall: Bool = false
 	@Published var callConnected: Bool = false
+	/// Outgoing call reached OutgoingRinging/EarlyMedia (UI shows "ringing…" instead of "calling…").
+	@Published var outgoingCallRinging: Bool = false
+	/// Last call just ended and the call screen briefly shows "Call Ended" before closing.
+	@Published var callEnded: Bool = false
 	@Published var meetingWaitingRoomDisplayed: Bool = false
 	@Published var meetingWaitingRoomSelected: Address?
 	@Published var meetingWaitingRoomName: String = ""
@@ -564,6 +568,16 @@ class TelecomManager: ObservableObject {
 				}
 			}
 			
+			let ringingNow = cstate == .OutgoingRinging || cstate == .OutgoingEarlyMedia
+			DispatchQueue.main.async {
+				if self.outgoingCallRinging != ringingNow {
+					self.outgoingCallRinging = ringingNow
+				}
+				if cstate == .OutgoingInit && self.callEnded {
+					self.callEnded = false
+				}
+			}
+
 			if cstate == Call.State.Connected {
 				DispatchQueue.main.async {
 					self.callConnected = true
@@ -690,12 +704,28 @@ class TelecomManager: ObservableObject {
 							UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: ["linphone-earpiece-enforcement"])
 							UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["linphone-earpiece-enforcement"])
 
-							withAnimation {
-								self.outgoingCallStarted = false
-								self.callInProgress = false
-								self.callDisplayed = false
-								self.callStarted = false
-								self.callConnected = false
+							let closeCallView = {
+								withAnimation {
+									self.callEnded = false
+									self.outgoingCallStarted = false
+									self.callInProgress = false
+									self.callDisplayed = false
+									self.callStarted = false
+									self.callConnected = false
+								}
+							}
+							if self.callDisplayed && self.callInProgress {
+								// Like the iOS Phone app: keep the screen up for a moment with "Call Ended".
+								self.callEnded = true
+								DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+									if core.callsNb == 0 {
+										closeCallView()
+									} else {
+										self.callEnded = false
+									}
+								}
+							} else {
+								closeCallView()
 							}
 						} else {
 							if core.calls.last != nil {
