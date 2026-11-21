@@ -603,6 +603,8 @@
 "settings_meetings_title" = "Meetings";
 "settings_meetings_show_past_meetings_title" = "Show past meetings";
 "settings_network_allow_ipv6" = "Allow IPv6";
+"settings_network_lan_keepalive_title" = "Sessiz sesle canlı tut";
+"settings_network_lan_keepalive_subtitle" = "Yedek yöntem: DerindSIP arka planda sessiz sesle sürekli çalışır (daha çok pil). Kapalı = ağ geçidinin Bluetooth beacon'ı ile uyanır.";
 "settings_network_title" = "Network";
 "settings_network_use_wifi_only" = "Use only Wi-Fi networks";
 "settings_security_enable_vfs_subtitle" = "Warning: once enabled it can't be disabled!";

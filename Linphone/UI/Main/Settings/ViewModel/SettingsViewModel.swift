@@ -50,6 +50,8 @@ class SettingsViewModel: ObservableObject {
 	// Network settings
 	@Published var useWifiOnly: Bool = false
 	@Published var allowIpv6: Bool = false
+	// LAN build: silent-audio background keep-alive instead of iBeacon wake ([app] lan_keepalive)
+	@Published var lanKeepAlive: Bool = false
 	
 	// Advanced settings
 	@Published var enableFec: Bool = false
@@ -95,7 +97,8 @@ class SettingsViewModel: ObservableObject {
 			
 			let useWifiOnlyTmp = core.wifiOnlyEnabled
 			let allowIpv6Tmp = core.ipv6Enabled
-			
+			let lanKeepAliveTmp = LanKeepAlive.isEnabled
+
 			// Advanced settings
 			let enableFecTmp = core.fecEnabled
 			var mediaEncryptionTmp = ""
@@ -136,7 +139,8 @@ class SettingsViewModel: ObservableObject {
 				
 				self.useWifiOnly = useWifiOnlyTmp
 				self.allowIpv6 = allowIpv6Tmp
-				
+				self.lanKeepAlive = lanKeepAliveTmp
+
 				// Advanced settings
 				self.enableFec = enableFecTmp
 				self.mediaEncryption = mediaEncryptionTmp
@@ -457,6 +461,16 @@ class SettingsViewModel: ObservableObject {
 			if core.ipv6Enabled != self.allowIpv6 {
 				core.ipv6Enabled = self.allowIpv6
 			}
+
+#if LAN_BUILD
+			if LanKeepAlive.isEnabled != self.lanKeepAlive {
+				core.config?.setBool(section: "app", key: "lan_keepalive", value: self.lanKeepAlive)
+				let keepAlive = self.lanKeepAlive
+				DispatchQueue.main.async {
+					LanBeaconWake.applyWakeMode(keepAlive: keepAlive)
+				}
+			}
+#endif
 			
 			if core.fecEnabled != self.enableFec {
 				core.fecEnabled = self.enableFec

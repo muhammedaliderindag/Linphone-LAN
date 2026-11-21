@@ -501,6 +501,17 @@ struct SettingsFragment: View {
 										
 										Toggle("settings_network_allow_ipv6", isOn: $settingsViewModel.allowIpv6)
 											.default_text_style_700(styleSize: 15)
+#if LAN_BUILD
+
+										Toggle(isOn: $settingsViewModel.lanKeepAlive) {
+											VStack(alignment: .leading, spacing: 2) {
+												Text("settings_network_lan_keepalive_title")
+													.default_text_style_700(styleSize: 15)
+												Text("settings_network_lan_keepalive_subtitle")
+													.default_text_style(styleSize: 14)
+											}
+										}
+#endif
 									}
 									.padding(.vertical, 30)
 									.padding(.horizontal, 20)

@@ -15,7 +15,7 @@ on:
         required: false
         default: ""
   push:
-    branches: [master, main, beacon]
+    branches: [master, main]
 
 jobs:
   build:

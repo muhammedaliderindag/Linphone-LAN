@@ -71,6 +71,32 @@ final class LanBeaconWake: NSObject, CLLocationManagerDelegate {
 		setupMonitoring()
 	}
 
+	/// Stop monitoring our beacon regions (silent-audio keep-alive selected in Settings). Main thread.
+	func stop() {
+		if !Thread.isMainThread {
+			DispatchQueue.main.async { self.stop() }
+			return
+		}
+		let m = manager ?? CLLocationManager()
+		for region in m.monitoredRegions where region.identifier.hasPrefix(LanBeaconWake.identifierPrefix) {
+			m.stopMonitoring(for: region)
+		}
+		Log.info("[LanBeacon] stopped monitoring beacon regions")
+	}
+
+	/// Settings toggle: switch between iBeacon wake (default) and the silent-audio keep-alive.
+	/// Called after `[app] lan_keepalive` was written. Takes effect immediately (keep-alive starts
+	/// at the next background transition).
+	static func applyWakeMode(keepAlive: Bool) {
+		Log.info("[LanBeacon] wake mode changed: \(keepAlive ? "silent-audio keep-alive" : "iBeacon")")
+		if keepAlive {
+			shared.stop()
+		} else {
+			LanKeepAlive.shared.stop(deactivateSession: true)
+			shared.start()
+		}
+	}
+
 	private func logAuthorization(prefix: String) {
 		guard let manager = manager else { return }
 		let status = manager.authorizationStatus
