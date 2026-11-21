@@ -393,10 +393,14 @@ class CoreContext: ObservableObject {
 				}
 #if LAN_BUILD
 				if cstate == .IncomingReceived {
+					Log.info("[LanBeacon] IncomingReceived (pump \(self.beaconPump != nil ? "on" : "off"))")
 					// CallKit now owns the app's lifetime: release the beacon background task.
 					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
 						self.endBeaconBgTask("incoming call")
 					}
+				}
+				if core.calls.isEmpty {
+					self.stopBeaconPump("no more calls")
 				}
 #endif
 
@@ -769,9 +773,13 @@ class CoreContext: ObservableObject {
 					Log.info("[LanBeacon] core is Off, starting it")
 					try? self.mCore.start()
 				}
-				if inBackground {
-					self.mCore.enterBackground()
-				}
+				// The wake window is short: run the core at foreground speed and pump it by hand
+				// so the REGISTER 200 OK and the bridge's INVITE are processed at once (with the
+				// background schedule the first test call got no 100/180 for >4 s).
+				// enterBackground() is restored in endBeaconBgTask / the post-call re-trigger.
+				_ = inBackground
+				self.mCore.enterForeground()
+				self.startBeaconPump()
 				self.mCore.refreshRegisters()
 				Log.info("[LanBeacon] refreshRegisters, account states: \(self.mCore.accountList.map { $0.state })")
 
@@ -799,10 +807,42 @@ class CoreContext: ObservableObject {
 	private func endBeaconBgTask(_ reason: String) {
 		beaconEndTimer?.cancel()
 		beaconEndTimer = nil
+		let inBackground = UIApplication.shared.applicationState == .background
+		coreQueue.async {
+			// Keep pumping while a call exists (stopped by onCallStateChanged when calls empty).
+			guard self.mCore != nil, self.mCore.calls.isEmpty else { return }
+			self.stopBeaconPump("wake window over (\(reason))")
+			if inBackground {
+				self.mCore.enterBackground()
+			}
+		}
 		guard beaconBgTask != .invalid else { return }
 		Log.info("[LanBeacon] ending background task (\(reason))")
 		UIApplication.shared.endBackgroundTask(beaconBgTask)
 		beaconBgTask = .invalid
+	}
+
+	/// Manual 20 ms iterate on coreQueue during a beacon wake (coreQueue only).
+	private var beaconPump: DispatchSourceTimer?
+
+	private func startBeaconPump() {
+		guard beaconPump == nil else { return }
+		let timer = DispatchSource.makeTimerSource(queue: coreQueue)
+		timer.schedule(deadline: .now(), repeating: .milliseconds(20), leeway: .milliseconds(5))
+		timer.setEventHandler { [weak self] in
+			guard let self = self, self.mCore != nil else { return }
+			self.mCore.iterate()
+		}
+		beaconPump = timer
+		timer.resume()
+		Log.info("[LanBeacon] core pump started (20 ms)")
+	}
+
+	private func stopBeaconPump(_ reason: String) {
+		guard let timer = beaconPump else { return }
+		timer.cancel()
+		beaconPump = nil
+		Log.info("[LanBeacon] core pump stopped: \(reason)")
 	}
 #endif
 
