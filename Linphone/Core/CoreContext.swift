@@ -391,6 +391,14 @@ class CoreContext: ObservableObject {
 					// The call (CallKit audio session) now keeps the app alive.
 					LanKeepAlive.shared.stop(deactivateSession: false)
 				}
+#if LAN_BUILD
+				if cstate == .IncomingReceived {
+					// CallKit now owns the app's lifetime: release the beacon background task.
+					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+						self.endBeaconBgTask("incoming call")
+					}
+				}
+#endif
 
 				if core.calls.isEmpty {
 					DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -661,10 +669,16 @@ class CoreContext: ObservableObject {
 		coreQueue.async {
 			Log.info("[onEnterForegroundOrBackground] Entering foreground")
 
+#if LAN_BUILD
+			// Always leave background mode in LAN builds (beacon wake or keep-alive).
+			self.mCore.enterForeground()
+#endif
 			if LanKeepAlive.isEnabled {
 				LanKeepAlive.shared.stop(deactivateSession: self.mCore.calls.isEmpty)
 				self.stopLanRegisterRefresh()
+#if !LAN_BUILD
 				self.mCore.enterForeground()
+#endif
 			}
 			try? self.mCore.start()
 			AppServices.corePreferences.reloadFromConfig()
@@ -678,9 +692,11 @@ class CoreContext: ObservableObject {
 			self.updatePresence(core: self.mCore, presence: .Offline)
 			self.mCore.iterate()
 
-			if LanKeepAlive.isEnabled {
+#if LAN_BUILD
+			do {
 				// LAN build: do NOT stop the core (that would send REGISTER Expires 0).
-				// Keep it registered on the local SIP server and keep the app alive.
+				// Keep it registered on the local SIP server; the app is woken either by
+				// iBeacon region monitoring (default) or kept alive by silent audio (fallback).
 				if self.mCore.globalState == .Off {
 					try? self.mCore.start()
 				}
@@ -688,15 +704,20 @@ class CoreContext: ObservableObject {
 				// background schedule (~500 ms instead of 20 ms). The missing REGISTER refresh
 				// once blamed on it was the bridge answering Expires 3600 (fixed in v7.2).
 				self.mCore.enterBackground()
-				self.startLanRegisterRefresh()
-				if self.mCore.calls.isEmpty {
-					Log.info("[onEnterForegroundOrBackground] LAN keep-alive: core stays running in background")
-					LanKeepAlive.shared.start()
+				if LanKeepAlive.isEnabled {
+					self.startLanRegisterRefresh()
+					if self.mCore.calls.isEmpty {
+						Log.info("[onEnterForegroundOrBackground] LAN keep-alive: core stays running in background")
+						LanKeepAlive.shared.start()
+					} else {
+						Log.info("[onEnterForegroundOrBackground] LAN keep-alive: call in progress, nothing to do")
+					}
 				} else {
-					Log.info("[onEnterForegroundOrBackground] LAN keep-alive: call in progress, nothing to do")
+					Log.info("[onEnterForegroundOrBackground] LAN beacon mode: core stays running in background")
 				}
 				return
 			}
+#endif
 
 			if self.mCore.currentCall == nil && self.mCore.globalState == .On {
 				Log.info("[onEnterForegroundOrBackground] Stopping core because no active calls")
@@ -707,6 +728,84 @@ class CoreContext: ObservableObject {
 		}
 	}
 	
+#if LAN_BUILD
+	// MARK: - iBeacon wake (LAN build)
+
+	/// Background task held while the app handles a beacon wake (main thread only).
+	private var beaconBgTask: UIBackgroundTaskIdentifier = .invalid
+	/// Fires 25 s after the last wake to release the background task (main thread only).
+	private var beaconEndTimer: DispatchWorkItem?
+
+	/// Called by `LanBeaconWake` when a beacon region is entered/inside. Re-REGISTERs right away so
+	/// the SIP bridge can deliver its INVITE (-> `.IncomingReceived` -> CallKit) in the ~10 s window.
+	func onBeaconWake(reason: String) {
+		let work = {
+			Log.info("[LanBeacon] onBeaconWake reason=\(reason)")
+			let inBackground = UIApplication.shared.applicationState == .background
+			if self.beaconBgTask == .invalid {
+				self.beaconBgTask = UIApplication.shared.beginBackgroundTask(withName: "lanbeacon") { [weak self] in
+					self?.endBeaconBgTask("expired")
+				}
+			}
+			self.beaconEndTimer?.cancel()
+			let endItem = DispatchWorkItem { [weak self] in
+				guard let self = self else { return }
+				coreQueue.async {
+					if self.mCore != nil && !self.mCore.calls.isEmpty {
+						Log.info("[LanBeacon] call present at timeout, CallKit keeps the app alive")
+					}
+					DispatchQueue.main.async { self.endBeaconBgTask("timeout") }
+				}
+			}
+			self.beaconEndTimer = endItem
+			DispatchQueue.main.asyncAfter(deadline: .now() + 25, execute: endItem)
+
+			coreQueue.async {
+				guard self.mCore != nil else {
+					Log.info("[LanBeacon] core not created yet, nothing to refresh")
+					return
+				}
+				if self.mCore.globalState == .Off {
+					Log.info("[LanBeacon] core is Off, starting it")
+					try? self.mCore.start()
+				}
+				if inBackground {
+					self.mCore.enterBackground()
+				}
+				self.mCore.refreshRegisters()
+				Log.info("[LanBeacon] refreshRegisters, account states: \(self.mCore.accountList.map { $0.state })")
+
+				coreQueue.asyncAfter(deadline: .now() + 3) {
+					guard self.mCore != nil, let account = self.mCore.defaultAccount, account.state != .Ok else { return }
+					Log.info("[LanBeacon] not registered after 3 s (\(account.state)), refreshing again")
+					self.mCore.refreshRegisters()
+				}
+				coreQueue.asyncAfter(deadline: .now() + 6) {
+					guard self.mCore != nil, let account = self.mCore.defaultAccount, account.state != .Ok else { return }
+					Log.warn("[LanBeacon] still not registered after 6 s (\(account.state)), toggling network reachability")
+					self.mCore.networkReachable = false
+					self.mCore.networkReachable = true
+				}
+			}
+		}
+		if Thread.isMainThread {
+			work()
+		} else {
+			DispatchQueue.main.async(execute: work)
+		}
+	}
+
+	/// Ends the beacon background task exactly once. Main thread only.
+	private func endBeaconBgTask(_ reason: String) {
+		beaconEndTimer?.cancel()
+		beaconEndTimer = nil
+		guard beaconBgTask != .invalid else { return }
+		Log.info("[LanBeacon] ending background task (\(reason))")
+		UIApplication.shared.endBackgroundTask(beaconBgTask)
+		beaconBgTask = .invalid
+	}
+#endif
+
 	func crashForCrashlytics() {
 		fatalError("Crashing app to test crashlytics")
 	}

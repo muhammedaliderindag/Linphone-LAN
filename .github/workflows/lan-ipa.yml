@@ -1,6 +1,6 @@
 # Builds the "DerindSIP" (LAN) variant as an UNSIGNED .ipa for sideloading with a free Apple ID
 # (AltStore / SideStore / Sideloadly). LAN variant = Swift flag LAN_BUILD:
-#   - core keeps running in background (silent audio keep-alive) instead of stopping,
+#   - core keeps running in background (woken by iBeacon region monitoring; silent audio keep-alive is a fallback) instead of stopping,
 #     so a UDP account on a local SIP server keeps receiving calls -> CallKit
 #   - no PushKit / APNs, no Crashlytics
 #   - app extensions removed (they need push and eat free-account App IDs)
@@ -15,7 +15,7 @@ on:
         required: false
         default: ""
   push:
-    branches: [master, main]
+    branches: [master, main, beacon]
 
 jobs:
   build:
@@ -89,6 +89,8 @@ jobs:
           plutil -replace CFBundleVersion -string "${{ github.run_number }}" "$PL"
           # Own app group (data/config/db) so nothing is shared with App Store Linphone
           plutil -replace APP_GROUP_NAME -string "$APP_GROUP" "$PL"
+          plutil -replace NSLocationAlwaysAndWhenInUseUsageDescription -string "DerindSIP uses Bluetooth beacons from your call gateway to wake up and receive incoming calls and messages in the background. Your location is never recorded." "$PL"
+          plutil -replace NSLocationWhenInUseUsageDescription -string "DerindSIP uses Bluetooth beacons from your call gateway to receive incoming calls and messages. Your location is never recorded." "$PL"
           EXE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$PL")
           ldid -SLinphone/LinphoneLAN.entitlements "$APP/$EXE"
           echo "Embedded entitlements:"; ldid -e "$APP/$EXE"

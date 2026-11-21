@@ -20,6 +20,9 @@
 import AVFoundation
 import UIKit
 
+/// FALLBACK (disabled by default): the default LAN wake mechanism is now the iBeacon wake
+/// (`LanBeaconWake`). Enable this silent-audio keep-alive with `[app] lan_keepalive=1`.
+///
 /// LAN-only build helper: keeps the app (and the linphone core) alive in background
 /// by looping a silent sound through the `audio` background mode, so a UDP account
 /// registered on a local SIP server (no push, no internet) keeps receiving INVITEs.
@@ -30,10 +33,10 @@ import UIKit
 final class LanKeepAlive {
 	static let shared = LanKeepAlive()
 
-	/// Config key `[app] lan_keepalive` (default: on in LAN builds, always off otherwise).
+	/// Config key `[app] lan_keepalive` (default: off; always off in non-LAN builds).
 	static var isEnabled: Bool {
 #if LAN_BUILD
-		return AppServices.configIfAvailable?.getBool(section: "app", key: "lan_keepalive", defaultValue: true) ?? true
+		return AppServices.configIfAvailable?.getBool(section: "app", key: "lan_keepalive", defaultValue: false) ?? false
 #else
 		return false
 #endif

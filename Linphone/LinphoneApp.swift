@@ -74,6 +74,15 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 				}
 			}
 		}
+
+		// iBeacon wake: when relaunched by CoreLocation the core is created by LinphoneApp.init
+		// (or waitForConfig); here we only log and start region monitoring.
+		if launchOptions?[.location] != nil {
+			Log.info("[LanBeacon] launched by location")
+		}
+		if !LanKeepAlive.isEnabled {
+			LanBeaconWake.shared.start()
+		}
 #endif
 
 		return true
