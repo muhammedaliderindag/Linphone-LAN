@@ -572,7 +572,11 @@ struct NativeKeypad: View {
 					size: buttonSize,
 					isEnabled: !telecomManager.callEnded || telecomManager.callEndedBusy
 				) {
-					endTapped()
+					if telecomManager.callEndedBusy {
+						telecomManager.dismissBusyEndedCall()
+					} else {
+						callViewModel.terminateCall()
+					}
 				}
 				.frame(width: buttonSize, height: buttonSize)
 
