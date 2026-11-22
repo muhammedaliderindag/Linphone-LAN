@@ -56,6 +56,14 @@ class TelecomManager: ObservableObject {
 	@Published var outgoingCallRinging: Bool = false
 	/// Last call just ended and the call screen briefly shows "Call Ended" before closing.
 	@Published var callEnded: Bool = false
+	/// LAN build: the outgoing call was refused busy (486/600/603). The screen shows "Busy"
+	/// and plays the busy tone, then closes, like the iOS Phone app.
+	@Published var callEndedBusy: Bool = false
+	/// CallKit ends postponed while the busy tone plays (ending at once would deactivate the
+	/// audio session and silence the tone). Keyed by CallKit uuid; main thread only.
+	var pendingBusyCallKitEnds: [UUID: () -> Void] = [:]
+	/// Invalidates a pending delayed close when the busy screen was dismissed early. Main thread only.
+	var endedCallCloseToken: Int = 0
 	@Published var meetingWaitingRoomDisplayed: Bool = false
 	@Published var meetingWaitingRoomSelected: Address?
 	@Published var meetingWaitingRoomName: String = ""
@@ -436,7 +444,41 @@ class TelecomManager: ObservableObject {
 			}
 		}
 	}
-	
+
+	/// Our outgoing call was refused busy: 486 Busy Here (the GSM bridge maps "user busy" to it),
+	/// 600 Busy Everywhere or 603 Decline.
+	static func isBusyRefusal(call: Call) -> Bool {
+		guard call.dir == .Outgoing else { return false }
+		let code = call.errorInfo?.protocolCode ?? 0
+		return call.reason == .Busy || call.reason == .Declined || code == 486 || code == 600 || code == 603
+	}
+
+	/// Closes the call screen after the last call ended ("Call Ended"/"Busy" phase over). Main thread.
+	func closeEndedCallView(stopTone: Bool = true) {
+		if stopTone {
+			BusyTonePlayer.shared.stop()
+		}
+		withAnimation {
+			self.callEnded = false
+			self.callEndedBusy = false
+			self.outgoingCallStarted = false
+			self.callInProgress = false
+			self.callDisplayed = false
+			self.callStarted = false
+			self.callConnected = false
+		}
+	}
+
+	/// End pressed on the "Busy" screen: stop the tone, end the postponed CallKit call and
+	/// close the screen now instead of waiting for the tone to finish. Main thread.
+	func dismissBusyEndedCall() {
+		endedCallCloseToken += 1
+		let pending = pendingBusyCallKitEnds
+		pendingBusyCallKitEnds.removeAll()
+		pending.values.forEach { $0() }
+		closeEndedCallView()
+	}
+
 	func onAccountRegistrationStateChanged(core: Core, account: Account, state: RegistrationState, message: String) {
 		if core.accountList.count == 1 && (state == .Failed || state == .Cleared) {
 			// terminate callkit immediately when registration failed or cleared, supporting single account configuration
@@ -579,6 +621,10 @@ class TelecomManager: ObservableObject {
 				if cstate == .OutgoingInit && self.callEnded {
 					self.callEnded = false
 				}
+				if cstate == .OutgoingInit && self.callEndedBusy {
+					BusyTonePlayer.shared.stop()
+					self.callEndedBusy = false
+				}
 			}
 
 			if cstate == Call.State.Connected {
@@ -687,7 +733,18 @@ class TelecomManager: ObservableObject {
 				if core.callsNb == 0 {
 					core.outputAudioDevice = core.defaultOutputAudioDevice
 				}
-				
+
+				// Busy: our outgoing call was refused with 486 Busy Here (the GSM bridge maps
+				// "user busy" to it), 600 Busy Everywhere or 603 Decline.
+#if LAN_BUILD
+				let endedBusy = TelecomManager.isBusyRefusal(call: call)
+				if endedBusy {
+					Log.info("[Busy] outgoing call \(callId) refused busy (code \(call.errorInfo?.protocolCode ?? 0))")
+				}
+#else
+				let endedBusy = false
+#endif
+
 				// if core.callsNb == 0 {
 				self.incomingDisplayName(call: call) { displayNameResult in
 					var displayName = "Unknown"
@@ -708,23 +765,29 @@ class TelecomManager: ObservableObject {
 							UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["linphone-earpiece-enforcement"])
 
 							let closeCallView = {
-								withAnimation {
-									self.callEnded = false
-									self.outgoingCallStarted = false
-									self.callInProgress = false
-									self.callDisplayed = false
-									self.callStarted = false
-									self.callConnected = false
-								}
+								// A busy tone stops by itself; closing a hidden call screen must not cut it.
+								self.closeEndedCallView(stopTone: !endedBusy)
+							}
+							if endedBusy {
+								BusyTonePlayer.shared.play()
 							}
 							if self.callDisplayed && self.callInProgress {
-								// Like the iOS Phone app: keep the screen up for a moment with "Call Ended".
+								// Like the iOS Phone app: keep the screen up for a moment with "Call Ended"
+								// (or "Busy" plus the busy tone).
 								self.callEnded = true
-								DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+								if endedBusy {
+									self.callEndedBusy = true
+								}
+								self.endedCallCloseToken += 1
+								let token = self.endedCallCloseToken
+								let delay = endedBusy ? BusyTonePlayer.duration() + 0.5 : 1.2
+								DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+									guard token == self.endedCallCloseToken else { return }
 									if core.callsNb == 0 {
 										closeCallView()
 									} else {
 										self.callEnded = false
+										self.callEndedBusy = false
 									}
 								}
 							} else {
@@ -787,8 +850,22 @@ class TelecomManager: ObservableObject {
 							break
 						}
 						if endCallKitReplacedCall {
-							let transaction = CXTransaction(action: CXEndCallAction(call: uuid!))
-							requestTransaction(transaction, action: "endCall")
+							let endUuid = uuid!
+							let endCallKit = {
+								let transaction = CXTransaction(action: CXEndCallAction(call: endUuid))
+								self.requestTransaction(transaction, action: "endCall")
+							}
+							if endedBusy {
+								// Keep the CallKit call (and its audio session) alive while the busy tone plays.
+								DispatchQueue.main.async {
+									self.pendingBusyCallKitEnds[endUuid] = endCallKit
+									DispatchQueue.main.asyncAfter(deadline: .now() + BusyTonePlayer.duration() + 0.2) {
+										self.pendingBusyCallKitEnds.removeValue(forKey: endUuid)?()
+									}
+								}
+							} else {
+								endCallKit()
+							}
 						} else {
 							endCallKitReplacedCall = true
 						}

@@ -1094,6 +1094,9 @@ class CallViewModel: ObservableObject {
 	
 	/// Status line of the iOS-style call screen (calling…/ringing…/timer/on hold/Call Ended).
 	func callStatusText() -> String {
+		if telecomManager.callEndedBusy {
+			return NSLocalizedString("call_native_busy", comment: "")
+		}
 		if telecomManager.callEnded {
 			return NSLocalizedString("call_native_ended", comment: "")
 		}

@@ -15,6 +15,7 @@
 		66246C6A2C622AE900973E97 /* TimeZoneExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66246C692C622AE900973E97 /* TimeZoneExtension.swift */; };
 		662B69D92B25DE18007118BF /* TelecomManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69D82B25DE18007118BF /* TelecomManager.swift */; };
 		662B69DB2B25DE25007118BF /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662B69DA2B25DE25007118BF /* ProviderDelegate.swift */; };
+		4C414E4B41000000000000B5 /* BusyTonePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C414E4B41000000000000F5 /* BusyTonePlayer.swift */; };
 		6646A7A32BB2E224006B842A /* ScheduleMeetingFragment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */; };
 		667E5D7F2B8E430C00EBCFC4 /* linphonerc-factory in Resources */ = {isa = PBXBuildFile; fileRef = D732A90B2B0376F500DB42BA /* linphonerc-factory */; };
 		667E5D812B8E444E00EBCFC4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 667E5D802B8E444D00EBCFC4 /* GoogleService-Info.plist */; };
@@ -309,6 +310,7 @@
 		66246C692C622AE900973E97 /* TimeZoneExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeZoneExtension.swift; sourceTree = "<group>"; };
 		662B69D82B25DE18007118BF /* TelecomManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelecomManager.swift; sourceTree = "<group>"; };
 		662B69DA2B25DE25007118BF /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
+		4C414E4B41000000000000F5 /* BusyTonePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BusyTonePlayer.swift; sourceTree = "<group>"; };
 		6646A7A22BB2E224006B842A /* ScheduleMeetingFragment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleMeetingFragment.swift; sourceTree = "<group>"; };
 		667E5D802B8E444D00EBCFC4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6691CA7D2B839C2D00B2A7B8 /* NotificationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -664,6 +666,7 @@
 				C65270F72F879D2700FF248C /* EarlyPushkitDelegate.swift */,
 				662B69D82B25DE18007118BF /* TelecomManager.swift */,
 				662B69DA2B25DE25007118BF /* ProviderDelegate.swift */,
+				4C414E4B41000000000000F5 /* BusyTonePlayer.swift */,
 			);
 			path = TelecomManager;
 			sourceTree = "<group>";
@@ -1696,6 +1699,7 @@
 				D750D3392AD3E6EE00EC99C5 /* PopupLoadingView.swift in Sources */,
 				D7E6D0492AE933AD00A57AAF /* FavoriteContactsListFragment.swift in Sources */,
 				662B69DB2B25DE25007118BF /* ProviderDelegate.swift in Sources */,
+				4C414E4B41000000000000B5 /* BusyTonePlayer.swift in Sources */,
 				D706BA822ADD72D100278F45 /* DeviceRotationViewModifier.swift in Sources */,
 				D7AEB9742F324A6F00298546 /* ConversationDocumentsListFragment.swift in Sources */,
 				D732A9132B04C7A300DB42BA /* HistoryListFragment.swift in Sources */,

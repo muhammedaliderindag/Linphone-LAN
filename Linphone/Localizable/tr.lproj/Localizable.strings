@@ -673,6 +673,7 @@
 "call_native_calling" = "aranıyor…";
 "call_native_ringing" = "çalıyor…";
 "call_native_ended" = "Arama Bitti";
+"call_native_busy" = "Meşgul";
 "call_native_on_hold" = "Beklemede";
 "call_native_held_by_remote" = "Karşı taraf beklemeye aldı";
 "call_native_record" = "Kaydet";

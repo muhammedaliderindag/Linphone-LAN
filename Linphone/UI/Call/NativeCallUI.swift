@@ -84,7 +84,7 @@ struct NativeCallHeader: View {
 				}
 				Text(callViewModel.callStatusText())
 					.font(.system(size: compact ? 15 : 17).monospacedDigit())
-					.foregroundColor(NativeCallStyle.secondaryText)
+					.foregroundColor(telecomManager.callEndedBusy ? NativeCallStyle.endRed : NativeCallStyle.secondaryText)
 			}
 
 			Text(dtmfDigits.isEmpty ? shownName : dtmfDigits)
@@ -321,9 +321,9 @@ struct NativeCallControls: View {
 			title: NSLocalizedString("call_native_end", comment: ""),
 			fill: NativeCallStyle.endRed,
 			size: buttonSize,
-			isEnabled: !telecomManager.callEnded
+			isEnabled: !telecomManager.callEnded || telecomManager.callEndedBusy
 		) {
-			callViewModel.terminateCall()
+			endTapped()
 		}
 	}
 
@@ -479,6 +479,15 @@ struct NativeCallControls: View {
 
 	// MARK: Helpers
 
+	/// End: hang up, or on the "Busy" screen stop the tone and close right away.
+	private func endTapped() {
+		if telecomManager.callEndedBusy {
+			telecomManager.dismissBusyEndedCall()
+		} else {
+			callViewModel.terminateCall()
+		}
+	}
+
 	private func speakerTapped() {
 		let session = AVAudioSession.sharedInstance()
 		let hasBluetooth = session.availableInputs?.contains(where: { $0.portType.rawValue.contains("Bluetooth") }) ?? false
@@ -561,9 +570,9 @@ struct NativeKeypad: View {
 					title: "",
 					fill: NativeCallStyle.endRed,
 					size: buttonSize,
-					isEnabled: !telecomManager.callEnded
+					isEnabled: !telecomManager.callEnded || telecomManager.callEndedBusy
 				) {
-					callViewModel.terminateCall()
+					endTapped()
 				}
 				.frame(width: buttonSize, height: buttonSize)
 
