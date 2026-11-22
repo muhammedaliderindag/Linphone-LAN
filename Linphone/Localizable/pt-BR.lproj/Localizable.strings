@@ -131,6 +131,11 @@
 "bottom_navigation_contacts_label" = "Contatos";
 "bottom_navigation_conversations_label" = "Conversas";
 "bottom_navigation_meetings_label" = "Reuniões";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "call_action_blind_transfer" = "Transferir";
 "call_action_change_layout" = "Layout";
 "call_action_go_to_calls_list" = "Lista de chamadas";

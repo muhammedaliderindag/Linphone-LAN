@@ -406,9 +406,31 @@ struct ContentView: View {
 											.padding(.top)
 											.accessibilityIdentifier("bottom_bar_calls_button")
 										}
-										
+
 										Spacer()
-										
+
+										Button(action: {
+											selectTab(4)
+										}, label: {
+											VStack {
+												Image(systemName: "circle.grid.3x3.fill")
+													.font(.system(size: 21, weight: .medium))
+													.foregroundStyle(sharedMainViewModel.indexView == 4 ? Color.msgAccent : Color.msgTextSecondary)
+													.frame(width: 25, height: 25)
+												if sharedMainViewModel.indexView == 4 {
+													Text("bottom_navigation_keypad_label")
+														.default_text_style_700(styleSize: 10)
+												} else {
+													Text("bottom_navigation_keypad_label")
+														.default_text_style(styleSize: 10)
+												}
+											}
+										})
+										.padding(.top)
+										.accessibilityIdentifier("bottom_bar_keypad_button")
+
+										Spacer()
+
                                         if !sharedMainViewModel.disableChatFeature {
                                             ZStack {
                                                 if SharedMainViewModel.shared.unreadMessages > 0 {
@@ -523,7 +545,12 @@ struct ContentView: View {
 									}
 									
 									VStack(spacing: 0) {
-										if searchIsActive == false {
+										if sharedMainViewModel.indexView == 4 && !isLandscape {
+											// DerindSIP: the Keypad tab is full screen, like the iOS Phone app.
+											Color.clear.frame(height: 0)
+										} else if searchIsActive == false || !isLandscape {
+											// In portrait, search lives in the floating bottom bar,
+											// so the header stays visible while searching.
 											HStack {
 												Button {
 													openMenu()
@@ -602,27 +629,27 @@ struct ContentView: View {
                                                         .frame(width: avatarSize, height: avatarSize)
                                                 }
 												
-												Text(String(localized: sharedMainViewModel.indexView == 0 ? "bottom_navigation_contacts_label" : (sharedMainViewModel.indexView == 1 ? "bottom_navigation_calls_label" : (sharedMainViewModel.indexView == 2 ? "bottom_navigation_conversations_label" : "bottom_navigation_meetings_label"))))
+												Text(String(localized: sharedMainViewModel.indexView == 0 ? "bottom_navigation_contacts_label" : (sharedMainViewModel.indexView == 1 ? "bottom_navigation_calls_label" : (sharedMainViewModel.indexView == 2 ? "bottom_navigation_conversations_label" : (sharedMainViewModel.indexView == 4 ? "bottom_navigation_keypad_label" : "bottom_navigation_meetings_label")))))
 													.msgText(sharedMainViewModel.indexView == 2 ? 30 : 24, .bold)
 													.lineLimit(1)
 													.minimumScaleFactor(0.7)
 													.padding(.leading, 2)
 												
 												Spacer()
-												
-												Button {
-													withAnimation {
-														searchIsActive.toggle()
-													}
-												} label: {
-													Image("magnifying-glass")
-														.renderingMode(.template)
-														.resizable()
-														.foregroundStyle(Color.msgAccent)
-														.frame(width: 23, height: 23, alignment: .leading)
-														.padding(.all, 10)
+
+												if isLandscape && sharedMainViewModel.indexView != 4 {
+													Button {
+														openSearch()
+													} label: {
+														Image("magnifying-glass")
+															.renderingMode(.template)
+															.resizable()
+															.foregroundStyle(Color.msgAccent)
+															.frame(width: 23, height: 23, alignment: .leading)
+															.padding(.all, 10)
 													}
 													.padding(.trailing, 0)
+												}
 
 													// DerindSIP: iOS-style "add" buttons in the header (replace the orange FABs)
 													if sharedMainViewModel.indexView == 0
@@ -754,26 +781,7 @@ struct ContentView: View {
 										} else {
 											HStack {
 												Button {
-													withAnimation {
-														self.focusedField = false
-														searchIsActive.toggle()
-													}
-													
-													text = ""
-													
-													if sharedMainViewModel.indexView != 3 {
-														magicSearch.currentFilter = ""
-														magicSearch.searchForContacts()
-													}
-													
-													if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
-														historyListVM.resetFilterCallLogs()
-													} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
-														conversationsListVM.resetFilterConversations()
-													} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
-														meetingsListVM.currentFilter = ""
-														meetingsListVM.computeMeetingsList()
-													}
+													closeSearch()
 												} label: {
 													Image("caret-left")
 														.renderingMode(.template)
@@ -784,153 +792,16 @@ struct ContentView: View {
 														.padding(.leading, -10)
 												}
 												
-												if #available(iOS 16.0, *) {
-													TextEditor(text: Binding(
-														get: {
-															return text
-														},
-														set: { value in
-															var newValue = value
-															if value.contains("\n") {
-																newValue = value.replacingOccurrences(of: "\n", with: "")
-															}
-															text = newValue
-														}
-													))
+												TextField("", text: $text)
 													.default_text_style_white_700(styleSize: 15)
 													.padding(.all, 6)
 													.disableAutocorrection(true)
 													.autocapitalization(.none)
 													.accentColor(.white)
-													.scrollContentBackground(.hidden)
 													.focused($focusedField)
 													.onAppear {
 														self.focusedField = true
 													}
-													.onChange(of: text) { newValue in
-														if sharedMainViewModel.indexView != 3 {
-															magicSearch.currentFilter = newValue
-															magicSearch.searchForContacts()
-														}
-														
-														if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
-															if text.isEmpty {
-																historyListVM.resetFilterCallLogs()
-															} else {
-																historyListVM.filterCallLogs(filter: text)
-															}
-														} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
-															if text.isEmpty {
-																conversationsListVM.resetFilterConversations()
-															} else {
-																conversationsListVM.filterConversations(filter: text)
-															}
-														} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
-															meetingsListVM.currentFilter = text
-															meetingsListVM.computeMeetingsList()
-														}
-													}
-													.onChange(of: isShowStartCallFragment) { isShowStartCallFragmentNewValue in
-														if isShowStartCallFragmentNewValue == false && !text.isEmpty {
-															if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
-																magicSearch.currentFilter = text
-																magicSearch.searchForContacts()
-																
-																if text.isEmpty {
-																	historyListVM.resetFilterCallLogs()
-																} else {
-																	historyListVM.filterCallLogs(filter: text)
-																}
-															}
-														}
-													}
-													.onChange(of: isShowStartConversationFragment) { isShowStartConversationFragmentNewValue in
-														if isShowStartConversationFragmentNewValue == false && !text.isEmpty {
-															if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
-																magicSearch.currentFilter = text
-																magicSearch.searchForContacts()
-																
-																if text.isEmpty {
-																	conversationsListVM.resetFilterConversations()
-																} else {
-																	conversationsListVM.filterConversations(filter: text)
-																}
-															}
-														}
-													}
-												} else {
-													TextEditor(text: Binding(
-														get: {
-															return text
-														},
-														set: { value in
-															var newValue = value
-															if value.contains("\n") {
-																newValue = value.replacingOccurrences(of: "\n", with: "")
-															}
-															text = newValue
-														}
-													))
-													.default_text_style_700(styleSize: 15)
-													.padding(.all, 6)
-													.focused($focusedField)
-													.disableAutocorrection(true)
-													.autocapitalization(.none)
-													.onAppear {
-														self.focusedField = true
-													}
-													.onChange(of: text) { newValue in
-														if sharedMainViewModel.indexView != 3 {
-															magicSearch.currentFilter = newValue
-															magicSearch.searchForContacts()
-														}
-														
-														if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
-															if text.isEmpty {
-																historyListVM.resetFilterCallLogs()
-															} else {
-																historyListVM.filterCallLogs(filter: text)
-															}
-														} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
-															if text.isEmpty {
-																conversationsListVM.resetFilterConversations()
-															} else {
-																conversationsListVM.filterConversations(filter: text)
-															}
-														} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
-															meetingsListVM.currentFilter = text
-															meetingsListVM.computeMeetingsList()
-														}
-													}
-													.onChange(of: isShowStartCallFragment) { isShowStartCallFragmentNewValue in
-														if isShowStartCallFragmentNewValue == false && !text.isEmpty {
-															if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
-																magicSearch.currentFilter = text
-																magicSearch.searchForContacts()
-																
-																if text.isEmpty {
-																	historyListVM.resetFilterCallLogs()
-																} else {
-																	historyListVM.filterCallLogs(filter: text)
-																}
-															}
-														}
-													}
-													.onChange(of: isShowStartConversationFragment) { isShowStartConversationFragmentNewValue in
-														if isShowStartConversationFragmentNewValue == false && !text.isEmpty {
-															if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
-																magicSearch.currentFilter = text
-																magicSearch.searchForContacts()
-																
-																if text.isEmpty {
-																	conversationsListVM.resetFilterConversations()
-																} else {
-																	conversationsListVM.filterConversations(filter: text)
-																}
-															}
-														}
-													}
-												}
 												
 												Button {
 													text = ""
@@ -990,8 +861,59 @@ struct ContentView: View {
 												text: $text,
 												orientation: orientation
 											)
+										} else if sharedMainViewModel.indexView == 4 {
+											KeypadView(
+												onOpenContact: { contactAvatarModel in
+													sharedMainViewModel.changeIndexView(indexViewInt: 0)
+													withAnimation {
+														sharedMainViewModel.displayedFriend = contactAvatarModel
+													}
+												},
+												onAddContact: { number in
+													isShowEditContactFragmentAddress = number
+													withAnimation {
+														contactsListViewModel?.selectedEditFriend = nil
+														isShowEditContactFragment = true
+													}
+												}
+											)
 										}
 									}
+									.onChange(of: text) { newValue in
+										// Only while searching: closing the search resets the filters itself.
+										if searchIsActive {
+											applySearch(newValue)
+										}
+									}
+									.onChange(of: isShowStartCallFragment) { isShowStartCallFragmentNewValue in
+										if isShowStartCallFragmentNewValue == false && !text.isEmpty && sharedMainViewModel.indexView == 1 {
+											applySearch(text)
+										}
+									}
+									.onChange(of: isShowStartConversationFragment) { isShowStartConversationFragmentNewValue in
+										if isShowStartConversationFragmentNewValue == false && !text.isEmpty && sharedMainViewModel.indexView == 2 {
+											applySearch(text)
+										}
+									}
+								}
+							}
+							.safeAreaInset(edge: .bottom, spacing: 0) {
+								if !isLandscape {
+									FloatingTabBar(
+										searchIsActive: $searchIsActive,
+										text: $text,
+										focusedField: $focusedField,
+										onSelect: { index in
+											selectTab(index)
+										},
+										onOpenSearch: {
+											openSearch()
+										},
+										onCloseSearch: {
+											closeSearch()
+										}
+									)
+									.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 10)
 								}
 							}
 							.frame(maxWidth:
@@ -1008,188 +930,6 @@ struct ContentView: View {
 								|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height {
 								Spacer()
 							}
-						}
-						
-						if !(orientation == .landscapeLeft
-							 || orientation == .landscapeRight
-							 || UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height) && !searchIsActive {
-							HStack {
-								Group {
-									Spacer()
-									Button(action: {
-										resetFilter()
-										
-										sharedMainViewModel.changeIndexView(indexViewInt: 0)
-										sharedMainViewModel.displayedCall = nil
-										sharedMainViewModel.displayedConversation = nil
-										sharedMainViewModel.displayedMeeting = nil
-									}, label: {
-										VStack {
-											Image("address-book")
-												.renderingMode(.template)
-												.resizable()
-												.foregroundStyle(sharedMainViewModel.indexView == 0 ? Color.msgAccent : Color.msgTextSecondary)
-												.frame(width: 25, height: 25)
-											if sharedMainViewModel.indexView == 0 {
-												Text("bottom_navigation_contacts_label")
-													.default_text_style_700(styleSize: 10)
-											} else {
-												Text("bottom_navigation_contacts_label")
-													.default_text_style(styleSize: 10)
-											}
-										}
-									})
-									.padding(.top)
-									.frame(width: 66)
-									.accessibilityIdentifier("bottom_bar_contacts_button")
-									
-									Spacer()
-									
-									ZStack {
-										if SharedMainViewModel.shared.missedCallsCount > 0 {
-											VStack {
-												HStack {
-													Text(
-                                                        SharedMainViewModel.shared.missedCallsCount < 99
-														? String(SharedMainViewModel.shared.missedCallsCount)
-														: "99+"
-													)
-													.foregroundStyle(.white)
-													.default_text_style(styleSize: 10)
-													.lineLimit(1)
-												}
-												.frame(width: 18, height: 18)
-												.background(Color.redDanger500)
-												.cornerRadius(50)
-											}
-											.padding(.bottom, 30)
-											.padding(.leading, 30)
-										}
-										
-										Button(action: {
-											resetFilter()
-											
-											sharedMainViewModel.changeIndexView(indexViewInt: 1)
-											sharedMainViewModel.displayedFriend = nil
-											sharedMainViewModel.displayedConversation = nil
-											sharedMainViewModel.displayedMeeting = nil
-											if SharedMainViewModel.shared.missedCallsCount > 0 {
-                                                SharedMainViewModel.shared.resetMissedCallsCount()
-											}
-										}, label: {
-											VStack {
-												Image("phone")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(sharedMainViewModel.indexView == 1 ? Color.msgAccent : Color.msgTextSecondary)
-													.frame(width: 25, height: 25)
-												if sharedMainViewModel.indexView == 1 {
-													Text("bottom_navigation_calls_label")
-														.default_text_style_700(styleSize: 9)
-												} else {
-													Text("bottom_navigation_calls_label")
-														.default_text_style(styleSize: 9)
-												}
-											}
-										})
-										.padding(.top)
-										.frame(width: 66)
-									}
-                                    
-                                    if !sharedMainViewModel.disableChatFeature {
-                                        Spacer()
-                                    
-                                        ZStack {
-                                            if SharedMainViewModel.shared.unreadMessages > 0 {
-                                                VStack {
-                                                    HStack {
-                                                        Text(
-                                                            SharedMainViewModel.shared.unreadMessages < 99
-                                                            ? String(SharedMainViewModel.shared.unreadMessages)
-                                                            : "99+"
-                                                        )
-                                                        .foregroundStyle(.white)
-                                                        .default_text_style(styleSize: 10)
-                                                        .lineLimit(1)
-                                                    }
-                                                    .frame(width: 18, height: 18)
-                                                    .background(Color.redDanger500)
-                                                    .cornerRadius(50)
-                                                }
-                                                .padding(.bottom, 30)
-                                                .padding(.leading, 30)
-                                            }
-                                            
-                                            Button(action: {
-												resetFilter()
-												
-                                                sharedMainViewModel.changeIndexView(indexViewInt: 2)
-                                                sharedMainViewModel.displayedFriend = nil
-                                                sharedMainViewModel.displayedCall = nil
-                                                sharedMainViewModel.displayedMeeting = nil
-                                            }, label: {
-                                                VStack {
-                                                    Image("chat-teardrop-text")
-                                                        .renderingMode(.template)
-                                                        .resizable()
-                                                        .foregroundStyle(sharedMainViewModel.indexView == 2 ? Color.msgAccent : Color.msgTextSecondary)
-                                                        .frame(width: 25, height: 25)
-                                                    
-                                                    if sharedMainViewModel.indexView == 2 {
-                                                        Text("bottom_navigation_conversations_label")
-                                                            .default_text_style_700(styleSize: 9)
-                                                    } else {
-                                                        Text("bottom_navigation_conversations_label")
-                                                            .default_text_style(styleSize: 9)
-                                                    }
-                                                }
-                                            })
-                                            .padding(.top)
-                                            .frame(width: 66)
-                                        }
-                                    }
-									
-									if !sharedMainViewModel.disableMeetingFeature {
-										Spacer()
-										Button(action: {
-											resetFilter()
-											
-											sharedMainViewModel.changeIndexView(indexViewInt: 3)
-											sharedMainViewModel.displayedFriend = nil
-											sharedMainViewModel.displayedCall = nil
-											sharedMainViewModel.displayedConversation = nil
-											
-											if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
-												meetingsListVM.currentFilter = ""
-												meetingsListVM.computeMeetingsList()
-											}
-										}, label: {
-											VStack {
-												Image("video-conference")
-													.renderingMode(.template)
-													.resizable()
-													.foregroundStyle(sharedMainViewModel.indexView == 3 ? Color.msgAccent : Color.msgTextSecondary)
-													.frame(width: 25, height: 25)
-												if sharedMainViewModel.indexView == 3 {
-													Text("bottom_navigation_meetings_label")
-														.default_text_style_700(styleSize: 9)
-												} else {
-													Text("bottom_navigation_meetings_label")
-														.default_text_style(styleSize: 9)
-												}
-											}
-										})
-										.padding(.top)
-										.frame(width: 66)
-									}
-									
-									Spacer()
-								}
-							}
-							.padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? 0 : 15)
-							.background(Color.msgBar.ignoresSafeArea(.all, edges: .bottom))
-							.msgHairline(.top)
-							.msgDarkScope()
 						}
 					}
 					
@@ -1298,7 +1038,10 @@ struct ContentView: View {
 						isShowAccountProfileFragment: $isShowAccountProfileFragment,
 						isShowSettingsFragment: $isShowSettingsFragment,
 						isShowRecordingsListFragment: $isShowRecordingsListFragment,
-						isShowHelpFragment: $isShowHelpFragment
+						isShowHelpFragment: $isShowHelpFragment,
+						onOpenMeetings: {
+							selectTab(3)
+						}
 					)
 					.environmentObject(accountProfileViewModel)
 					.ignoresSafeArea(.all)
@@ -2193,6 +1936,92 @@ struct ContentView: View {
 		if !magicSearch.currentFilter.isEmpty {
 			magicSearch.currentFilter = ""
 			magicSearch.searchForContacts()
+		}
+	}
+
+	/// Landscape / iPad layout: side bar on the left, list + detail side by side.
+	var isLandscape: Bool {
+		orientation == .landscapeLeft
+		|| orientation == .landscapeRight
+		|| UIScreen.main.bounds.size.width > UIScreen.main.bounds.size.height
+	}
+
+	/// DerindSIP: single entry point for tab switches (floating bar, side bar, side menu).
+	/// Index: 0 Contacts, 1 Calls, 2 Conversations, 3 Meetings, 4 Keypad.
+	func selectTab(_ index: Int) {
+		resetFilter()
+
+		sharedMainViewModel.changeIndexView(indexViewInt: index)
+		if index != 0 { sharedMainViewModel.displayedFriend = nil }
+		if index != 1 { sharedMainViewModel.displayedCall = nil }
+		if index != 2 { sharedMainViewModel.displayedConversation = nil }
+		if index != 3 { sharedMainViewModel.displayedMeeting = nil }
+
+		if index == 1 && SharedMainViewModel.shared.missedCallsCount > 0 {
+			SharedMainViewModel.shared.resetMissedCallsCount()
+		}
+
+		if index == 3, let meetingsListVM = meetingsListViewModel {
+			meetingsListVM.currentFilter = ""
+			meetingsListVM.computeMeetingsList()
+		}
+	}
+
+	func openSearch() {
+		// The keypad has nothing to filter: search the contacts instead (like iOS).
+		if sharedMainViewModel.indexView == 4 {
+			selectTab(0)
+		}
+		withAnimation {
+			searchIsActive = true
+		}
+	}
+
+	func closeSearch() {
+		withAnimation {
+			self.focusedField = false
+			searchIsActive = false
+		}
+
+		text = ""
+
+		if sharedMainViewModel.indexView != 3 {
+			magicSearch.currentFilter = ""
+			magicSearch.searchForContacts()
+		}
+
+		if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+			historyListVM.resetFilterCallLogs()
+		} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+			conversationsListVM.resetFilterConversations()
+		} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+			meetingsListVM.currentFilter = ""
+			meetingsListVM.computeMeetingsList()
+		}
+	}
+
+	/// Applies the search text to the list of the current tab.
+	func applySearch(_ newValue: String) {
+		if sharedMainViewModel.indexView != 3 && sharedMainViewModel.indexView != 4 {
+			magicSearch.currentFilter = newValue
+			magicSearch.searchForContacts()
+		}
+
+		if let historyListVM = historyListViewModel, sharedMainViewModel.indexView == 1 {
+			if newValue.isEmpty {
+				historyListVM.resetFilterCallLogs()
+			} else {
+				historyListVM.filterCallLogs(filter: newValue)
+			}
+		} else if let conversationsListVM = conversationsListViewModel, sharedMainViewModel.indexView == 2 {
+			if newValue.isEmpty {
+				conversationsListVM.resetFilterConversations()
+			} else {
+				conversationsListVM.filterConversations(filter: newValue)
+			}
+		} else if let meetingsListVM = meetingsListViewModel, sharedMainViewModel.indexView == 3 {
+			meetingsListVM.currentFilter = newValue
+			meetingsListVM.computeMeetingsList()
 		}
 	}
 }

@@ -1,4 +1,9 @@
 "bottom_navigation_meetings_label" = "会议";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "contact_message_action" = "信息";
 "help_title" = "帮助";
 "manage_account_devices_title" = "设备";

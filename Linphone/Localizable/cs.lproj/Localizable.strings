@@ -62,6 +62,11 @@
 "bottom_navigation_contacts_label" = "Kontakty";
 "bottom_navigation_conversations_label" = "Konverzace";
 "bottom_navigation_meetings_label" = "Schůzky";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "call_action_blind_transfer" = "Přepojit";
 "call_action_change_layout" = "Rozložení";
 "call_action_go_to_calls_list" = "Seznam hovorů";

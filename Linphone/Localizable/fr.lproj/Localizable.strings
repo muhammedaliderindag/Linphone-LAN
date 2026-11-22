@@ -105,6 +105,11 @@
 "bottom_navigation_contacts_label" = "Contacts";
 "bottom_navigation_conversations_label" = "Conversations";
 "bottom_navigation_meetings_label" = "Réunions";
+"bottom_navigation_keypad_label" = "Clavier";
+"bottom_navigation_search_placeholder" = "Rechercher";
+"keypad_add_to_contacts" = "Ajouter aux contacts";
+"keypad_copy" = "Copier";
+"keypad_paste" = "Coller";
 "call_action_attended_transfer" = "Transfert";
 "call_action_blind_transfer" = "Transfert";
 "call_action_change_layout" = "Disposition";

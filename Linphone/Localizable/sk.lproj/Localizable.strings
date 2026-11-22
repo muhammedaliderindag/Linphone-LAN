@@ -21,6 +21,11 @@
 "account_settings_voicemail_uri_title" = "URI adresa hlasovej schránky";
 "account_settings_update_password_title" = "Aktualizovať heslo";
 "bottom_navigation_meetings_label" = "Schôdzky";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "contacts_list_empty" = "Momentálne žiadny kontakt…";
 "contacts_list_favourites_title" = "Obľúbené";
 "contacts_list_all_contacts_title" = "Všetky kontakty";

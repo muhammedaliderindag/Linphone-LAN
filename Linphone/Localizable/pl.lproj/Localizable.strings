@@ -18,6 +18,11 @@
 "bottom_navigation_calls_label" = "Połączenia";
 "bottom_navigation_conversations_label" = "Rozmowy";
 "bottom_navigation_meetings_label" = "Spotkania";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "assistant_account_login" = "Login";
 "assistant_scan_qr_code" = "Zeskanuj kod QR";
 "assistant_third_party_sip_account_warning_ok" = "Zrozumiałem";

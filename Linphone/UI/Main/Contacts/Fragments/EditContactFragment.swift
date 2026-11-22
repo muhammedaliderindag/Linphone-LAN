@@ -493,8 +493,26 @@ struct EditContactFragment: View {
 		.onAppear {
 			if !self.isShowEditContactFragmentAddress.isEmpty {
 				DispatchQueue.main.async {
-					editContactViewModel.sipAddresses[0] = isShowEditContactFragmentAddress
-					editContactViewModel.sipAddresses.append("")
+					let value = isShowEditContactFragmentAddress
+					// DerindSIP: a plain number (e.g. typed on the Keypad) goes to the phone field.
+					let isPhoneNumber = !value.contains("@")
+						&& value.contains(where: { $0.isNumber })
+						&& value.allSatisfy({ $0.isNumber || "+*# ".contains($0) })
+					if isPhoneNumber {
+						if editContactViewModel.phoneNumbers.isEmpty {
+							editContactViewModel.phoneNumbers.append(value)
+						} else {
+							editContactViewModel.phoneNumbers[0] = value
+						}
+						editContactViewModel.phoneNumbers.append("")
+					} else {
+						if editContactViewModel.sipAddresses.isEmpty {
+							editContactViewModel.sipAddresses.append(value)
+						} else {
+							editContactViewModel.sipAddresses[0] = value
+						}
+						editContactViewModel.sipAddresses.append("")
+					}
 				}
 			}
 		}

@@ -63,6 +63,11 @@
 "bottom_navigation_contacts_label" = "Kontakte";
 "bottom_navigation_conversations_label" = "Chats";
 "bottom_navigation_meetings_label" = "Besprechungen";
+"bottom_navigation_keypad_label" = "Ziffernblock";
+"bottom_navigation_search_placeholder" = "Suchen";
+"keypad_add_to_contacts" = "Zu Kontakten hinzufügen";
+"keypad_copy" = "Kopieren";
+"keypad_paste" = "Einsetzen";
 "call_action_blind_transfer" = "Weiterleiten";
 "call_action_change_layout" = "Layout";
 "call_action_go_to_calls_list" = "Anrufliste";

@@ -88,6 +88,8 @@
 		D719ABC92ABC6FD700B41C10 /* CoreContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABC82ABC6FD700B41C10 /* CoreContext.swift */; };
 		4C414E4B41000000000000B1 /* LanKeepAlive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C414E4B41000000000000F1 /* LanKeepAlive.swift */; };
 		4C414E4B41000000000000B2 /* LanBeaconWake.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C414E4B41000000000000F2 /* LanBeaconWake.swift */; };
+		4C414E4B41000000000000B3 /* FloatingTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C414E4B41000000000000F3 /* FloatingTabBar.swift */; };
+		4C414E4B41000000000000B4 /* KeypadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C414E4B41000000000000F4 /* KeypadView.swift */; };
 		D719ABCC2ABC769C00B41C10 /* AssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCB2ABC769C00B41C10 /* AssistantView.swift */; };
 		D719ABCF2ABC779A00B41C10 /* AccountLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */; };
 		D719EF892EDF4AFA00509AAB /* GeneratedGit.swift in Sources */ = {isa = PBXBuildFile; fileRef = D719EF882EDF4AFA00509AAB /* GeneratedGit.swift */; };
@@ -378,6 +380,8 @@
 		D719ABC82ABC6FD700B41C10 /* CoreContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreContext.swift; sourceTree = "<group>"; };
 		4C414E4B41000000000000F1 /* LanKeepAlive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanKeepAlive.swift; sourceTree = "<group>"; };
 		4C414E4B41000000000000F2 /* LanBeaconWake.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LanBeaconWake.swift; sourceTree = "<group>"; };
+		4C414E4B41000000000000F3 /* FloatingTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingTabBar.swift; sourceTree = "<group>"; };
+		4C414E4B41000000000000F4 /* KeypadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypadView.swift; sourceTree = "<group>"; };
 		D719ABCB2ABC769C00B41C10 /* AssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantView.swift; sourceTree = "<group>"; };
 		D719ABCE2ABC779A00B41C10 /* AccountLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountLoginViewModel.swift; sourceTree = "<group>"; };
 		D719EF882EDF4AFA00509AAB /* GeneratedGit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneratedGit.swift; sourceTree = "<group>"; };
@@ -997,6 +1001,8 @@
 				D750D3382AD3E6EE00EC99C5 /* PopupLoadingView.swift */,
 				D706BA812ADD72D100278F45 /* DeviceRotationViewModifier.swift */,
 				D72250682ADFBF2D008FB426 /* SideMenu.swift */,
+				4C414E4B41000000000000F3 /* FloatingTabBar.swift */,
+				4C414E4B41000000000000F4 /* KeypadView.swift */,
 				C62817332C1C7C7400DBA646 /* HelpView.swift */,
 				C6DC4E3E2C19C289009096FD /* SideMenuEntry.swift */,
 				C62817272C1B389700DBA646 /* SideMenuAccountRow.swift */,
@@ -1835,6 +1841,8 @@
 				D74DA0FE2C047F0700A85602 /* RedialHelper.swift in Sources */,
 				66D382052CEB7E0A0063E1C5 /* ShortcutModel.swift in Sources */,
 				D72250692ADFBF2D008FB426 /* SideMenu.swift in Sources */,
+				4C414E4B41000000000000B3 /* FloatingTabBar.swift in Sources */,
+				4C414E4B41000000000000B4 /* KeypadView.swift in Sources */,
 				D7AEB9A02F3E219600298546 /* ContactDeviceModel.swift in Sources */,
 				D703F7082DC8C605005B8F75 /* FilePicker.swift in Sources */,
 				C6DC4E3F2C19C289009096FD /* SideMenuEntry.swift in Sources */,

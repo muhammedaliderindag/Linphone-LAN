@@ -344,6 +344,11 @@
 "assistant_third_party_sip_account_create_linphone_account" = "Я надаю перевагу створенню облікового запису";
 "assistant_web_platform_link" = "subscribe.linphone.org";
 "bottom_navigation_meetings_label" = "Наради";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "call_action_attended_transfer" = "Перенаправлення із супроводом";
 "call_action_blind_transfer" = "Перенаправлення";
 "call_action_change_layout" = "Формат";

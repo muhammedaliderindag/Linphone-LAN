@@ -34,6 +34,8 @@ struct SideMenu: View {
 	@Binding var isShowSettingsFragment: Bool
 	@Binding var isShowRecordingsListFragment: Bool
 	@Binding var isShowHelpFragment: Bool
+	/// DerindSIP: Meetings left the bottom bar; the menu opens that tab.
+	var onOpenMeetings: (() -> Void)?
 	@State private var showHelp = false
 	
 	var body: some View {
@@ -128,7 +130,17 @@ struct SideMenu: View {
 						ForEach(0..<CoreContext.shared.shortcuts.count, id: \.self) { index in
 							SideMenuShortcut(shortcutModel: CoreContext.shared.shortcuts[index])
 						}
-						
+
+						if !SharedMainViewModel.shared.disableMeetingFeature, let onOpenMeetings = onOpenMeetings {
+							SideMenuEntry(
+								iconName: "video-conference",
+								title: "bottom_navigation_meetings_label"
+							).onTapGesture {
+								self.menuClose()
+								onOpenMeetings()
+							}
+						}
+
 						SideMenuEntry(
 							iconName: "gear",
 							title: "settings_title"

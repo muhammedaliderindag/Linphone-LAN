@@ -170,3 +170,32 @@ struct MsgUnreadDot: View {
 			.frame(width: 10, height: 10)
 	}
 }
+
+// MARK: - Glass (iOS 26 Liquid Glass with a material fallback)
+
+private struct MsgGlass<S: Shape>: ViewModifier {
+	let shape: S
+	let interactive: Bool
+
+	func body(content: Content) -> some View {
+		if #available(iOS 26.0, *) {
+			if interactive {
+				content.glassEffect(.regular.interactive(), in: shape)
+			} else {
+				content.glassEffect(.regular, in: shape)
+			}
+		} else {
+			content
+				.background(.ultraThinMaterial, in: shape)
+				.background(Color.msgBar.opacity(0.55), in: shape)
+				.overlay(shape.stroke(Color.white.opacity(0.12), lineWidth: 0.5))
+		}
+	}
+}
+
+extension View {
+	/// Floating "Liquid Glass" surface (tab bar pill, search circle).
+	func msgGlass<S: Shape>(in shape: S, interactive: Bool = false) -> some View {
+		self.modifier(MsgGlass(shape: shape, interactive: interactive))
+	}
+}

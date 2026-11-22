@@ -29,3 +29,8 @@
 "call_native_call_quality" = "Call Quality";
 "call_native_encryption" = "Encryption";
 "call_native_back_to_app" = "Back to App";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";

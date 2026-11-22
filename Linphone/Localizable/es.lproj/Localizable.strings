@@ -70,6 +70,11 @@
 "bottom_navigation_contacts_label" = "Contactos";
 "bottom_navigation_conversations_label" = "Conversaciones";
 "bottom_navigation_meetings_label" = "Reuniones";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "call_stats_media_encryption_title" = "Cifrado de medios";
 "conference_layout_grid" = "Mosaico";
 "contact_call_action" = "Llamar";

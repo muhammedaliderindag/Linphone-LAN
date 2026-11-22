@@ -26,6 +26,11 @@
 "bottom_navigation_contacts_label" = "Névjegyek";
 "bottom_navigation_conversations_label" = "Üzenetek";
 "bottom_navigation_meetings_label" = "Meetingek";
+"bottom_navigation_keypad_label" = "Keypad";
+"bottom_navigation_search_placeholder" = "Search";
+"keypad_add_to_contacts" = "Add to Contacts";
+"keypad_copy" = "Copy";
+"keypad_paste" = "Paste";
 "contact_call_action" = "Hívás";
 "contact_details_delete" = "Törlés";
 "conversation_action_call" = "Hívás";

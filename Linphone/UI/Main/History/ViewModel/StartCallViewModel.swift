@@ -155,7 +155,11 @@ class StartCallViewModel: ObservableObject {
 	}
 	
 	func interpretAndStartCall() {
-		let numberToCall = self.searchField
+		StartCallViewModel.interpretAndStartCall(number: self.searchField)
+	}
+
+	/// Interprets a typed number/address and starts the call (also used by the Keypad tab).
+	static func interpretAndStartCall(number numberToCall: String) {
 		CoreContext.shared.doOnCoreQueue { core in
 			let address = core.interpretUrl(url: numberToCall, applyInternationalPrefix: LinphoneUtils.applyInternationalPrefix(core: core))
 			if address != nil {
